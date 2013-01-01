@@ -26,6 +26,8 @@ if [ "$clt_installed" != "y" ]; then
 	echo "Downloading Command Line Tools (log in to start the download)"
 	# download the command line tools
 	open "https://developer.apple.com/downloads/download.action?path=Developer_Tools/command_line_tools_for_xcode__june_2012/command_line_tools_for_xcode_june_2012.dmg"
+	# If this doesn't work for you, you can find the most recent version here:  https://developer.apple.com/downloads
+	# Then plug that file into the commands below
 
 	read
 
