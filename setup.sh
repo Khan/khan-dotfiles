@@ -215,12 +215,12 @@ update_credentials() {
     # sed -i means 'replace in-place'
     if grep -q '%NAME_FIRST_LAST%' "$ROOT/.gitconfig" "$ROOT/.hgrc"; then
         read -p "Enter your full name (First Last): " name
-        sed -i "s/%NAME_FIRST_LAST%/$name/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
+        perl -pli -e "s/%NAME_FIRST_LAST%/$name/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
     fi
 
     if grep -q '%EMAIL%' "$ROOT/.gitconfig" "$ROOT/.hgrc"; then
         read -p "Enter your KA email, without the @khanacademy.org (e.g. $USER): " email
-        sed -i "s/%EMAIL%/$email/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
+        perl -pli -e "s/%EMAIL%/$email/g" "$ROOT/.gitconfig" "$ROOT/.hgrc"
     fi
 }
 
