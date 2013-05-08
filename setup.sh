@@ -191,10 +191,11 @@ install_python_and_npm() {
     # Activate the virtualenv
     . ~/.virtualenv/khan27/bin/activate
 
-    # Install all the requirements that khan and khan-exercises need.
+    # Install all the requirements for khan, khan-exercises, and khan-linter.
     # This also installs npm deps.
     ( cd "$ROOT/khan/webapp" && make install_deps )
     ( cd "$ROOT/khan/webapp/khan-exercises" && pip install -r requirements.txt )
+    ( cd "$ROOT/khan/devtools/khan-linter" && pip install -r requirements.txt )
 }
 
 install_ruby() {
