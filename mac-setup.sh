@@ -205,9 +205,8 @@ install_homebrew() {
     brew install apple-gcc42
 
     # We need a particular version of phantomjs to run the end-to-end tests.
+    # This command will let us access those.
     brew tap homebrew/versions
-    brew uninstall --force phantomjs
-    brew install phantomjs198
 
     # Make sure everything is ok.  We don't care if we're using an
     # obsolete gcc, so instead of looking at the exit code for 'brew
@@ -256,21 +255,9 @@ install_node() {
 }
 
 install_phantomjs() {
-    info "Checking for phantomjs..."
-    if brew ls phantomjs >/dev/null 2>&1; then
-        # If phantomjs is already installed via brew, check if it is outdated
-        if brew outdated | grep -q -e 'phantomjs'; then
-            # If phantomjs is outdated, update it
-            success "phantomjs is being upgraded!"
-            brew upgrade phantomjs 2>&1
-        else
-            success "phantomjs already installed and up to date!"
-        fi
-    else
-        # Otherwise, install via brew
-        success "phantomjs not found, installing!"
-        brew install phantomjs 2>&1
-    fi
+    info "Installing phantomjs 1.9.8..."
+    brew uninstall --force phantomjs
+    brew install phantomjs198
 }
 
 install_helpful_tools() {
@@ -298,7 +285,7 @@ install_helpful_tools() {
 
 echo "\n"
 success "Running Khan Installation Script 1.1\n"
-warn "Warning: This is only tested on Mac OS 10.9 (Mavericks)\n"
+warn "Warning: This is only tested on Mac OS 10.9 (Mavericks)\nand Mac OS 10.10 (Yosemite)\n"
 notice "After each statement, either something will open for you to"
 notice "interact with, or a script will run for you to use\n"
 notice "Press enter when a download/install is completed to go to"
