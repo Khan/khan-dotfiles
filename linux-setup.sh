@@ -7,6 +7,35 @@
 # Bail on any errors
 set -e
 
+# NOTE(danielhollas): To support Ubuntu based distros like Linux Mint,
+# we need to patch `lsb_release`, because Debian sources
+# only support Ubuntu distro names
+linux_codename() {
+  # Use corresponding Ubuntu codenames for Linux Mint
+  if [ `lsb_release -i -s` = "LinuxMint" ];then
+    mint_version=`lsb_release -r -s`
+    case $mint_version in
+      18*)
+        echo "xenial"
+        break
+        ;;
+      19*)
+        echo "bionic"
+        break
+        ;;
+      20*)
+        echo "focal"
+        break
+        ;;
+      *)
+        echo "Unrecognized Linux Mint distribution!"
+        exit 1
+    esac
+  else
+    lsb_release -c -s
+  fi
+}
+
 # Install in $HOME by default, but can set an alternate destination via $1.
 ROOT=${1-$HOME}
 mkdir -p "$ROOT"
@@ -75,8 +104,8 @@ install_packages() {
         # This is a simplified version of https://deb.nodesource.com/setup_12.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_12.x `linux_codename` main
+deb-src https://deb.nodesource.com/node_12.x `linux_codename` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
@@ -247,7 +276,7 @@ install_postgresql() {
     curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc \
         | sudo apt-key add -
 
-    sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
+    sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `linux_codename`-pgdg main"
     sudo apt-get update
     sudo apt-get install -y postgresql-11 postgresql-contrib libpq-dev
 
