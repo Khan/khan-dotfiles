@@ -40,7 +40,11 @@ export PATH="$HOME/.local/bin:$PATH"
 # if they have brew and have our python@2 formula installed
 # See: https://github.com/Khan/homebrew-repo/blob/master/Formula/python%402.rb
 if brew --prefix khan/repo/python@2 >/dev/null 2>&1; then
-    export PATH="$(brew --prefix khan/repo/python@2)/libexec/bin:$PATH"
+    # This will exist if native python2 is installed (usually only on intel)
+    PY2_BIN="$(brew --prefix khan/repo/python@2)"
+    # On a M1 machine, we run python2 via rosetta out of /usr/local
+    [ -d "$PY2_BIN" ] || PY2_BIN="/usr/local/opt/python@2"
+    export PATH="$PY2_BIN/libexec/bin:$PATH"
 fi
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.

@@ -59,8 +59,13 @@ if ! which gcloud >/dev/null; then
     # On mac, we could alternately do `brew install google-cloud-sdk`,
     # but we need this code for linux anyway, so we might as well be
     # consistent across platforms; this also makes dotfiles simpler.
-    platform="$(uname -s | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz)-$(uname -m)"
+    # Also (2021), brew does not supply the version we want on M1.
+    arch="$(uname -m)"
+    # Use rosetta for gcloud on M1
+    [ `uname -m` = "arm64" ] && arch="x86_64"
+    platform="$(uname -s | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz)-$arch"
     gcloud_url="https://storage.googleapis.com/cloud-sdk-release/google-cloud-sdk-$version-$platform.tar.gz"
+    echo "$SCRIPT: Installing from $gcloud_url"
     local_archive_filename="/tmp/gcloud-$version.tar.gz"
     curl "$gcloud_url" >"$local_archive_filename"
     (

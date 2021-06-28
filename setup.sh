@@ -318,11 +318,12 @@ setup_arc() {
 }
 
 
+install_dotfiles
+
 check_dependencies
 
-# the order of these individually doesn't matter but they should come first
 update_userinfo
-install_dotfiles
+
 # the order for these is (mostly!) important, beware
 clone_repos
 install_and_setup_gcloud
