@@ -202,20 +202,23 @@ install_python2() {
 }
 
 install_node() {
+    BREW=brew
+    [ `uname -m` = "arm64" ] && BREW="arch -x86_64 /usr/local/bin/brew"
+
     if ! which node >/dev/null 2>&1; then
         # Install node 12: It's LTS and the latest version supported on
         # appengine standard.
-        brew install node@12
+        $BREW install node@12
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force --overwrite node@12
+        $BREW link --force --overwrite node@12
     fi
     # We don't want to force usage of node v12, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v12" >/dev/null ; then
         notice "Your version of node is $(node --version). We currently only support v12."
-        if brew ls --versions node@12 >/dev/null ; then
+        if $BREW ls --versions node@12 >/dev/null ; then
             notice "You do however have node 12 installed."
             notice "Consider running:"
         else
