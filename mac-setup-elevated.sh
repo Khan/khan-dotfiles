@@ -12,15 +12,11 @@ usage() {
     cat << EOF
 usage: $SCRIPT [options]
   --root <dir> Use specified directory as root (instead of HOME).
-  --all        Install all user apps.
-  --none       Install no user apps.
 EOF
 }
 
 # Install in $HOME by default, but can set an alternate destination via $1.
 ROOT="${ROOT:-$HOME}"
-
-APPS=
 
 # Process command line arguments
 while [[ "$1" != "" ]]; do
@@ -28,12 +24,6 @@ while [[ "$1" != "" ]]; do
         -r | --root)
             shift
             ROOT=$1
-            ;;
-        -a | --all)
-            APPS="-a"
-            ;;
-        -n | --none)
-            APPS="-n"
             ;;
         -h | --help)
             usage
@@ -108,5 +98,3 @@ install_protoc
 # We use java for our google cloud dataflow jobs that live in webapp
 # (as well as in khan-linter for linting those jobs)
 install_mac_java
-
-"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-apps.sh "$APPS"
