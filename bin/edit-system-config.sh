@@ -15,10 +15,6 @@ echo "Modifying system configs"
 
 MIMETYPES="/etc/mime.types"
 [ `uname -s` = Darwin ] && MIMETYPES="$(brew --prefix)/etc/mime.types"
-if [ ! -f "$MIMETYPES" ]; then
-    echo "Could not find mime.types file"
-    exit 1
-fi
 
 # This command avoids the spew when you deploy the Khan Academy
 # appengine app:
