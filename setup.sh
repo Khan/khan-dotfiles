@@ -301,25 +301,6 @@ install_hooks() {
     fi
 }
 
-# Set up .arcrc: we can't update this through the standard process
-# because it has secrets embedded in it, but our arcanist fork will
-# do the updates for us.
-setup_arc() {
-    if [ ! -f "$HOME/.arcrc" ]; then
-        echo "Time to set up arc to talk to Phabricator!"
-        echo "First, go make sure you're logged in and your"
-        echo "account is set up (use Google OAuth to create"
-        echo "an account, if you haven't).  Click here to start:"
-        echo "  -->  https://phabricator.khanacademy.org  <--"
-        echo -n "Press enter when you're logged in: "
-        read
-        # This is added to PATh by dotfiles, but those may not be sourced yet.
-        PATH="$DEVTOOLS_DIR/arcanist/khan-bin:$PATH"
-        arc install-certificate -- https://phabricator.khanacademy.org
-    fi
-}
-
-
 install_dotfiles
 
 check_dependencies
@@ -331,7 +312,6 @@ clone_repos
 install_and_setup_gcloud
 install_deps        # pre-reqs: clone_repos, install_and_setup_gcloud
 install_hooks       # pre-req: clone_repos
-setup_arc           # pre-req: clone_repos
 download_db_dump    # pre-req: install_deps
 create_pg_databases # pre-req: install_deps
 
