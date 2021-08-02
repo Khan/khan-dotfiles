@@ -26,6 +26,7 @@
   db = !git deploy-branch
   rb = !git review-branch
   pb = !git review-branch       ; short for 'phabricator branch'
+  pr = !git pull-request
 
   # Other useful commands.
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
