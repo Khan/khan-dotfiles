@@ -27,5 +27,5 @@ clone_mobile_repo() {
 
 install_react_native_dependencies() {
     update "Installing react-native dependencies..."
-    (cd "$REPOS_DIR/mobile/react-native"; yarn)
+    (cd "$REPOS_DIR/mobile"; yarn)
 }
