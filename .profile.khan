@@ -37,12 +37,21 @@ export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
 # --user (or have an unwritable default site-packages)
 export PATH="$HOME/.local/bin:$PATH"
 
-# Add the unversioned binaries from our backported homebrew python@2 formula,
-# if they have brew and have our python@2 formula installed
-# See: https://github.com/Khan/homebrew-repo/blob/master/Formula/python%402.rb
-if brew --prefix khan/repo/python@2 >/dev/null 2>&1; then
+if which brew >/dev/null 2>&1; then
+    BREW_PREFIX_HINT_FILE=~/.brew_prefix
+    if [ -e $BREW_PREFIX_HINT_FILE ]; then
+        BREW_PREFIX=$(cat $BREW_PREFIX_HINT_FILE)
+    else
+        BREW_PREFIX="$(brew --prefix khan/repo/python@2)"
+	echo $BREW_PREFIX > $BREW_PREFIX_HINT_FILE
+    fi
+
+    # Add the unversioned binaries from our backported homebrew python@2 formula,
+    # if they have brew and have our python@2 formula installed
+    # See: https://github.com/Khan/homebrew-repo/blob/master/Formula/python%402.rb
+
     # This will exist if native python2 is installed (usually only on intel)
-    PY2_BIN="$(brew --prefix khan/repo/python@2)"
+    PY2_BIN=$BREW_PREFIX
     # On a M1 machine, we run python2 via rosetta out of /usr/local
     [ -d "$PY2_BIN" ] || PY2_BIN="/usr/local/opt/python@2"
     export PATH="$PY2_BIN/libexec/bin:$PATH"
