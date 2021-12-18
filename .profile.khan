@@ -37,13 +37,29 @@ export PATH="$HOME/khan/webapp/genfiles/go/bin:$PATH"
 # --user (or have an unwritable default site-packages)
 export PATH="$HOME/.local/bin:$PATH"
 
+# We are caching a few config files so shells start faster
+KA_CONFIG_CACHE_DIR="$HOME/.config/khan/cache/dotfiles"
+KA_CPATH_HINT_FILE="$KA_CONFIG_CACHE_DIR/ka-cpath-hint"
+BREW_PREFIX_HINT_FILE="$KA_CONFIG_CACHE_DIR/brew-prefix-hint"
+
+# Find xcode /usr/include directory
+if which xcrun >/dev/null 2>&1; then
+    if [ -e "$KA_CPATH_HINT_FILE" ]; then
+        export CPATH=$(cat "$KA_CPATH_HINT_FILE")
+    else
+        export CPATH="$(xcrun --show-sdk-path)/usr/include"
+        mkdir -p "$KA_CONFIG_CACHE_DIR"
+        echo "$CPATH" > "$KA_CPATH_HINT_FILE"
+    fi
+fi
+
 if which brew >/dev/null 2>&1; then
-    BREW_PREFIX_HINT_FILE=~/.brew_prefix
     if [ -e $BREW_PREFIX_HINT_FILE ]; then
         BREW_PREFIX=$(cat $BREW_PREFIX_HINT_FILE)
     else
         BREW_PREFIX="$(brew --prefix khan/repo/python@2)"
-	echo $BREW_PREFIX > $BREW_PREFIX_HINT_FILE
+        mkdir -p "$KA_CONFIG_CACHE_DIR"
+        echo $BREW_PREFIX > $BREW_PREFIX_HINT_FILE
     fi
 
     # Add the unversioned binaries from our backported homebrew python@2 formula,
