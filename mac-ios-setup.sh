@@ -21,6 +21,28 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 . "$REPOS_DIR/devtools/khan-dotfiles/shared-functions.sh"
 . "$REPOS_DIR/devtools/khan-dotfiles/mobile-functions.sh"
 
+# Xcodes is a tool to manage which version of Xcode is installed
+install_xcodes() {
+    if ! which xcodes; then
+        XCODES_WORKING_DIR=$(mktemp -d)
+        # Make sure we cleanup on exit
+        trap 'rm -rf -- "$XCODES_WORKING_DIR"' EXIT
+
+        # We _don't_ use Homebrew here. The Homebrew install of `xcodes`
+        # requires a functioning Xcode install, which we most likely don't if
+        # this is a clean OS install. So we just download the latest binary
+        # release from Github.
+        curl -sL https://api.github.com/repos/RobotsAndPencils/xcodes/releases/latest | \
+            jq -r '.assets[].browser_download_url' | \
+            grep xcodes.zip | \
+            wget -nv -O "$XCODES_WORKING_DIR/xcodes.zip" -i -
+
+        unzip "$XCODES_WORKING_DIR/xcodes.zip" -d "$XCODES_WORKING_DIR/"
+        sudo install -C -v "$XCODES_WORKING_DIR/xcodes" /usr/local/bin/
+        popd
+    fi
+}
+
 # Ensure Carthage is installed. Carthage is used to manage some dependencies and
 # is required to compile the app.
 install_carthage() {
@@ -45,6 +67,7 @@ install_fastlane() {
 ensure_mac_os # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 clone_mobile_repo
+install_xcodes
 install_carthage
 install_fastlane
 install_homebrew_libraries
