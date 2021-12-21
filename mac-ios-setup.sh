@@ -24,6 +24,8 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 # Xcodes is a tool to manage which version of Xcode is installed
 install_xcodes() {
     if ! which xcodes; then
+        update "Installing xcodes utility..."
+
         XCODES_WORKING_DIR=$(mktemp -d)
         # Make sure we cleanup on exit
         trap 'rm -rf -- "$XCODES_WORKING_DIR"' EXIT
@@ -39,7 +41,6 @@ install_xcodes() {
 
         unzip "$XCODES_WORKING_DIR/xcodes.zip" -d "$XCODES_WORKING_DIR/"
         sudo install -C -v "$XCODES_WORKING_DIR/xcodes" /usr/local/bin/
-        popd
     fi
 }
 
