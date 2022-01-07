@@ -164,6 +164,14 @@ create_and_activate_virtualenv() {
     # Activate the virtualenv.
     . "$1/bin/activate"
 
+    # pip may get broken by virtualenv for some reason. We're better off 
+    # calling `python -m pip` so we'll just swap in a script that does 
+    # that for us.
+    if ! pip --version 2>/dev/null ; then
+        cp bin/pip `which pip`
+        cp bin/pip2 `which pip2`
+    fi
+
     # pip20+ stopped supporting python2.7, so we need to make sure
     # we are using an older pip.
     if ! pip --version | grep -q "pip 1[0-9]"; then
