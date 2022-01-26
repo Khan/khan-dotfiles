@@ -51,7 +51,7 @@ echo
 echo "Running Khan Installation Script 1.2"
 
 if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[12345]\.' ; then
-    echo "Warning: This is only tested up to macOS 11.2 (Big Sur)."
+    echo "Warning: This is only tested up to macOS 12.1 (Monterey)."
     echo
     echo "If you find that this works on a newer version of macOS, "
     echo "please update this message."
