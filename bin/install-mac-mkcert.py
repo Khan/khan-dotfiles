@@ -10,7 +10,8 @@ import subprocess
 
 result = subprocess.run(['which', 'mkcert'], capture_output=True)
 if result.returncode != 0:
-    subprocess.run(['brew', 'install', 'mkcert'], check=True)
+    # nss is a library that's required to make mkcert work with Firefox
+    subprocess.run(['brew', 'install', 'mkcert', 'nss'], check=True)
     # The following will ask for your password
     subprocess.run(['mkcert', '-install'], check=True)
 
