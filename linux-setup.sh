@@ -53,6 +53,20 @@ install_go() {
     fi
 }
 
+# Builds and installs `mkcert` which is used by the following things in
+# webapp:
+# - https://khanacademy.dev
+# - the "Vitejs Directly" option in the dev support bar
+install_mkcert() {
+    if ! which mkcert >/dev/null; then
+        git clone https://github.com/FiloSottile/mkcert && cd mkcert
+        go build -ldflags "-X main.Version=$(git describe --tags)"
+        sudo cp mkcert /usr/local/bin/mkcert
+    else
+        echo "mkcert already installed"
+    fi
+}
+
 # NOTE: if you add a package here, check if you should also add it
 # to webapp's Dockerfile.
 install_packages() {
@@ -137,6 +151,7 @@ EOF
     #   services. We standardize on version 12 (the latest version suppported
     #   on appengine standard).
     # redis is needed to run memorystore on dev
+    # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
     # TODO(benkraft): Pull the version we want from webapp somehow.
     # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
@@ -151,8 +166,9 @@ EOF
         nginx \
         redis-server \
         curl \
-       unzip \
-        jq
+        unzip \
+        jq \
+        libnss3-tools
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
@@ -208,6 +224,10 @@ EOF
 
     # We use go for our code, going forward
     install_go
+
+    # Used to create and install security certificates, see the docstring
+    # for this function for more details.
+    install_mkcert
 }
 
 install_protoc() {
