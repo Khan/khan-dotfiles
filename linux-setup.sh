@@ -61,11 +61,18 @@ install_go() {
 # NOTE: This depends on `go` being installed.
 install_mkcert() {
     if ! which mkcert >/dev/null; then
+        update "Installing mkcert..."
         builddir=$(mktemp -d -t mkcert)
         git clone https://github.com/FiloSottile/mkcert "$builddir"
-        cd "$builddir"
-        go build -ldflags "-X main.Version=$(git describe --tags)"
-        sudo install -m 755 mkcert /usr/local/bin
+
+        (
+            cd "$builddir"
+            go build -ldflags "-X main.Version=$(git describe --tags)"
+            sudo install -m 755 mkcert /usr/local/bin
+        )
+
+        # cleanup temporary build directory
+        rm -rf "$builddir"
     else
         echo "mkcert already installed"
     fi
@@ -258,6 +265,9 @@ install_watchman() {
             make
             sudo make install
         )
+
+        # cleanup temporary build directory
+        rm -rf "$builddir"
     fi
 }
 
