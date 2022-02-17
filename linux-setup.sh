@@ -61,12 +61,8 @@ install_go() {
 # NOTE: This depends on `go` being installed.
 install_mkcert() {
     if ! which mkcert >/dev/null; then
-        builddir="/tmp/mkcert/"
-        if [ ! -d "$builddir" ]; then
-            mkdir -p "$builddir"
-            git clone https://github.com/FiloSottile/mkcert "$builddir"
-        fi
-
+        builddir=$(mktemp -d -t mkcert)
+        git clone https://github.com/FiloSottile/mkcert "$builddir"
         cd "$builddir"
         go build -ldflags "-X main.Version=$(git describe --tags)"
         sudo install -m 755 mkcert /usr/local/bin
@@ -247,11 +243,8 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
-        builddir="/tmp/watchman/"
-        if [ ! -d "$builddir" ]; then
-            mkdir -p "$builddir"
-            git clone https://github.com/facebook/watchman.git "$builddir"
-        fi
+        builddir=$(mktemp -d -t watchman)
+        git clone https://github.com/facebook/watchman.git "$builddir"
 
         (
             # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
