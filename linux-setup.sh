@@ -57,9 +57,17 @@ install_go() {
 # webapp:
 # - https://khanacademy.dev
 # - the "Vitejs Directly" option in the dev support bar
+#
+# NOTE: This depends on `go` being installed.
 install_mkcert() {
     if ! which mkcert >/dev/null; then
-        git clone https://github.com/FiloSottile/mkcert && cd mkcert
+        builddir="$DEVTOOLS_DIR/mkcert/"
+        if [ ! -d "$builddir" ]; then
+            mkdir -p "$builddir"
+            git clone https://github.com/FiloSottile/mkcert "$builddir"
+        fi
+
+        cd "$builddir"
         go build -ldflags "-X main.Version=$(git describe --tags)"
         sudo cp mkcert /usr/local/bin/mkcert
     else
