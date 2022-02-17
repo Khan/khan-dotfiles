@@ -61,7 +61,7 @@ install_go() {
 # NOTE: This depends on `go` being installed.
 install_mkcert() {
     if ! which mkcert >/dev/null; then
-        builddir="$DEVTOOLS_DIR/mkcert/"
+        builddir="/tmp/mkcert/"
         if [ ! -d "$builddir" ]; then
             mkdir -p "$builddir"
             git clone https://github.com/FiloSottile/mkcert "$builddir"
@@ -69,7 +69,7 @@ install_mkcert() {
 
         cd "$builddir"
         go build -ldflags "-X main.Version=$(git describe --tags)"
-        sudo cp mkcert /usr/local/bin/mkcert
+        sudo install -m 755 mkcert /usr/local/bin
     else
         echo "mkcert already installed"
     fi
@@ -247,7 +247,7 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
-        builddir="$DEVTOOLS_DIR/watchman/"
+        builddir="/tmp/watchman/"
         if [ ! -d "$builddir" ]; then
             mkdir -p "$builddir"
             git clone https://github.com/facebook/watchman.git "$builddir"
