@@ -82,7 +82,9 @@ install_mkcert() {
         echo "A CA has been added to your system and browser certificate "
         echo "trust stores."
         echo ""
-        echo "You must REBOOT your machine for browsers to recognize new CA."
+        echo "You must RESTART your browser in order for it to recognize "
+        echo "the new CA and in some situations you may need REBOOT your "
+        echo "machine."
     else
         echo "mkcert already installed"
     fi
