@@ -16,7 +16,9 @@ if result.returncode != 0:
     subprocess.run(['mkcert', '-install'], check=True)
 
     print("""
-You have installed mkcert (used to make khanacademy.dev work)
+You have installed mkcert (used to make khanacademy.dev and "Vitejs Directly"
+on localhost:8088 work).
+
 A CA has been added to your system and browser certificate trust stores.
 
 You must REBOOT your machine for browsers to recognize new CA.

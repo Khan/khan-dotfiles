@@ -76,8 +76,11 @@ install_mkcert() {
 
         mkcert -install
 
-        echo "You have installed mkcert (used to make khanacademy.dev work)"
-        echo "A CA has been added to your system and browser certificate trust stores."
+        echo "You have installed mkcert (used to make khanacademy.dev and "
+        echo "'Vitejs Directly' on localhost:8088 work)."
+        echo ""
+        echo "A CA has been added to your system and browser certificate "
+        echo "trust stores."
         echo ""
         echo "You must REBOOT your machine for browsers to recognize new CA."
     else
