@@ -62,7 +62,7 @@ install_go() {
 install_mkcert() {
     if ! which mkcert >/dev/null; then
         update "Installing mkcert..."
-        builddir=$(mktemp -d -t mkcert)
+        builddir=$(mktemp -d -t mkcert.XXXXX)
         git clone https://github.com/FiloSottile/mkcert "$builddir"
 
         (
@@ -250,7 +250,7 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
-        builddir=$(mktemp -d -t watchman)
+        builddir=$(mktemp -d -t watchman.XXXXX)
         git clone https://github.com/facebook/watchman.git "$builddir"
 
         (
