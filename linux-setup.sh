@@ -73,6 +73,13 @@ install_mkcert() {
 
         # cleanup temporary build directory
         rm -rf "$builddir"
+
+        mkcert -install
+
+        echo "You have installed mkcert (used to make khanacademy.dev work)"
+        echo "A CA has been added to your system and browser certificate trust stores."
+        echo ""
+        echo "You must REBOOT your machine for browsers to recognize new CA."
     else
         echo "mkcert already installed"
     fi
