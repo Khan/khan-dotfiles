@@ -11,7 +11,8 @@ parser.add_argument("--force", help="Force install of Khan's python2",
 args = parser.parse_args()
 
 which = subprocess.run(['which', 'python2'], capture_output=True, text=True)
-is_installed = which.stdout.strip() != "/usr/bin/python2"
+is_installed = (which.returncode == 0
+                and which.stdout.strip() != "/usr/bin/python2")
 if is_installed:
     print("Already running a non-system python2.")
 
