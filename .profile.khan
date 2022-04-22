@@ -104,13 +104,20 @@ if [ `uname -s` = Darwin ]; then
     alias timeout=gtimeout
 fi
 
-# Activate Python2.7 virtualenv if present
-if [ -s ~/.virtualenv/khan27/bin/activate ]; then
-  . ~/.virtualenv/khan27/bin/activate
-else
-  echo "[WARN]  Could not find '~/.virtualenv/khan27/bin/activate'"\
-    "- All processes that depend on Python may be negatively impacted."\
-    "Please run 'make' from the dotfiles directory to fix this."
+# If you do NOT want to have the python2 environment auto-activated,
+# add the following to the top of your ~/.profile script:
+#   export DO_NOT_ACTIVATE_VIRTUALENV_KHAN27=1
+#
+if [ -z "$DO_NOT_ACTIVATE_VIRTUALENV_KHAN27" ]; then
+    # Activate Python2.7 virtualenv if present
+    # This is desireable if you're touching the python monolith
+    if [ -s ~/.virtualenv/khan27/bin/activate ]; then
+        . ~/.virtualenv/khan27/bin/activate
+    else
+        echo "[WARN]  Could not find '~/.virtualenv/khan27/bin/activate'"\
+          "- All processes that depend on Python may be negatively impacted."\
+          "Please run 'make' from the dotfiles directory to fix this."
+    fi
 fi
 
 # Since we auto-activate the khan27 virtualenv, we don't want pipenv using any
