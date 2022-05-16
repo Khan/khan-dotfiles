@@ -79,7 +79,7 @@ kv "PATH" "$PATH"
 if [ "${uname_os}" = "Darwin" ]; then
     header "OSX - XCode"
     # DEV-245 - Should be 11.x
-    kv_multiline "Xcode Version" "$(xcodebuild -version)"
+    kv_multiline "Xcode Version" "$(xcodebuild -version 2>&1)"
     kv_multiline "Avaliable Versions" "$(system_profiler SPDeveloperToolsDataType)"
 fi
 
