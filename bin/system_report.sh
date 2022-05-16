@@ -21,6 +21,14 @@ kv_multiline() {
     printf "%s\n%s\n\n" "$1:" "$2" >> "${tmpfile}"
 }
 
+tool_version_warning() {
+    version=$1
+    warning="$(grep -v '^#' bin/bad_versions.txt | grep "${version}" | sed 's/.* | //g')"
+    if ! [ -z "$warning" ] ; then
+        printf "\n!!! WARNING!!!\n\t %s" "${warning}" >> "${tmpfile}"
+    fi
+}
+
 tool_version() {
     tool=$1
     version_cmd=$2
@@ -29,7 +37,9 @@ tool_version() {
         if [[ -L "${loc}" ]] ; then
             loc="${loc} -> $(readlink "${loc}")"
         fi
-        kv "${tool}" "$("${tool}" "${version_cmd}" 2>&1) (${loc})"
+        version="$("${tool}" "${version_cmd}" 2>&1)"
+        kv "${tool}" "${version} (${loc})"
+        tool_version_warning "${version}"
     else
         kv "${tool}" "Not present!"
     fi

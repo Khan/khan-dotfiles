@@ -1,0 +1,7 @@
+# This file contains known bad versions of software. It should be formatted as:
+# some version | the reason it's bad
+# The version should exactly match the output of the version command
+# Lines that start with a hash mark are ignored
+
+# Go
+go version go1.16.11 darwin/amd64 | This version of go has problems with linters, see DEV-783
