@@ -61,9 +61,8 @@ if [ "${uname_os}" = "Darwin" ]; then
     # Should be 10.15.x or 11.x
     osx_version=$(sw_vers -productVersion)
     kv "Version" "${osx_version}"
-    # We support EXACTLY 10.15.x and 11.x.x
-    if echo "$osx_version" | grep -q -v -e '^10.15' -e '^11' ; then 
-        kv "!!! WARNING!!!" "Please update to OSX 10.15 Catalina!!!"
+    if echo "$osx_version" | grep -q -v -e '^12' -e '^11' ; then 
+        kv "!!! WARNING!!!" "Please update to OSX 12(Monterey)!!!"
 
     fi
 fi
