@@ -40,3 +40,8 @@ if ! which gcloud >/dev/null; then
         source "$GCLOUD_COMPLETION_FILE"
     fi
 fi
+
+# Add a brew86 alias if we're on an ARM architecture Mac
+if [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ]; then
+  alias brew86="arch -x86_64 /usr/local/bin/brew $@"
+fi

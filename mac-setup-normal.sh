@@ -11,6 +11,17 @@ if [[ $(uname -m) = "arm64" ]]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
+# This will call down to brew UNLESS the machine is an ARM architecture 
+# Mac (ie M1), in which case this will use rosetta to interact with the x86 
+# version of brew.
+brew86() {
+    if [[ $(uname -m) = "arm64" ]]; then
+        arch -x86_64 /usr/local/bin/brew $@
+    else
+        brew $@
+    fi
+}
+
 tty_bold=`tput bold`
 tty_normal=`tput sgr0`
 
@@ -202,23 +213,20 @@ install_python2() {
 }
 
 install_node() {
-    BREW=brew
-    [ `uname -m` = "arm64" ] && BREW="arch -x86_64 /usr/local/bin/brew"
-
     if ! which node >/dev/null 2>&1; then
         # Install node 16: It's LTS and the latest version supported on
         # appengine standard.
-        $BREW install node@16
+        brew86 install node@16
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        $BREW link --force --overwrite node@16
+        brew86 link --force --overwrite node@16
     fi
     # We don't want to force usage of node v16, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v16" >/dev/null ; then
         notice "Your version of node is $(node --version). We currently only support v16."
-        if $BREW ls --versions node@16 >/dev/null ; then
+        if brew86 ls --versions node@16 >/dev/null ; then
             notice "You do however have node 16 installed."
             notice "Consider running:"
         else
@@ -233,15 +241,15 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        if brew ls go >/dev/null 2>&1; then
-            brew upgrade "go@$DESIRED_GO_VERSION"
+        if brew86 ls go >/dev/null 2>&1; then
+            brew86 upgrade "go@$DESIRED_GO_VERSION"
         else
-            brew install "go@$DESIRED_GO_VERSION"
+            brew86 install "go@$DESIRED_GO_VERSION"
         fi
 
         # Brew doesn't link non-latest versions of go on install. This command
         # fixes that, telling the system that this is the go executable to use
-        brew link --force --overwrite "go@$DESIRED_GO_VERSION"
+        brew86 link --force --overwrite "go@$DESIRED_GO_VERSION"
     else
         success "go already installed"
     fi
