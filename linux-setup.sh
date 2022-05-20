@@ -113,7 +113,7 @@ EOF
     sudo apt-get install -y python-is-python2 || true
 
     # Install pip manually.
-    curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py
+    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
     sudo python2 get-pip.py
     # Delete get-pip.py after we're finish running it.
     rm -f get-pip.py
