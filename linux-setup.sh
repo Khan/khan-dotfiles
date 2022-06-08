@@ -67,6 +67,7 @@ install_mkcert() {
 
         (
             cd "$builddir"
+            go mod download
             go build -ldflags "-X main.Version=$(git describe --tags)"
             sudo install -m 755 mkcert /usr/local/bin
         )
