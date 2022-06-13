@@ -54,15 +54,8 @@ install_carthage() {
 }
 
 install_fastlane() {
-    if ! which fastlane; then
-        update "Installing fastlane..."
-        sudo gem install fastlane --no-document --verbose
-
-        # Make sure the gem install dir is in our PATH
-        if ! command -v fastlane &>/dev/null; then
-            echo "export PATH=$(gem environment gemdir)/bin:$PATH" >>~/.bash_profile
-        fi
-    fi
+    update "Installing Fastlane and Cocoapods..."
+    (cd "$REPOS_DIR/mobile"; bundle install)
 }
 
 ensure_mac_os # Function defined in shared-functions.sh.
