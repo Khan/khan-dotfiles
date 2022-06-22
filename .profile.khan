@@ -99,6 +99,7 @@ if [ `uname -s` = Darwin ]; then
     export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
     export CPPFLAGS="-I/usr/local/opt/openssl/include $CPPFLAGS"
     export CFLAGS="-I/usr/local/include -L/usr/local/lib $CFLAGS"
+    export CGO_CPPFLAGS="-Wno-error -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-builtin-requires-header" $CGO_CPPFLAGS
 
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout

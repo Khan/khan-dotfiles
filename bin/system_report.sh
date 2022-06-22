@@ -108,6 +108,7 @@ tool_version yarn --version
 
 header "Go"
 tool_version go version
+kv_multiline "Go ENV" "$(go env)"
 
 header "Rust"
 tool_version cargo --version
