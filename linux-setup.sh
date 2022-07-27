@@ -155,16 +155,21 @@ EOF
 
     # Install pip manually.
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-    sudo python2 get-pip.py
+    # Match webapp's version.
+    sudo python2 get-pip.py pip==19.3.1
     # Delete get-pip.py after we're finish running it.
     rm -f get-pip.py
-    # Match webapp's version.
-    sudo pip install pip==19.3.1
 
     # Install virtualenv and pychecker manually; ubuntu
     # dropped support for them in ubuntu >=20 (since they're python2)
     sudo pip install virtualenv==20.0.23
     sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
+
+    # get-pip.py will remove the system pip3 binary if it previously existed,
+    # but it won't remove the package, so installing the package again won't
+    # restore it. Here we remove the package if it exists, so that the next
+    # apt-get command will install it properly.
+    sudo apt-get remove -y python3-pip || true
 
     # Needed to develop at Khan: git, node (js).
     # php is needed for phabricator
