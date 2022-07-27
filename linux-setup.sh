@@ -291,9 +291,11 @@ install_watchman() {
 install_postgresql() {
     # Instructions taken from
     # https://pgdash.io/blog/postgres-11-getting-started.html
+    # and
+    # https://wiki.postgresql.org/wiki/Apt
     # Postgres 11 is not available in 18.04, so we need to add the pg apt repository.
-    curl -s https://www.postgresql.org/media/keys/ACCC4CF8.asc \
-        | sudo apt-key add -
+    curl https://www.postgresql.org/media/keys/ACCC4CF8.asc \
+        | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/apt.postgresql.org.gpg >/dev/null
 
     sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
     sudo apt-get update
