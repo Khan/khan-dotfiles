@@ -109,19 +109,19 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_12.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_12.x
+       ! grep -q node_16.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_16.x
         wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_12.x `lsb_release -c -s` main
+deb https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
+deb-src https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 12.x, otherwise apt will update newer Ubuntu versions
+        # Pin nodejs to 16.x, otherwise apt might update it in newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 12.*
+Pin: version 16.*
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
@@ -155,7 +155,7 @@ EOF
     sudo python2 get-pip.py
     # Delete get-pip.py after we're finish running it.
     rm -f get-pip.py
-    # Match webapp's version version.
+    # Match webapp's version.
     sudo pip install pip==19.3.1
 
     # Install virtualenv and pychecker manually; ubuntu
@@ -186,7 +186,7 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=12* \
+        nodejs=16* \
         nginx \
         redis-server \
         curl \
@@ -200,13 +200,13 @@ EOF
     # need too.
     sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
-    # We need npm 6 or greater to support node12.  That's the default
+    # We need npm 8 or greater to support node16.  That's the default
     # for nodejs, but we may have overridden it before in a way that
     # makes it impossible to upgrade, so we reinstall nodejs if our
-    # npm version is 5.x.x.
-    if expr "`npm --version`" : 5 >/dev/null 2>&1; then
+    # npm version is 5.x.x, 6.x.x, or 7.x.x.
+    if expr "`npm --version`" : '5\|6\|7' >/dev/null 2>&1; then
         sudo apt-get purge -y nodejs
-        sudo apt-get install -y "nodejs=12*"
+        sudo apt-get install -y "nodejs=16*"
     fi
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
@@ -223,9 +223,9 @@ EOF
     fi
     # Make sure we have the preferred version of npm
     # TODO(benkraft): Pull this version number from webapp somehow.
-    # We need npm 6 or greater to support node12. This is a particular npm6
+    # We need npm 8 or greater to support node16. This is a particular npm8
     # version known to work.
-    sudo npm install -g npm@6.14.4
+    sudo npm install -g npm@8.11.0
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar virtualbox ack-grep
