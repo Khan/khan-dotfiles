@@ -284,7 +284,7 @@ install_watchman() {
         )
 
         # cleanup temporary build directory
-        rm -rf "$builddir"
+        sudo rm -rf "$builddir"
     fi
 }
 
