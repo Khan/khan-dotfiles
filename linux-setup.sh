@@ -150,6 +150,9 @@ EOF
     # This is needed for ubuntu >=20, but not prior ones.
     sudo apt-get install -y python-is-python2 || true
 
+    # Python is needed for development and curl is needed for the setup scripts
+    sudo apt-get install -y python-dev python-mode python-setuptools curl
+
     # Install pip manually.
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
     sudo python2 get-pip.py
@@ -163,7 +166,7 @@ EOF
     sudo pip install virtualenv==20.0.23
     sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
 
-    # Needed to develop at Khan: git, python, node (js).
+    # Needed to develop at Khan: git, node (js).
     # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # imagemagick is needed for image resizing and other operations
@@ -172,15 +175,11 @@ EOF
     # libncurses-dev and libreadline-dev are needed for readline
     # nginx is used as a devserver proxy that serves static files
     # nodejs is used for various frontendy stuff in webapp, as well as our js
-    #   services. We standardize on version 12 (the latest version suppported
-    #   on appengine standard).
+    #   services. We standardize on version 16.
     # redis is needed to run memorystore on dev
     # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
     # TODO(benkraft): Pull the version we want from webapp somehow.
-    # curl for various scripts (including setup.sh)
     sudo apt-get install -y git \
-        python-dev \
-        python-mode python-setuptools \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         imagemagick \
         libxslt1-dev \
@@ -189,10 +188,10 @@ EOF
         nodejs=16* \
         nginx \
         redis-server \
-        curl \
         unzip \
         jq \
-        libnss3-tools
+        libnss3-tools \
+        python3-pip
 
     # There are two different php packages, depending on if you're on Ubuntu
     # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
@@ -231,7 +230,7 @@ EOF
     sudo apt-get install -y unrar virtualbox ack-grep
 
     # Not needed for Khan, but useful things to have.
-    sudo apt-get install -y ntp abiword curl diffstat expect gimp \
+    sudo apt-get install -y ntp abiword diffstat expect gimp \
         mplayer netcat netpbm screen w3m vim emacs google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
