@@ -331,9 +331,11 @@ install_postgresql() {
 install_rust() {
     builddir=$(mktemp -d -t rustup.XXXXX) 
 
-    cd "$builddir"
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output rustup-init.sh
-    bash rustup-init.sh -y --profile default
+    (
+        cd "$builddir"
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output rustup-init.sh
+        bash rustup-init.sh -y --profile default
+    )
 
     # cleanup temporary build directory
     sudo rm -rf "$builddir"
