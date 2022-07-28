@@ -328,6 +328,17 @@ install_postgresql() {
     sudo service postgresql restart
 }
 
+install_rust() {
+    builddir=$(mktemp -d -t rustup.XXXXX) 
+
+    cd "$builddir"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output rustup-init.sh
+    bash rustup-init.sh -y --profile default
+
+    # cleanup temporary build directory
+    sudo rm -rf "$builddir"
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -370,6 +381,7 @@ install_watchman
 setup_clock
 config_inotify
 install_postgresql
+install_rust
 # TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
 # https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 

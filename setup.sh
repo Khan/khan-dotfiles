@@ -210,7 +210,7 @@ clone_repos() {
     kaclone_repair_self
 }
 
-# Sets up Python 2, pipenv, and virtualenv
+# Sets up virtualenv and pipenv
 setup_python() {
     echo "Installing virtualenv"
 
