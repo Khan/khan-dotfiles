@@ -299,7 +299,7 @@ install_postgresql() {
 
     sudo add-apt-repository -y "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -c -s`-pgdg main"
     sudo apt-get update
-    sudo apt-get install -y postgresql-11 postgresql-contrib libpq-dev
+    sudo apt-get install -y postgresql-11
 
     # Set up authentication to allow connections from the postgres user with no
     # password. This matches the authentication setup that homebrew installs on
