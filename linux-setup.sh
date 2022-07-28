@@ -147,11 +147,22 @@ EOF
         sudo apt-get update -qq -y || true
     fi
 
-    # This is needed for ubuntu >=20, but not prior ones.
+    # Python is needed for development. First try the Ubuntu 22.04+ packages, then
+    # the Ubuntu <22.04 packages if that fails.
+    sudo apt-get install -y python2-dev python-setuptools || sudo apt-get install -y python-dev python-mode python-setuptools
+
+    # This is needed for Ubuntu >=20, but not prior ones. It no longer exists
+    # as of Ubuntu 22.04.
     sudo apt-get install -y python-is-python2 || true
 
-    # Python is needed for development and curl is needed for the setup scripts
-    sudo apt-get install -y python-dev python-mode python-setuptools curl
+    # If we're on Ubuntu 22.04+, installing python-is-python2 didn't do anything, so
+    # we create the symlink ourselves.
+    if ! [ -f /usr/bin/python ]; then
+        sudo ln -s /usr/bin/python2 /usr/bin/python
+    fi
+
+    # Install curl for setup script usage
+    sudo apt-get install -y curl
 
     # Install pip manually.
     curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
@@ -267,13 +278,21 @@ install_protoc() {
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
+
+        # First try installing via apt package, which exists in the repositories
+        # as of Ubuntu 20.04.
+        sudo apt-get install -y watchman || true
+    fi
+
+    if ! which watchman ; then
+        # If installing the package didn't work, then install from source.
         builddir=$(mktemp -d -t watchman.XXXXX)
         git clone https://github.com/facebook/watchman.git "$builddir"
 
         (
             # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
             cd "$builddir"
-            sudo apt-get install -y autoconf automake build-essential python-dev libtool libssl-dev
+            sudo apt-get install -y autoconf automake build-essential libtool libssl-dev
             git checkout tags/v4.9.0
             ./autogen.sh
             # --enable-lenient is required for newer versions of GCC, which is
