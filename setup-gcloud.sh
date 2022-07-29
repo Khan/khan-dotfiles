@@ -53,6 +53,8 @@ PATH="$DEVTOOLS_DIR/google-cloud-sdk/bin:$PATH"
 
 echo "$SCRIPT: Using DEVTOOLS_DIR=${DEVTOOLS_DIR}"
 
+# TODO: Remove the CLOUDSDK_PYTHON environment variable from .profile.khan
+#       and setup.sh when we upgrade the SDK version to at least 377.0.0.
 version=360.0.0  # should match webapp's MAX_SUPPORTED_VERSION
 if ! which gcloud >/dev/null; then
     echo "$SCRIPT: Installing Google Cloud SDK (gcloud)"

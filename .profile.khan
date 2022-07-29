@@ -114,9 +114,12 @@ fi
 #
 if [ -z "$DO_NOT_ACTIVATE_VIRTUALENV_KHAN27" ]; then
     # Activate Python2.7 virtualenv if present
-    # This is desireable if you're touching the python monolith
+    # This is desirable if you're touching the python monolith
     if [ -s ~/.virtualenv/khan27/bin/activate ]; then
         . ~/.virtualenv/khan27/bin/activate
+        # Force gcloud to use Python 2.7, since our version of the SDK doesn't
+        # work with Python 3.10+.
+        # TODO: Remove this when we upgrade the gcloud SDK to at least 377.0.0.
         export CLOUDSDK_PYTHON=~/.virtualenv/khan27/bin/python
     else
         echo "[WARN]  Could not find '~/.virtualenv/khan27/bin/activate'"\

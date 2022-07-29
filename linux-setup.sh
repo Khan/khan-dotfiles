@@ -201,7 +201,7 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs=16* \
+        nodejs \
         nginx \
         redis-server \
         unzip \
@@ -221,7 +221,7 @@ EOF
     # npm version is 5.x.x, 6.x.x, or 7.x.x.
     if expr "`npm --version`" : '5\|6\|7' >/dev/null 2>&1; then
         sudo apt-get purge -y nodejs
-        sudo apt-get install -y "nodejs=16*"
+        sudo apt-get install -y "nodejs"
     fi
 
     # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
