@@ -334,7 +334,7 @@ install_rust() {
     (
         cd "$builddir"
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output rustup-init.sh
-        bash rustup-init.sh -y --profile default
+        bash rustup-init.sh -y --profile default --no-modify-path
     )
 
     # cleanup temporary build directory
