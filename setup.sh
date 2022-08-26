@@ -223,10 +223,6 @@ setup_python() {
     pip3 install -q pipenv
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
-    # Force gcloud to use Python 2.7, since our version of the SDK doesn't
-    # work with Python 3.10+.
-    # TODO: Remove this when we upgrade the gcloud SDK to at least 377.0.0.
-    export CLOUDSDK_PYTHON=~/.virtualenv/khan27/bin/python
 }
 
 # Must have cloned the repos first.
