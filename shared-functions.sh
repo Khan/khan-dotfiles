@@ -81,14 +81,14 @@ ensure_mac_os() {
 # Mac-specific function to install Java JDK
 install_mac_java() {
     # Determine which Java JDKs we have.
-    # If a non-Adopt Open JDK that is v1.8 (aka Java 8), that's ok!
-    java_versions=$(/usr/libexec/java_home --version "1.8" >/dev/null 2>&1 || echo "Not found")
+    # If a non-Adopt Open JDK that is v1.11 (aka Java 11), that's ok!
+    java_versions=$(/usr/libexec/java_home --version "1.11" >/dev/null 2>&1 || echo "Not found")
 
     if [ "$java_versions" = "Not found" ]; then
-        echo "Installing Adopt Open JDK v8..."
-        brew install homebrew/cask-versions/adoptopenjdk8
+        echo "Installing Adopt Open JDK v11..."
+        brew install homebrew/cask-versions/adoptopenjdk11
     else
-        echo "java8 already installed ($java_versions)"
+        echo "java11 already installed ($java_versions)"
     fi
 }
 

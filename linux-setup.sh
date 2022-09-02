@@ -23,15 +23,7 @@ DEVTOOLS_DIR="$REPOS_DIR/devtools"
 trap exit_warning EXIT   # from shared-functions.sh
 
 install_java() {
-    # On 16.04LTS and some later versions we have openjdk-8, so install it directly.
-    sudo apt-get install -y openjdk-8-jdk || {
-        # On more recent versions, use the Azul Systems binary distribution of OpenJDK 8,
-        # since Java 8 has been removed from the official packages.
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9
-        sudo apt-add-repository -y 'deb http://repos.azulsystems.com/ubuntu stable main'
-        sudo apt-get update
-        sudo apt-get install -y zulu-8
-    }
+    sudo apt-get install -y openjdk-11-jdk
     # We ask you to select a java version (interactively) in case you have more
     # than one installed.  If there's only one, it'll just select that version
     # by default.
