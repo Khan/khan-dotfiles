@@ -372,6 +372,13 @@ install_watchman() {
     fi
 }
 
+install_fastly() {
+    if ! which fastly >/dev/null 2>&1; then
+        update "Installing fastly..."
+        brew install fastly/tap/fastly
+    fi
+}
+
 echo
 success "Running Khan mac-setup-normal.sh\n"
 
@@ -397,5 +404,6 @@ install_image_utils
 install_helpful_tools
 install_watchman
 install_python_tools
+install_fastly
 
 trap - EXIT

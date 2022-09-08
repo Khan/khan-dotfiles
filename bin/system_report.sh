@@ -113,6 +113,9 @@ kv_multiline "Go ENV" "$(go env)"
 header "Rust"
 tool_version cargo --version
 
+header "Fastly"
+tool_version fastly version
+
 header "PostgreSQL"
 tool_version postgres --version
 tool_version psql --version

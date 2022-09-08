@@ -333,6 +333,19 @@ install_rust() {
     sudo rm -rf "$builddir"
 }
 
+install_fastly() {
+    builddir=$(mktemp -d -t fastly.XXXXX) 
+
+    (
+        cd "$builddir"
+        curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_amd64.deb
+        sudo apt install ./fastly_3.3.0_linux_amd64.deb
+    )
+
+    # cleanup temporary build directory
+    sudo rm -rf "$builddir"
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -376,6 +389,7 @@ setup_clock
 config_inotify
 install_postgresql
 install_rust
+install_fastly
 # TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
 # https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 
