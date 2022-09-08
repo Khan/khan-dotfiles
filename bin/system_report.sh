@@ -113,6 +113,7 @@ kv_multiline "Go ENV" "$(go env)"
 header "Rust"
 tool_version cargo --version
 
+# This is multi-line, but it's still pretty readable. Good enough for now.
 header "Fastly"
 tool_version fastly version
 

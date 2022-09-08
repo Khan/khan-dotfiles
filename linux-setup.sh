@@ -338,6 +338,7 @@ install_fastly() {
 
     (
         cd "$builddir"
+        # There's no need to update the version regularly, fastly self updates
         curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_amd64.deb
         sudo apt install ./fastly_3.3.0_linux_amd64.deb
     )
