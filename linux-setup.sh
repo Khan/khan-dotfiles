@@ -358,8 +358,8 @@ install_age() {
 
     if ! which age ; then
         # If installing the package didn't work, then download the binary.
-
         downloaddir=$(mktemp -d -t age.XXXXX)
+
         (
             cd "$downloaddir"
             curl -L https://dl.filippo.io/age/latest?for=linux/amd64 --output age.tar.gz
@@ -369,7 +369,7 @@ install_age() {
         )
 
         # cleanup temporary download directory
-        sudo rm -rf "downloaddir"
+        sudo rm -rf "$downloaddir"
     fi
 }
 
