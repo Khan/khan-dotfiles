@@ -361,7 +361,7 @@ install_age() {
 
         downloaddir=$(mktemp -d -t age.XXXXX)
         (
-            cd "downloaddir"
+            cd "$downloaddir"
             curl -L https://dl.filippo.io/age/latest?for=linux/amd64 --output age.tar.gz
             tar xf age.tar.gz
             sudo mv ./age/age /usr/local/bin/
