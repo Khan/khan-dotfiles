@@ -337,6 +337,16 @@ install_openssl() {
     done
 }
 
+install_age() {
+    info "Checking for age\n"
+    if ! which age  >/dev/null 2>&1; then
+        info "Installing age\n"
+        brew install age
+    else
+        success "age already installed"
+    fi
+}
+
 install_jq() {
     info "Checking for jq\n"
     if ! which jq  >/dev/null 2>&1; then
@@ -387,6 +397,7 @@ maybe_generate_ssh_keys
 register_ssh_keys
 install_wget
 install_openssl
+install_age
 install_jq
 update_git
 

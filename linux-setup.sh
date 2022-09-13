@@ -347,6 +347,32 @@ install_fastly() {
     sudo rm -rf "$builddir"
 }
 
+install_age() {
+    if ! which age ; then
+        update "Installing age..."
+
+        # First try installing via apt package, which exists in the repositories
+        # as of Ubuntu 22.04.
+        sudo apt-get install -y age || true
+    fi
+
+    if ! which age ; then
+        # If installing the package didn't work, then download the binary.
+
+        downloaddir=$(mktemp -d -t age.XXXXX)
+        (
+            cd "downloaddir"
+            curl -L https://dl.filippo.io/age/latest?for=linux/amd64 --output age.tar.gz
+            tar xf age.tar.gz
+            sudo mv ./age/age /usr/local/bin/
+            sudo mv ./age/age-keygen /usr/local/bin/
+        )
+
+        # cleanup temporary download directory
+        sudo rm -rf "downloaddir"
+    fi
+}
+
 setup_clock() {
     # This shouldn't be necessary, but it seems it is.
     if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
@@ -391,6 +417,7 @@ config_inotify
 install_postgresql
 install_rust
 install_fastly
+install_age
 # TODO (boris): Setup pyenv (see mac_setup:install_python_tools)
 # https://opencafe.readthedocs.io/en/latest/getting_started/pyenv/
 
