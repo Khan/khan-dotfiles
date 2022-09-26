@@ -1,0 +1,21 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: kabuild
+build:
+  artifacts:
+  - image: kabuild-image
+    docker:
+      dockerfile: containers/kabuild/Dockerfile
+    context: ../..
+  tagPolicy:
+    gitCommit: {}
+deploy:
+  kubectl:
+    manifests:
+    - k8s.yaml
+profiles:
+- name: cloudbuild
+  build:
+    googleCloudBuild:
+      projectId: khan-internal-services

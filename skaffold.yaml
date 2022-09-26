@@ -1,0 +1,6 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: dotfiles
+requires:
+- path: containers/kabuild
