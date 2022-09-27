@@ -10,10 +10,6 @@ build:
     context: ../..
   tagPolicy:
     gitCommit: {}
-deploy:
-  kubectl:
-    manifests:
-    - k8s.yaml
 profiles:
 - name: cloudbuild
   build:

@@ -1,7 +1,12 @@
 # This is meant to be a base image for building (and possibly running) webapp.
 # It implements most of linux-setup.sh.
 
+# Warning: We're using a number of "deprecated" packages and moving past 22.04
+# is likely non-trivial.
 FROM ubuntu:22.04
+
+# TODO: Use linux-setup.sh for everything.
+# Warning: I hit a number of snags trying to use linux-setup.sh directly.
 
 RUN apt-get update && apt-get install -y \
     curl \
@@ -29,6 +34,8 @@ RUN apt-get update && apt-get install -y \
 # But we want to be root easily if needed.
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
+# TODO: Lock down google-sdk version as we do elsewhere.
+
 # Install google-sdk repo
 RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 RUN echo "deb https://packages.cloud.google.com/apt cloud-sdk main" >> /etc/apt/sources.list.d/google-cloud-sdk.list
@@ -55,6 +62,8 @@ RUN apt-get install -y \
     nodejs \
     watchman
 
+# TODO: Get version from common location
+# WARNING: We REALLY WANT to avoid requring make and/or break standalone skaffold.
 ENV DESIRED_GO_VERSION=1.16
 RUN apt-get install -y golang-${DESIRED_GO_VERSION}
 RUN cp -sf /usr/lib/go-${DESIRED_GO_VERSION}/bin/* /usr/local/bin/
@@ -105,7 +114,7 @@ COPY containers/kabuild/bash_aliases.sh /etc/profile.d/
 WORKDIR /root
 
 ENV GROUP_NAME=khandev
-ENV USER_NAME=kbuild
+ENV USER_NAME=kabuild
 RUN addgroup --gid 1001 ${GROUP_NAME}
 RUN useradd -ms /bin/bash --uid 1001 --gid 1001 ${USER_NAME}
 
