@@ -109,14 +109,13 @@ RUN chmod -R a+rX /usr/local/include/google/protobuf
 WORKDIR /root
 RUN rm -rf /tmp/protoc
 
-COPY containers/kabuild/bash_aliases.sh /etc/profile.d/
-
 WORKDIR /root
 
 ENV GROUP_NAME=khandev
-ENV USER_NAME=kabuild
+ENV USER_NAME=khandev
 RUN addgroup --gid 1001 ${GROUP_NAME}
-RUN useradd -ms /bin/bash --uid 1001 --gid 1001 ${USER_NAME}
+# To set password to "kabuild", add -p padco2M.JnJHY
+RUN useradd -ms /bin/bash --uid 1001 --gid 1001 -G sudo ${USER_NAME}
 
 RUN mkdir /tmp/fastly
 RUN cd /tmp/fastly && \
@@ -132,21 +131,23 @@ RUN mkdir khan
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
 RUN virtualenv -q --python="$(which python2)" --always-copy "/home/${USER_NAME}/${VENV}"
 RUN /home/${USER_NAME}/${VENV}/bin/pip install -U "pip<20" setuptools
-COPY --chown=${USER_NAME}:${GROUP_NAME} containers/kabuild/bash_aliases.sh .bash_aliases
 COPY --chown=${USER_NAME}:${GROUP_NAME} .profile.khan .profile.khan
 COPY --chown=${USER_NAME}:${GROUP_NAME} .bash_profile.khan .bash_profile.khan
 COPY --chown=${USER_NAME}:${GROUP_NAME} .bashrc.khan .bashrc.khan
 COPY --chown=${USER_NAME}:${GROUP_NAME} bash_profile.default .bash_profile
-# The following may cause .bashrc not to be read
 COPY --chown=${USER_NAME}:${GROUP_NAME} profile.default .profile
 COPY --chown=${USER_NAME}:${GROUP_NAME} git-completion.bash git-completion.bash
 COPY --chown=${USER_NAME}:${GROUP_NAME} .gitconfig.khan .gitconfig
 COPY --chown=${USER_NAME}:${GROUP_NAME} . /home/${USER_NAME}/khan/devtools/khan-dotfiles/
+
+COPY --chown=${USER_NAME}:${GROUP_NAME} bashrc.default bashrc.default
+RUN cat bashrc.default .bashrc > .bashrc.new
+RUN mv .bashrc.new .bashrc
+RUN rm -f bashrc.default
 
 RUN mkdir -p /tmp/rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output /tmp/rust/rustup-init.sh
 RUN bash /tmp/rust/rustup-init.sh -y --profile default --no-modify-path
 RUN rm -rf /tmp/rust
 
-#ENTRYPOINT ["tail", "-f", "/dev/null"]
-CMD /bin/bash
+CMD /bin/bash --login

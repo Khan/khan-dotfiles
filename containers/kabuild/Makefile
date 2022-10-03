@@ -22,10 +22,18 @@ help:
 	@echo "  run_dirty: Run the container most recently built (for debugging changes)"
 	@echo "  run: Run what we think is the most recent version of the container"
 	@echo "  run VER=...: Run a specific version of the container"
+	@echo "  current_tag: The current tag that is/was built"
+	@echo "  current image: Full image that is/was built"
 
+# The current image name (and tag)
+.PHONY: current_image
+current_image:
+	@echo ${CURRENT_IMAGE_TAG}
+
+# The current tag that will be built
 .PHONY: current_tag
 current_tag:
-	@echo ${CURRENT_TAG}
+	@echo ${CURRENT_IMAGE_TAG} | sed 's/.*://'
 
 # Run what we think is the most recent non-dirty image (most recent tag)
 .PHONY: run
