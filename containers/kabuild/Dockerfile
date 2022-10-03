@@ -150,4 +150,4 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output /tmp/rust
 RUN bash /tmp/rust/rustup-init.sh -y --profile default --no-modify-path
 RUN rm -rf /tmp/rust
 
-CMD /bin/bash --login
+CMD tail -f /dev/null

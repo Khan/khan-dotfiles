@@ -10,6 +10,15 @@ build:
     context: ../..
   tagPolicy:
     gitCommit: {}
+deploy:
+  kubectl:
+    manifests:
+    - k8s.yaml
+portForward:
+- resourceType: Pod
+  port: 8088
+- resourceType: Pod
+  port: 2000
 profiles:
 - name: cloudbuild
   build:

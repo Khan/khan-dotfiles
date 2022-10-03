@@ -1,0 +1,26 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: khandev-claim
+spec:
+  storageClassName: khandev-ssd-retain
+  resources:
+    requests:
+      storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+---
+# This storage class overrides standard-rwo to force Retain=true
+# Thus, data sticks around.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: khandev-ssd-retain
+provisioner: kubernetes.io/gce-pd
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+parameters:
+  type: pd-ssd
+  fstype: ext4
+  replication-type: none

@@ -44,7 +44,7 @@ run:
 	@docker run --rm -it \
 		-v ~/.ssh/id_rsa:/home/kabuild/.ssh/id_rsa \
 		-v ${KAROOT}:/home/kabuild/khan \
-		${CLEAN_IMAGE_TAG}
+		${CLEAN_IMAGE_TAG} bash -l
 
 # Run the current image whether dirty or clean
 # This is the command to use when testing changes
@@ -56,7 +56,7 @@ run_dirty:
 	@docker run -it --rm --pull ${PULL_POLICY} \
 		-v ~/.ssh/id_rsa:/home/kabuild/.ssh/id_rsa \
 		-v ${KAROOT}:/home/kabuild/khan \
-		${CURRENT_IMAGE_TAG}
+		${CURRENT_IMAGE_TAG} bash -l
 
 .PHONY: docker_build
 docker_build:
