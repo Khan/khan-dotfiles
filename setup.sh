@@ -310,6 +310,11 @@ install_hooks() {
     fi
 }
 
+install_our_lovely_cli() {
+  cd "$DEVTOOLS_DIR/our-lovely-cli"
+  npm install  
+}
+
 install_dotfiles
 
 check_dependencies
@@ -318,6 +323,7 @@ update_userinfo
 
 # the order for these is (mostly!) important, beware
 clone_repos
+install_our_lovely_cli   # pre-req: clone_repos
 setup_python
 install_and_setup_gcloud # pre-req: setup_python
 install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud

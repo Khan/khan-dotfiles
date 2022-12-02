@@ -209,7 +209,7 @@ install_python2() {
     fi
 
     info "Installing python2 from khan/repo. This may take a few minutes."
-    brew install khan/repo/python@2
+    brew86 install khan/repo/python@2
 }
 
 install_node() {

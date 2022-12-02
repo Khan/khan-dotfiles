@@ -4,6 +4,7 @@
 # This script will prompt for user's password if sudo access is needed
 # TODO(ericbrown): Can we check, install & upgrade apps we know we need/want?
 
+import platform
 import subprocess
 
 HOMEBREW_INSTALLER = \
@@ -34,7 +35,12 @@ if install_brew:
     subprocess.run(['sudo', 'sh', '-c', 'echo You have sudo'], check=True)
 
     # Run downloaded installer
-    result = subprocess.run(['bash'], input=installer.stdout, check=True)
+    result = subprocess.run(['/bin/bash'], input=installer.stdout, check=True)
+    if platform.uname().machine == 'arm64':
+        # install brew86 for M1 architecture
+        result = subprocess.run(['arch -x86_64 /bin/bash'],
+                                input=installer.stdout, check=True)
+
 
 print('Updating (but not upgrading) Homebrew')
 subprocess.run(['brew', 'update'], capture_output=True, check=True)
