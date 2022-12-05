@@ -13,7 +13,9 @@ parser.add_argument(
 args = parser.parse_args()
 
 which = subprocess.run(["which", "python2"], capture_output=True, text=True)
-is_installed = which.returncode == 0 and which.stdout.strip() != "/usr/bin/python2"
+is_installed = (
+    which.returncode == 0 and which.stdout.strip() != "/usr/bin/python2"
+)
 if is_installed:
     print("Already running a non-system python2.")
 
@@ -28,7 +30,9 @@ if args.force or not is_installed:
 
 # Get version of pip2
 pip2_version = ""
-pip2_version_str = subprocess.run(["pip2", "--version"], capture_output=True, text=True)
+pip2_version_str = subprocess.run(
+    ["pip2", "--version"], capture_output=True, text=True
+)
 if pip2_version_str:
     match = re.match(r"\w+ (\d+)", pip2_version_str.stdout)
     if match:

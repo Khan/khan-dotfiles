@@ -322,9 +322,9 @@ check_dependencies
 update_userinfo
 
 # the order for these is (mostly!) important, beware
+setup_python
 clone_repos
 install_our_lovely_cli   # pre-req: clone_repos
-setup_python
 install_and_setup_gcloud # pre-req: setup_python
 install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud
 install_hooks            # pre-req: clone_repos
