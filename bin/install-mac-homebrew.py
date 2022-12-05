@@ -14,6 +14,8 @@ class HomebrewInstaller:
         'https://raw.githubusercontent.com/Homebrew/install/master/install.sh'
     HOMEBREW_UNINSTALLER = \
         'https://raw.githubusercontent.com/Homebrew/install/master/install.sh'
+    ARM64_BREW_DIR = '/opt/homebrew/bin'
+    X86_BREW_DIR = '/usr/local/bin'
 
     def __init__(self):
         self.__install_script = None
@@ -45,32 +47,39 @@ class HomebrewInstaller:
         subprocess.run(['sudo', 'sh', '-c', 'echo You have sudo'], check=True)
 
         # Run installer
-        installer_runner = 'arch -x86_64 /bin/bash' if force_x86 else '/bin/bash'
-        subprocess.run([installer_runner], input=script, check=True)
+        installer_runner = ['arch', '-x86_64', '/bin/bash'] if force_x86 else ['/bin/bash']
+        subprocess.run(installer_runner, input=script, check=True)
 
     def install_homebrew(self, force_x86: bool = False) -> None:
         self._install_or_uninstall_homebrew(script=self._install_script, force_x86=force_x86)
 
-    def uninstall_homebrew(self) -> None:
+    def uninstall_homebrew(self, force_x86: bool = False) -> None:
+        if force_x86:
+            os.environ['PATH'] = self.X86_BREW_DIR + os.environ['PATH']
         self._install_or_uninstall_homebrew(script=self._uninstall_script)
+        if force_x86:
+            os.environ['PATH'] = self.ARM64_BREW_DIR + os.environ['PATH']
 
     def _validate_and_install_homebrew(self, force_x86: bool = False) -> None:
-        brew_cmd = 'brew86' if force_x86 else 'brew'
+        brew_runner = ['arch', '-x86_64', '/usr/local/bin/brew'] if force_x86 else ['brew']
         if force_x86:
             brew_bin_exists = os.path.exists('/usr/local/bin/brew')
         else:
-            brew_bin_exists = subprocess.run(['which', 'brew'], capture_output=True) == 0
+            brew_bin_exists = subprocess.run(['which', 'brew'], capture_output=True).returncode == 0
         if not brew_bin_exists:
             print('Brew not found, Installing!')
             self.install_homebrew(force_x86=force_x86)
         else:
-            result = subprocess.run([brew_cmd, '--help'], capture_output=True)
+            result = subprocess.run(brew_runner + ['--help'], capture_output=True)
             if result.returncode != 0:
                 print('Brew broken, Re-installing')
-                self.uninstall_homebrew()
+                self.uninstall_homebrew(force_x86=force_x86)
                 self.install_homebrew(force_x86=force_x86)
-        print('Updating (but not upgrading) Homebrew')
-        subprocess.run([brew_cmd, 'update'], capture_output=True, check=True)
+        update_msg = 'Updating (but not upgrading) Homebrew'
+        if force_x86:
+            update_msg += ' x86'
+        print(update_msg)
+        subprocess.run(brew_runner + ['update'], capture_output=True, check=True)
 
         # Install homebrew-cask, so we can use it manage installing binary/GUI apps
         # brew tap caskroom/cask
@@ -81,20 +90,18 @@ class HomebrewInstaller:
         # subprocess.run(['brew', 'tap', 'brew/cask-versions'], check=True)
 
         # This is where we store our own formula, including a python@2 backport
-        subprocess.run([brew_cmd, 'tap', 'khan/repo'], check=True)
+        subprocess.run(brew_runner + ['tap', 'khan/repo'], check=True)
 
     def validate_and_install_homebrew(self) -> None:
         self._validate_and_install_homebrew()
 
         if platform.uname().machine == 'arm64':
             # Ensure arm64 brew bin is used by default over x86
-            arm64_brew_dir = '/opt/homebrew/bin'
-            x86_brew_dir = '/usr/local/bin'
-            path_msg = f'{arm64_brew_dir} must come before {x86_brew_dir} in PATH'
+            path_msg = f'{self.ARM64_BREW_DIR} must come before {self.X86_BREW_DIR} in PATH'
             env_path = os.environ['PATH']
-            assert arm64_brew_dir in env_path, path_msg
-            opt_homebrew_idx = env_path.index(arm64_brew_dir)
-            usr_local_bin_idx = env_path.index(x86_brew_dir)
+            assert self.ARM64_BREW_DIR in env_path, path_msg
+            opt_homebrew_idx = env_path.index(self.ARM64_BREW_DIR)
+            usr_local_bin_idx = env_path.index(self.X86_BREW_DIR)
             assert opt_homebrew_idx < usr_local_bin_idx, path_msg
             # Install x86 brew for M1 architecture to be run with rosetta
             self._validate_and_install_homebrew(force_x86=True)
