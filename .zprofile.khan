@@ -8,6 +8,11 @@
 # The zsh shell does not load .profile itself, so we have to source
 # .profile here.
 
+# Add homebrew to path on M1 macs
+if [ `uname -m` = "arm64" ]; then
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
    # We check and then set this environment variable to ensure that we source
    # .profile only once.  Depending on a user's dotfile configuration, it
@@ -41,3 +46,24 @@ if ! which gcloud >/dev/null; then
         source "$GCLOUD_COMPLETION_FILE"
     fi
 fi
+
+# Add a brew86 alias if we're on an ARM architecture Mac
+if [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ]; then
+  alias brew86="arch -x86_64 /usr/local/bin/brew $@"
+fi
+
+# Add a mykeeper alias to run keeper with KA config
+alias mykeeper="keeper --config $HOME/.keeper-config.json"
+
+# Add ssh keys stored in the keychain to the ssh-agent
+# Note: IF you have an identity in ~/.ssh and DO NOT have a passphrase already
+#   in the keychain, you will be prompted for a passphrase.  This is because
+#   ssh-add will try to add the key to the agent, and will prompt for a
+#   passphrase if it doesn't have one in the keychain.
+#   If you have a passphrase in the keychain, you will not be prompted.
+#   If you don't have an identity in ~/.ssh, you will not be prompted.
+#   If you have an identity in ~/.ssh and DO have a passphrase in the keychain,
+#   you will not be prompted.
+#   (Being prompted should NOT happen if you ran ssh-add -K when you first
+#    created the key.)
+ssh-add -K
