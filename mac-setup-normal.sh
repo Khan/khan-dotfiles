@@ -117,11 +117,9 @@ verify_ssh_auth () {
     ssh_host="git@github.com"
     webpage_url="https://github.com/settings/ssh"
     instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
-
     info "Checking for GitHub ssh auth"
-    if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
-        -q -e "Authentication succeeded (publickey)"
-    then
+    # ssh returns 1 if auth succeeds, 255 if it fails (and 130 if passphrase is wrong)
+    if [ $(ssh -T $ssh_host >/dev/null; echo $?) -eq 1]; then
         if [ "$2" == "false" ]  # error if auth fails twice in a row
         then
             error "Still no luck with GitHub ssh auth. Ask a dev!"
