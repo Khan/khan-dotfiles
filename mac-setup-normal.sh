@@ -253,16 +253,6 @@ install_go() {
     fi
 }
 
-install_nginx() {
-    info "Checking for nginx\n"
-    if ! type nginx >/dev/null 2>&1; then
-        info "Installing nginx\n"
-        brew install nginx
-    else
-        success "nginx already installed"
-    fi
-}
-
 install_redis() {
     info "Checking for redis\n"
     if ! type redis-cli >/dev/null 2>&1; then
@@ -396,7 +386,6 @@ install_go
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-rust.py
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 
-install_nginx
 install_redis
 install_image_utils
 install_helpful_tools
