@@ -74,7 +74,7 @@ class HomebrewInstaller:
         brew_runner = (
             ["arch", "-x86_64", "/usr/local/bin/brew"]
             if force_x86
-            else ["brew"]
+            else ["/opt/homebrew/bin/brew"]
         )
         if force_x86:
             brew_bin_exists = os.path.exists("/usr/local/bin/brew")

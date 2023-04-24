@@ -117,8 +117,12 @@ install_dotfiles() {
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
-            add_fatal_error "$dest does not 'include' $ka_version;" \
-                            "see $(pwd)/$file and add the contents to $dest"
+            echo "WARNING: $dest does not 'include' $ka_version;"
+            echo "         (see $(pwd)/$file and add the contents to $dest)"
+            should_append=$(get_yn_input "Should we append $file to $dest so things work as expected?" "y")
+            if [ "$should_append" = "y" ]; then
+                cat "$file" >> "$dest"
+            fi
         fi
     done
 
