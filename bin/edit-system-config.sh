@@ -29,12 +29,6 @@ else
 fi
 sudo chmod a+r $MIMETYPES
 
-# If there is no ssh key, make one.
-mkdir -p "$ROOT/.ssh"
-if [ ! -e "$ROOT/.ssh/id_rsa" -a ! -e "$ROOT/.ssh/id_dsa" ]; then
-    ssh-keygen -q -N "" -t rsa -f "$ROOT/.ssh/id_rsa"
-fi
-
 # if the user does not have a global gitignore file configured, reference
 # ours (or whatever is in the default location
 if ! git config --global core.excludesfile > /dev/null; then
@@ -47,4 +41,10 @@ rm -f ~/.gitignore.khan
 ZSHSHARE="/usr/local/share/zsh"
 if [[ -d "${ZSHSHARE}" ]]; then
     chmod -R 755 "${ZSHSHARE}"
+fi
+
+if ! grep -q khanacademy.dev /etc/hosts; then
+    echo "Adding khanacademy.dev to /etc/hosts"
+    echo "127.0.0.1 storage.khanacademy.dev khanacademy.dev *.khanacademy.dev" | \
+        sudo tee -a /etc/hosts
 fi

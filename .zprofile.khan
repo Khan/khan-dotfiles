@@ -8,6 +8,11 @@
 # The zsh shell does not load .profile itself, so we have to source
 # .profile here.
 
+# Add homebrew to path on M1 macs
+if [ `uname -m` = "arm64" ]; then
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
    # We check and then set this environment variable to ensure that we source
    # .profile only once.  Depending on a user's dotfile configuration, it

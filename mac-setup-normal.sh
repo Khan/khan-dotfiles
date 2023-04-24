@@ -83,12 +83,23 @@ maybe_generate_ssh_keys () {
   # Create a public key if need be.
   info "Checking for ssh keys"
   mkdir -p ~/.ssh
-  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_dsa ]
+  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ]
   then
+    # TODO(ebrown): Verify these key(s) have passphrases on them
     success "Found existing ssh keys"
   else
-    ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-    success "Generated an rsa ssh key at ~/.ssh/id_rsa"
+    echo
+    echo "Creating your ssh key pair for this machine"
+    echo "Please DO NOT use an empty passphrase"
+    APPLE_SSH_ADD_BEHAVIOR=macos ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa
+    # Old: ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
+    success "Generated an rsa ssh key at ~/.ssh/id_ecdsa"
+    APPLE_SSH_ADD_BEHAVIOR=macos ssh-add -K
+    success "Added key to your keychain"
+    echo "Your ssh public key is:"
+    cat ~/.ssh/id_ecdsa.pub
+    echo "Please manually copy this public key to https://github.com/settings/keys."
+    read -p "Press enter when you've done this..."
   fi
   return 0
 }
@@ -214,17 +225,17 @@ install_node() {
     if ! which node >/dev/null 2>&1; then
         # Install node 16: It's LTS and the latest version supported on
         # appengine standard.
-        brew86 install node@16
+        brew install node@16
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew86 link --force --overwrite node@16
+        brew link --force --overwrite node@16
     fi
     # We don't want to force usage of node v16, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v16" >/dev/null ; then
         notice "Your version of node is $(node --version). We currently only support v16."
-        if brew86 ls --versions node@16 >/dev/null ; then
+        if brew ls --versions node@16 >/dev/null ; then
             notice "You do however have node 16 installed."
             notice "Consider running:"
         else

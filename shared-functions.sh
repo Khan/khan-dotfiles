@@ -156,8 +156,17 @@ has_recent_go() {
 # Arguments:
 #   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
 create_and_activate_virtualenv() {
+    # On a arm64 mac, we MUST use the python2 version of virtualenv
+    VIRTUALENV=$(which virtualenv)
+    if [[ -n ${IS_MAC_ARM} ]]; then
+        VIRTUALENV=/usr/local/bin/virtualenv
+        if [[ -z "${VIRTUALENV}" ]]; then
+            /usr/local/bin/python2 -m pip install virtualenv
+        fi
+    fi
+
     if [ ! -d "$1" ]; then
-        virtualenv -q --python="$(which python2)" --always-copy "$1"
+        ${VIRTUALENV} -q --python="$(which python2)" --always-copy "$1"
     fi
 
     # Activate the virtualenv.

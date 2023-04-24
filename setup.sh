@@ -37,6 +37,16 @@ WEBAPP="${WEBAPP:-true}"
 
 # Will contain a string on a mac and be empty on linux
 IS_MAC=$(which sw_vers || echo "")
+IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
+
+# On a clean install of Mac OS X, /opt/homebrew/bin is not in the PATH.
+# Thus, stuff installed with the arm64 version of homebrew is not visible.
+# (This was not the case on intel macs where /usr/local/bin is in the path
+#  of a clean OS install - in which case all homebrew stuff is visible.)
+if [[ -n "${IS_MAC_ARM}" ]]; then
+    echo "Adding arm64 homebrew to path"
+    #PATH=/opt/homebrew/bin:${PATH}
+fi
 
 trap exit_warning EXIT   # from shared-functions.sh
 
@@ -219,7 +229,7 @@ setup_python() {
     pip2 install -q virtualenv==20.0.23
 
     # Used by various infra projects for managing python3 environment
-    echo "Installing pipenv"
+    echo "Installing pipenv for python3"
     pip3 install -q pipenv
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
