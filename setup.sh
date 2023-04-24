@@ -45,7 +45,7 @@ IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
 #  of a clean OS install - in which case all homebrew stuff is visible.)
 if [[ -n "${IS_MAC_ARM}" ]]; then
     echo "Adding arm64 homebrew to path"
-    #PATH=/opt/homebrew/bin:${PATH}
+    PATH=/opt/homebrew/bin:${PATH}
 fi
 
 trap exit_warning EXIT   # from shared-functions.sh
