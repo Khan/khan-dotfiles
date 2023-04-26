@@ -250,15 +250,15 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        if brew86 ls go >/dev/null 2>&1; then
-            brew86 upgrade "go@$DESIRED_GO_VERSION"
+        if brew ls go >/dev/null 2>&1; then
+            brew upgrade "go@$DESIRED_GO_VERSION"
         else
-            brew86 install "go@$DESIRED_GO_VERSION"
+            brew install "go@$DESIRED_GO_VERSION"
         fi
 
         # Brew doesn't link non-latest versions of go on install. This command
         # fixes that, telling the system that this is the go executable to use
-        brew86 link --force --overwrite "go@$DESIRED_GO_VERSION"
+        brew link --force --overwrite "go@$DESIRED_GO_VERSION"
     else
         success "go already installed"
     fi

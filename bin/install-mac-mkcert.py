@@ -6,12 +6,19 @@ the other scripts that require elevated permissions (sudo) and because it
 requires a reboot after completion.
 """
 
+import os
 import subprocess
+
+# Ensure we are using the best "version" of brew
+BREW86_PREFIX = "/usr/local/bin/"
+BREW_PREFIX = "/opt/homebrew/bin/"
+BREW_PREFIX = BREW_PREFIX if os.path.isdir(BREW_PREFIX) else BREW86_PREFIX
+BREW = BREW_PREFIX + "brew"
 
 result = subprocess.run(['which', 'mkcert'], capture_output=True)
 if result.returncode != 0:
     # nss is a library that's required to make mkcert work with Firefox
-    subprocess.run(['brew', 'install', 'mkcert', 'nss'], check=True)
+    subprocess.run([BREW, 'install', 'mkcert', 'nss'], check=True)
     # The following will ask for your password
     subprocess.run(['mkcert', '-install'], check=True)
 
