@@ -11,8 +11,8 @@ if [[ $(uname -m) = "arm64" ]]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
-# This will call down to brew UNLESS the machine is an ARM architecture 
-# Mac (ie M1), in which case this will use rosetta to interact with the x86 
+# This will call down to brew UNLESS the machine is an ARM architecture
+# Mac (ie M1), in which case this will use rosetta to interact with the x86
 # version of brew.
 brew86() {
     if [[ $(uname -m) = "arm64" ]]; then
@@ -83,12 +83,23 @@ maybe_generate_ssh_keys () {
   # Create a public key if need be.
   info "Checking for ssh keys"
   mkdir -p ~/.ssh
-  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_dsa ]
+  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ]
   then
+    # TODO(ebrown): Verify these key(s) have passphrases on them
     success "Found existing ssh keys"
   else
-    ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-    success "Generated an rsa ssh key at ~/.ssh/id_rsa"
+    echo
+    echo "Creating your ssh key pair for this machine"
+    echo "Please DO NOT use an empty passphrase"
+    APPLE_SSH_ADD_BEHAVIOR=macos ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa
+    # Old: ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
+    success "Generated an rsa ssh key at ~/.ssh/id_ecdsa"
+    APPLE_SSH_ADD_BEHAVIOR=macos ssh-add -K
+    success "Added key to your keychain"
+    echo "Your ssh public key is:"
+    cat ~/.ssh/id_ecdsa.pub
+    echo "Please manually copy this public key to https://github.com/settings/keys."
+    read -p "Press enter when you've done this..."
   fi
   return 0
 }
@@ -117,11 +128,9 @@ verify_ssh_auth () {
     ssh_host="git@github.com"
     webpage_url="https://github.com/settings/ssh"
     instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
-
     info "Checking for GitHub ssh auth"
-    if ! ssh -T -v $ssh_host 2>&1 >/dev/null | grep \
-        -q -e "Authentication succeeded (publickey)"
-    then
+    # ssh returns 1 if auth succeeds, 255 if it fails (and 130 if passphrase is wrong)
+    if [ $(ssh -T $ssh_host >/dev/null; echo $?) -eq 1]; then
         if [ "$2" == "false" ]  # error if auth fails twice in a row
         then
             error "Still no luck with GitHub ssh auth. Ask a dev!"
@@ -209,24 +218,24 @@ install_python2() {
     fi
 
     info "Installing python2 from khan/repo. This may take a few minutes."
-    brew install khan/repo/python@2
+    brew86 install khan/repo/python@2
 }
 
 install_node() {
     if ! which node >/dev/null 2>&1; then
         # Install node 16: It's LTS and the latest version supported on
         # appengine standard.
-        brew86 install node@16
+        brew install node@16
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew86 link --force --overwrite node@16
+        brew link --force --overwrite node@16
     fi
     # We don't want to force usage of node v16, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v16" >/dev/null ; then
         notice "Your version of node is $(node --version). We currently only support v16."
-        if brew86 ls --versions node@16 >/dev/null ; then
+        if brew ls --versions node@16 >/dev/null ; then
             notice "You do however have node 16 installed."
             notice "Consider running:"
         else
@@ -241,27 +250,17 @@ install_node() {
 install_go() {
     if ! has_recent_go; then   # has_recent_go is from shared-functions.sh
         info "Installing go\n"
-        if brew86 ls go >/dev/null 2>&1; then
-            brew86 upgrade "go@$DESIRED_GO_VERSION"
+        if brew ls go >/dev/null 2>&1; then
+            brew upgrade "go@$DESIRED_GO_VERSION"
         else
-            brew86 install "go@$DESIRED_GO_VERSION"
+            brew install "go@$DESIRED_GO_VERSION"
         fi
 
         # Brew doesn't link non-latest versions of go on install. This command
         # fixes that, telling the system that this is the go executable to use
-        brew86 link --force --overwrite "go@$DESIRED_GO_VERSION"
+        brew link --force --overwrite "go@$DESIRED_GO_VERSION"
     else
         success "go already installed"
-    fi
-}
-
-install_nginx() {
-    info "Checking for nginx\n"
-    if ! type nginx >/dev/null 2>&1; then
-        info "Installing nginx\n"
-        brew install nginx
-    else
-        success "nginx already installed"
     fi
 }
 
@@ -398,7 +397,6 @@ install_go
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-rust.py
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 
-install_nginx
 install_redis
 install_image_utils
 install_helpful_tools

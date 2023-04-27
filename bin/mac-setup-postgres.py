@@ -21,20 +21,27 @@ import re
 import subprocess
 import time
 
+# Ensure we are using the best "version" of brew
+BREW86_PREFIX = "/usr/local/bin/"
+BREW_PREFIX = "/opt/homebrew/bin/"
+BREW_PREFIX = BREW_PREFIX if os.path.isdir(BREW_PREFIX) else BREW86_PREFIX
+BREW = BREW_PREFIX + "brew"
+PSQL = BREW_PREFIX + "psql"
+
 SCRIPT = os.path.basename(__file__)
 POSTGRES_FORMULA = 'postgresql@14'
 
 
 def get_brewname():
     """Return the brew formula name currently installed or None."""
-    result = subprocess.run(['brew', 'ls', POSTGRES_FORMULA],
+    result = subprocess.run([BREW, 'ls', POSTGRES_FORMULA],
                             capture_output=True)
     if result.returncode == 0:
         return POSTGRES_FORMULA
 
     # TODO(ericbrown): Remove when sure this is no longer needed
     # I believe this code is from when postgresql 11 was the current version
-    result = subprocess.run(['brew', 'ls', 'postgres', '--versions'],
+    result = subprocess.run([BREW, 'ls', 'postgres', '--versions'],
                             capture_output=True, text=True)
     if result.returncode == 0 and re.search(r'\s11\.\d', result.stdout):
         return "postgresql"
@@ -43,7 +50,7 @@ def get_brewname():
     return None
 
 
-def link_postgres_if_needed(brewname: str, force=False):
+def link_postgres_if_needed(brewname, force=False):
     """Create symlinks in /usr/local/bin for postgresql (i.e. psql).
 
     Brew doesn't link non-latest versions on install. This command fixes that
@@ -52,13 +59,13 @@ def link_postgres_if_needed(brewname: str, force=False):
     # TODO(ericbrown): If user has non-brew psql installed in PATH, WARN
     # TODO(ericbrown): Verify this psql is from brew's postgresql@14
     # If it is from postgresql@14 then we must either unlink or remove it
-    result = subprocess.run(['which', 'psql'], capture_output=True)
+    result = subprocess.run(['which', PSQL], capture_output=True)
     if force or result.returncode != 0:
-        print(f'{SCRIPT}: brew link {brewname}')
+        print(f'{SCRIPT}: {BREW} link {brewname}')
         # We unlink first because 'brew link' returns non-0 if already linked
-        subprocess.run(['brew', 'unlink', brewname],
+        subprocess.run([BREW, 'unlink', brewname],
                        stdout=subprocess.DEVNULL)
-        subprocess.run(['brew',
+        subprocess.run([BREW,
                         'link', '--force', '--overwrite', '--quiet',
                         brewname],
                        check=True, stdout=subprocess.DEVNULL)
@@ -66,12 +73,12 @@ def link_postgres_if_needed(brewname: str, force=False):
 
 def install_postgres(brewname: str) -> None:
     print(f'Installing {brewname}')
-    subprocess.run(['brew', 'install', brewname], check=True)
+    subprocess.run([BREW, 'install', brewname], check=True)
     link_postgres_if_needed(brewname, force=True)
 
 
 def is_postgres_running(brewname: str) -> bool:
-    result = subprocess.run(['brew', 'services', 'list'],
+    result = subprocess.run([BREW, 'services', 'list'],
                             capture_output=True, text=True)
     return (result.returncode == 0 and
             any(brewname in lst and 'started' in lst
@@ -81,13 +88,13 @@ def is_postgres_running(brewname: str) -> bool:
 def start_postgres(brewname: str) -> None:
     """Postgres must be running for us to create the postgres user."""
     print(f'{SCRIPT}: Starting postgresql service')
-    subprocess.run(['brew', 'services', 'start', brewname], check=True)
+    subprocess.run([BREW, 'services', 'start', brewname], check=True)
     time.sleep(5)  # Give postgres a chance to start up before we connect
 
 
 def does_postgres_user_exist() -> bool:
     """Return True if the 'postgres' user exists in postgres."""
-    result = subprocess.run(['psql',
+    result = subprocess.run([PSQL,
                              '-tc', 'SELECT rolname from pg_catalog.pg_roles',
                              'postgres'],
                             capture_output=True, check=True, text=True)
@@ -96,7 +103,7 @@ def does_postgres_user_exist() -> bool:
 
 def create_postgres_user() -> None:
     print(f'{SCRIPT}: Creating postgres user')
-    subprocess.run(['psql', '--quiet', '-c',
+    subprocess.run([PSQL, '--quiet', '-c',
                     'CREATE ROLE postgres LOGIN SUPERUSER;', 'postgres'],
                    check=True)
 

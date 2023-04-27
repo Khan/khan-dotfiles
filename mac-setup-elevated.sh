@@ -50,7 +50,7 @@ install_protoc() {
     # If the user has a homebrew version of protobuf installed, uninstall it so
     # we can manually install our own version in /usr/local.
     if brew list --formula | grep -q '^protobuf$'; then
-        info "Uninstalling homebrew version of protobuf\n"
+        echo "Uninstalling homebrew version of protobuf\n"
         brew uninstall protobuf
     fi
 

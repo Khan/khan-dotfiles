@@ -88,7 +88,6 @@ RUN apt-get install -y \
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nginx \
         redis-server \
         libnss3-tools \
         python3-pip

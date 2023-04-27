@@ -134,7 +134,7 @@ install_protoc_common() {
 }
 
 DESIRED_GO_MAJOR_VERISON=1
-DESIRED_GO_MINOR_VERISON=16
+DESIRED_GO_MINOR_VERISON=19
 DESIRED_GO_VERSION="$DESIRED_GO_MAJOR_VERISON.$DESIRED_GO_MINOR_VERISON"
 
 # Evaluates to truthy if go is installed and
@@ -156,8 +156,17 @@ has_recent_go() {
 # Arguments:
 #   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
 create_and_activate_virtualenv() {
+    # On a arm64 mac, we MUST use the python2 version of virtualenv
+    VIRTUALENV=$(which virtualenv)
+    if [[ -n ${IS_MAC_ARM} ]]; then
+        VIRTUALENV=/usr/local/bin/virtualenv
+        if [[ -z "${VIRTUALENV}" ]]; then
+            /usr/local/bin/python2 -m pip install virtualenv
+        fi
+    fi
+
     if [ ! -d "$1" ]; then
-        virtualenv -q --python="$(which python2)" --always-copy "$1"
+        ${VIRTUALENV} -q --python="$(which python2)" --always-copy "$1"
     fi
 
     # Activate the virtualenv.
@@ -176,6 +185,53 @@ create_and_activate_virtualenv() {
     if ! pip --version | grep -q "pip 1[0-9]"; then
         pip install -U "pip<20" setuptools
     fi
+}
+
+# Creates keeper config for command line access
+# This is interactive
+create_default_keeper_config() {
+    config_file=${HOME}/.keeper-config.json
+    if [ -e "${config_file}" ]; then
+        if [ "$(get_yn_input "Keeper config exists, do you want to recreate it now?" "n")" = "y" ]; then
+            rm -f ${config_file}
+        fi
+    fi
+
+    if [ ! -e "${config_file}" ]; then
+        gitemail=$(git config kaclone.email)
+        echo "Keeper Command Line setup"
+        echo "-------------------------"
+        echo "Khan Email: ${gitemail}"
+        echo "If this is incorrect, reenter it here."
+        read -p "Enter your KA email (or blank if ${gitemail} is correct): " email
+        email=${email:-$gitemail}
+
+        echo "If you haven't setup Keeper yet, you will not have a master password."
+        echo "Just hit <enter>. Once you setup Keeper, run mac-setup-keeper.sh."
+        read -s -p "Keeper Master Password: " master_password
+        echo
+        cat << EOF > ${config_file}
+{
+"server": "https://keepersecurity.com/api/v2/",
+"user": "${email}",
+"password": "${master_password}",
+"sso_master_password": true,
+"mfa_token": "",
+"mfa_type": "",
+"debug": false,
+"login_v3": false,
+"plugins": [],
+"commands": []
+}
+EOF
+    fi
+}
+
+# install keeper
+# $1: path to python3 (including python3 binary)
+install_keeper() {
+    python=$1
+    ${python} -m pip install keepercommander==16.5.18
 }
 
 # If we exit unexpectedly, log this warning.

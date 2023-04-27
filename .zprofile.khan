@@ -55,6 +55,10 @@ fi
 # Add a mykeeper alias to run keeper with KA config
 alias mykeeper="keeper --config $HOME/.keeper-config.json"
 
+# Setting this allows us to store ssh-keys in the keychain without generating
+# a warning.  See ssh-add man page.
+export APPLE_SSH_ADD_BEHAVIOR=macos
+
 # Add ssh keys stored in the keychain to the ssh-agent
 # Note: IF you have an identity in ~/.ssh and DO NOT have a passphrase already
 #   in the keychain, you will be prompted for a passphrase.  This is because

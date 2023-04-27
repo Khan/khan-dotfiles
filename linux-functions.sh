@@ -107,7 +107,6 @@ EOF
     # lib{xml2,xslt}-dev are needed for lxml
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
-    # nginx is used as a devserver proxy that serves static files
     # nodejs is used for various frontendy stuff in webapp, as well as our js
     #   services. We standardize on version 12 (the latest version suppported
     #   on appengine standard).
@@ -130,7 +129,6 @@ EOF
         libyaml-dev \
         libncurses-dev libreadline-dev \
         nodejs=12* \
-        nginx \
         redis-server \
         curl \
         jq \

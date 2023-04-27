@@ -37,6 +37,16 @@ WEBAPP="${WEBAPP:-true}"
 
 # Will contain a string on a mac and be empty on linux
 IS_MAC=$(which sw_vers || echo "")
+IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
+
+# On a clean install of Mac OS X, /opt/homebrew/bin is not in the PATH.
+# Thus, stuff installed with the arm64 version of homebrew is not visible.
+# (This was not the case on intel macs where /usr/local/bin is in the path
+#  of a clean OS install - in which case all homebrew stuff is visible.)
+if [[ -n "${IS_MAC_ARM}" ]]; then
+    echo "Adding arm64 homebrew to path"
+    PATH=/opt/homebrew/bin:${PATH}
+fi
 
 trap exit_warning EXIT   # from shared-functions.sh
 
@@ -107,8 +117,12 @@ install_dotfiles() {
         if [ ! -e "$dest" ]; then
             cp -f "$file" "$dest"
         elif ! fgrep -q "$ka_version" "$dest"; then
-            add_fatal_error "$dest does not 'include' $ka_version;" \
-                            "see $(pwd)/$file and add the contents to $dest"
+            echo "WARNING: $dest does not 'include' $ka_version;"
+            echo "         (see $(pwd)/$file and add the contents to $dest)"
+            should_append=$(get_yn_input "Should we append $file to $dest so things work as expected?" "y")
+            if [ "$should_append" = "y" ]; then
+                cat "$file" >> "$dest"
+            fi
         fi
     done
 
@@ -219,7 +233,7 @@ setup_python() {
     pip2 install -q virtualenv==20.0.23
 
     # Used by various infra projects for managing python3 environment
-    echo "Installing pipenv"
+    echo "Installing pipenv for python3"
     pip3 install -q pipenv
 
     create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
@@ -310,6 +324,11 @@ install_hooks() {
     fi
 }
 
+install_our_lovely_cli() {
+  cd "$DEVTOOLS_DIR/our-lovely-cli"
+  npm install  
+}
+
 install_dotfiles
 
 check_dependencies
@@ -317,13 +336,18 @@ check_dependencies
 update_userinfo
 
 # the order for these is (mostly!) important, beware
-clone_repos
 setup_python
+clone_repos
+install_our_lovely_cli   # pre-req: clone_repos
 install_and_setup_gcloud # pre-req: setup_python
 install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud
 install_hooks            # pre-req: clone_repos
 download_db_dump         # pre-req: install_deps
 create_pg_databases      # pre-req: install_deps
+create_default_keeper_config # pre-req: update_userinfo
+
+# We want to run this only with the brew version of python, NOT OSX's python3
+install_keeper $(brew --prefix)/bin/python3
 
 echo
 echo "---------------------------------------------------------------------"

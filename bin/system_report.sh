@@ -121,7 +121,6 @@ header "PostgreSQL"
 tool_version postgres --version
 tool_version psql --version
 
-# TODO(dbraley): (A) check nginx
 # TODO(dbraley): (A) check redis
 # TODO(dbraley): (A) check image_utils
 
