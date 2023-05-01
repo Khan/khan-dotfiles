@@ -41,6 +41,10 @@ if ! which gcloud >/dev/null; then
     fi
 fi
 
+# Stop OSX from constantly telling you that zsh is now the default shell.
+# It is debatable which shell is better, but we don't need this warning.
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
 # Add a brew86 alias if we're on an ARM architecture Mac
 if [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ]; then
   alias brew86="arch -x86_64 /usr/local/bin/brew $@"
