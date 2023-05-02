@@ -130,7 +130,7 @@ verify_ssh_auth () {
     instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
     info "Checking for GitHub ssh auth"
     # ssh returns 1 if auth succeeds, 255 if it fails (and 130 if passphrase is wrong)
-    if [ $(ssh -T $ssh_host >/dev/null; echo $?) -eq 1]; then
+    if [ $(ssh -T $ssh_host >/dev/null; echo $?) -ne 1 ]; then
         if [ "$2" == "false" ]  # error if auth fails twice in a row
         then
             error "Still no luck with GitHub ssh auth. Ask a dev!"

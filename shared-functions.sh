@@ -148,6 +148,14 @@ has_recent_go() {
         -o "$go_minor_version" -ge "$DESIRED_GO_MINOR_VERISON" ]
 }
 
+# Install the version of python2 virtualenv that we want
+install_python2_virtualenv() {
+    # Install virtualenv.
+    # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
+    # Must do --force-reinstall or it will NOT automatically overwrite
+    # python3 version of virtualenv if it accidentally gets installed.
+    python2 -m pip install virtualenv==20.0.23 --force-reinstall
+}
 
 # Creates a webapp virtualenv in $1, if none exists, then activates it.
 #

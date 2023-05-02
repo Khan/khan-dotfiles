@@ -31,6 +31,9 @@ if [[ "$VIRTUAL_ENV" != */.virtualenv/khan27 ]]; then
     exit 1
 fi
 
+echo "Ensure proper version of python2 virutalenv is installed"
+install_python2_virtualenv
+
 echo "Cleaning out old virtualenv"
 rm -rf "$VIRTUAL_ENV"
 # We probably just removed `which python`, force the shell to find a new one.

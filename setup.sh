@@ -226,17 +226,19 @@ clone_repos() {
 
 # Sets up virtualenv and pipenv
 setup_python() {
-    echo "Installing virtualenv"
+    echo "Installing python2 virtualenv"
+    install_python2_virtualenv
 
-    # Install virtualenv.
-    # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    pip2 install -q virtualenv==20.0.23
+    create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
 
     # Used by various infra projects for managing python3 environment
     echo "Installing pipenv for python3"
+
+    # WARNING: This overrwrites the python2 virtualenv
     pip3 install -q pipenv
 
-    create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
+    echo "Reinstall python2 virtualenv (will overwrite python3 version)"
+    install_python2_virtualenv
 }
 
 # Must have cloned the repos first.
