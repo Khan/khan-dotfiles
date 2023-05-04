@@ -209,14 +209,22 @@ create_default_keeper_config() {
         gitemail=$(git config kaclone.email)
         echo "Keeper Command Line setup"
         echo "-------------------------"
-        echo "Khan Email: ${gitemail}"
-        echo "If this is incorrect, reenter it here."
         read -p "Enter your KA email (or blank if ${gitemail} is correct): " email
         email=${email:-$gitemail}
 
-        echo "If you haven't setup Keeper yet, you will not have a master password."
-        echo "Just hit <enter>. Once you setup Keeper, run mac-setup-keeper.sh."
+        echo
+        echo "Keeper Master Password"
+        echo "----------------------"
+        echo "If you've setup keeper, enter your master password."
+        echo
+        echo "If you have not setup keeper, use your browser to set it up"
+        echo "at https://khanacademy.org/r/keeper"
+        echo "If you want to do this later (not recommended), just hit enter"
+        echo "and run mac-setup-keeper.sh script later."
+        echo
+
         read -s -p "Keeper Master Password: " master_password
+
         echo
         cat << EOF > ${config_file}
 {
@@ -224,6 +232,7 @@ create_default_keeper_config() {
 "user": "${email}",
 "password": "${master_password}",
 "sso_master_password": true,
+"mfa_duration": "12_hours",
 "mfa_token": "",
 "mfa_type": "",
 "debug": false,
@@ -239,7 +248,16 @@ EOF
 # $1: path to python3 (including python3 binary)
 install_keeper() {
     python=$1
-    ${python} -m pip install keepercommander==16.5.18
+    # Version 16.5.18 worked for Khan for a long time
+    # Version 16.6+ may have issues (unsure of what)
+    # Version 16.9.0 seems to have some problems with the keeper command line
+    #         (See INFRA-9162)
+    # Version 16.8.24 seems to be a good replacement for 16.5.18
+    version=16.8.24
+    ${python} -m pip install -q keepercommander==${version}
+    # Show the keeper version (and warning if out of date)
+    keeper version
+    echo "(Any warning above about the latest version can probably be ignored)"
 }
 
 # If we exit unexpectedly, log this warning.

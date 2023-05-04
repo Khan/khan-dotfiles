@@ -17,10 +17,12 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 # Load shared setup functions.
 . "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
 
-create_default_keeper_config
-
 # We want to run this only with the brew version of python, NOT OSX's python3
 install_keeper $(brew --prefix)/bin/python3
+echo
 
-echo "To test keeper is working, run the following:"
-echo "keeper --config \$HOME/.keeper-config.json list"
+create_default_keeper_config
+
+echo
+echo "To test keeper is working, run: mykeeper list"
+echo "(KA alias mykeeper='keeper --config \$HOME/.keeper-config.json')"
