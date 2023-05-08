@@ -55,7 +55,7 @@ install_carthage() {
 
 install_fastlane() {
     update "Installing Fastlane and Cocoapods..."
-    (cd "$REPOS_DIR/mobile/ios"; bundle install)
+    (cd "$REPOS_DIR/mobile/app/ios"; bundle install)
 }
 
 ensure_mac_os # Function defined in shared-functions.sh.

@@ -11,7 +11,7 @@ set -e -o pipefail
 # app. This script can be run whenever you want to create and/or run an Android
 # emulator with the KA app.
 
-ANDROID_REPO="$HOME"/khan/mobile/android
+ANDROID_REPO="$HOME"/khan/mobile/app/android
 ANDROID_HOME=~/Library/Android/sdk
 
 # Load shared setup functions.
