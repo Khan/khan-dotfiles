@@ -125,6 +125,12 @@ EOF
         updated_apt_repo=yes
     fi
 
+    # To get python3.8, later.
+    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q deadsnakes; then
+        sudo add-apt-repository -y ppa:deadsnakes/ppa
+        updated_apt_repo=yes
+    fi
+
     # To get chrome, later.
     if [ ! -s /etc/apt/sources.list.d/google-chrome.list ]; then
         echo "deb http://dl.google.com/linux/chrome/deb/ stable main" \
@@ -134,12 +140,17 @@ EOF
         updated_apt_repo=yes
     fi
 
+
     # Register all that stuff we just did.
     if [ -n "$updated_apt_repo" ]; then
         sudo apt-get update -qq -y || true
     fi
 
-    # Python is needed for development. First try the Ubuntu 22.04+ packages, then
+    # Python3 is needed to run the python services (e.g. ai-guide-core).
+    # We pin it at python3.8 at the moment.
+    sudo apt-get install -y python3.8
+
+    # Python2 is needed for development. First try the Ubuntu 22.04+ packages, then
     # the Ubuntu <22.04 packages if that fails.
     sudo apt-get install -y python2-dev python-setuptools || sudo apt-get install -y python-dev python-mode python-setuptools
 
@@ -332,7 +343,7 @@ install_rust() {
 }
 
 install_fastly() {
-    builddir=$(mktemp -d -t fastly.XXXXX) 
+    builddir=$(mktemp -d -t fastly.XXXXX)
 
     (
         cd "$builddir"

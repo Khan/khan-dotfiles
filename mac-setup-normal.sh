@@ -347,6 +347,12 @@ install_jq() {
 }
 
 install_python_tools() {
+    # We need python3.8 for our python3 services (e.g. ai-guide-core)
+    if ! which python3.8 >/dev/null 2>&1; then
+        info "Installing python 3.8\n"
+        brew install python@3.8
+    fi
+
     # We use various python versions (e.g. internal-service)
     # and use Pyenv, pipenv as environment manager
     if ! brew ls pyenv >/dev/null 2>&1; then
