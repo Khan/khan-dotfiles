@@ -148,7 +148,7 @@ EOF
 
     # Python3 is needed to run the python services (e.g. ai-guide-core).
     # We pin it at python3.8 at the moment.
-    sudo apt-get install -y python3.8
+    sudo apt-get install -y python3.8 python3.8-venv
 
     # Python2 is needed for development. First try the Ubuntu 22.04+ packages, then
     # the Ubuntu <22.04 packages if that fails.
