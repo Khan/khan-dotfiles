@@ -55,8 +55,6 @@ install_mac_apps() {
     firefox firefox-developer-edition google-chrome google-chrome-canary
     # Tools
     dropbox google-drive-file-stream iterm2 zoomus
-    # Virtualbox (requires difficult meraki workaround in Catalina++)
-    #virtualbox
     # Text Editors
     macvim sublime-text textmate atom
     # Chat

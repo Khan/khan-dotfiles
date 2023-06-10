@@ -173,7 +173,7 @@ EOF
     sudo npm install -g yarn
 
     # Not technically needed to develop at Khan, but we assume you have it.
-    sudo apt-get install -y unrar virtualbox ack-grep
+    sudo apt-get install -y unrar ack-grep
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword curl diffstat expect gimp \
