@@ -248,12 +248,13 @@ EOF
 # $1: path to python3 (including python3 binary)
 install_keeper() {
     python=$1
-    # Version 16.5.18 worked for Khan for a long time
-    # Version 16.6+ may have issues (unsure of what)
-    # Version 16.9.0 seems to have some problems with the keeper command line
-    #         (See INFRA-9162)
-    # Version 16.8.24 seems to be a good replacement for 16.5.18
-    version=16.8.24
+    # NOTE(miguel): we have had issues in our deploy system and with devs
+    # in their local environment with keeper throttling requests since
+    # we have upgraded from 16.5.18. So we are moving keeper back to version
+    # 16.5.18. The last version we had issues with was 16.8.24.
+    # Version 16.5.18 is what we use in jenkins so we want to match that
+    # https://github.com/Khan/aws-config/commit/fd89852562ca3719f8936c04c847ad73d4ba82f8
+    version=16.5.18
     ${python} -m pip install -q keepercommander==${version}
     # Show the keeper version (and warning if out of date)
     keeper version
