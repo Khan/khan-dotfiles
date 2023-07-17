@@ -265,7 +265,7 @@ install_deps() {
     if [ "$WEBAPP" = true ]; then
         echo "Installing webapp dependencies"
         # This checks for gcloud, so we do it after install_and_setup_gcloud.
-        ( cd "$REPOS_DIR/webapp" && make install_deps )
+        ( cd "$REPOS_DIR/webapp" && source ~/.virtualenv/khan27/bin/activate && make install_deps )
     fi
 }
 
