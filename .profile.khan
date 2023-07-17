@@ -110,7 +110,7 @@ fi
 
 # If you do NOT want to have the python2 environment auto-activated,
 # add the following to the top of your ~/.profile script:
-#   export DO_NOT_ACTIVATE_VIRTUALENV_KHAN27=1
+export DO_NOT_ACTIVATE_VIRTUALENV_KHAN27=1
 #
 if [ -z "$DO_NOT_ACTIVATE_VIRTUALENV_KHAN27" ]; then
     # Activate Python2.7 virtualenv if present
