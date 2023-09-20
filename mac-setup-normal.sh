@@ -387,7 +387,7 @@ install_fastly() {
 install_docker() {
     if ! which docker >/dev/null 2>&1; then
         update "Installing docker..."
-        brew install docker
+        brew install --cask docker
     fi
 }
 
