@@ -111,8 +111,9 @@ EOF
     #   services. We standardize on version 12 (the latest version suppported
     #   on appengine standard).
     # redis is needed to run memorystore on dev
+    # docker is needed to run dev-webapp containers
     # unzip is needed for other scripts
-    # tree sysdig docker iftop tcpflow are for diagnostics
+    # tree sysdig iftop tcpflow are for diagnostics
     # cargo is for rust / fastly
     # python-dev supplies Python.h for things built by setup.sh (but why?)
     # libncurses-dev is needed to build the readline we want
@@ -130,9 +131,10 @@ EOF
         libncurses-dev libreadline-dev \
         nodejs=12* \
         redis-server \
+        docker \
         curl \
         jq \
-        unzip tree sysdig docker iftop tcpflow \
+        unzip tree sysdig iftop tcpflow \
         cargo cargo-doc \
         python-dev \
         gcc \

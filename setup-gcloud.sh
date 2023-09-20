@@ -79,6 +79,7 @@ if [ -z "$(gcloud auth list --format='value(account)')" ]; then
     echo "$SCRIPT: Follow these instructions to authorize gcloud (twice)..."
     gcloud auth login ${GCLOUD_AUTH_ARGS}
     gcloud auth application-default login ${GCLOUD_AUTH_ARGS}
+    gcloud auth configure-docker us-central1-docker.pkg.dev
 fi
 
 echo "$SCRIPT: Ensuring gcloud is up to date and has the right components."

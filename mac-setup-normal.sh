@@ -384,6 +384,13 @@ install_fastly() {
     fi
 }
 
+install_docker() {
+    if ! which docker >/dev/null 2>&1; then
+        update "Installing docker..."
+        brew install docker
+    fi
+}
+
 echo
 success "Running Khan mac-setup-normal.sh\n"
 
@@ -409,5 +416,6 @@ install_helpful_tools
 install_watchman
 install_python_tools
 install_fastly
+install_docker
 
 trap - EXIT
