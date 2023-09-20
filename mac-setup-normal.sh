@@ -385,6 +385,10 @@ install_fastly() {
 }
 
 install_docker() {
+    # TODO(csilvers): we should really be installing a docker UI here
+    # (docker desktop or docker rancher), which will install the
+    # docker CLI as part of it.  Once we decide on a UI we can replace
+    # these install instructions with the install for the UI instead.
     if ! which docker >/dev/null 2>&1; then
         update "Installing docker..."
         brew install --cask docker
