@@ -44,15 +44,6 @@ install_xcodes() {
     fi
 }
 
-# Ensure Carthage is installed. Carthage is used to manage some dependencies and
-# is required to compile the app.
-install_carthage() {
-    if ! which carthage; then
-        update "Installing Carthage..."
-        brew install carthage
-    fi
-}
-
 install_fastlane() {
     update "Installing Fastlane and Cocoapods..."
     (cd "$REPOS_DIR/mobile/app/ios"; bundle install)
@@ -62,7 +53,6 @@ ensure_mac_os # Function defined in shared-functions.sh.
 # TODO(hannah): Ensure setup.sh has already been run.
 clone_mobile_repo
 install_xcodes
-install_carthage
 install_fastlane
 install_homebrew_libraries
 install_react_native_dependencies

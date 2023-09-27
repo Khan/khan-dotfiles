@@ -61,7 +61,7 @@ if [ "${uname_os}" = "Darwin" ]; then
     # Should be 10.15.x or 11.x
     osx_version=$(sw_vers -productVersion)
     kv "Version" "${osx_version}"
-    if echo "$osx_version" | grep -q -v -e '^12' -e '^11' ; then 
+    if echo "$osx_version" | grep -q -v -e '^12' -e '^11' ; then
         kv "!!! WARNING!!!" "Please update to OSX 12(Monterey)!!!"
 
     fi
@@ -72,7 +72,6 @@ header "Environment"
 kv "User" "$(whoami)"
 kv "Shell" "$SHELL"
 kv "PATH" "$PATH"
-
 
 # XCode, a big pain point on Mac
 if [ "${uname_os}" = "Darwin" ]; then
