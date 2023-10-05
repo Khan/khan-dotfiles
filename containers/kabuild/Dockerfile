@@ -64,7 +64,7 @@ RUN apt-get install -y \
 
 # TODO: Get version from common location
 # WARNING: We REALLY WANT to avoid requring make and/or break standalone skaffold.
-ENV DESIRED_GO_VERSION=1.16
+ENV DESIRED_GO_VERSION=1.21
 RUN apt-get install -y golang-${DESIRED_GO_VERSION}
 RUN cp -sf /usr/lib/go-${DESIRED_GO_VERSION}/bin/* /usr/local/bin/
 
