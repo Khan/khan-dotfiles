@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Shortcut for getting secret values from google secret manager
+gcloud --project khan-academy secrets versions access latest --secret "$@"
