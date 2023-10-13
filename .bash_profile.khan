@@ -53,6 +53,9 @@ fi
 # Add a mykeeper alias to run keeper with KA config
 alias mykeeper="keeper --config $HOME/.keeper-config.json"
 
+# Shortcut for getting secret values from google secret manager
+alias gsmsecret="gcloud --project khan-academy secrets versions access latest --secret"
+
 # Setting this allows us to store ssh-keys in the keychain without generating
 # a warning.  See ssh-add man page.
 export APPLE_SSH_ADD_BEHAVIOR=macos
