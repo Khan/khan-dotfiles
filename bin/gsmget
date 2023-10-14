@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 SCRIPT=$(basename $0)
 
@@ -33,5 +33,5 @@ then
   VERSION="latest"
 fi
 
-# Shortcut for getting secret values from google secret manager
-gcloud --project khan-academy secrets versions access "$VERSION" --secret "$SECRET"
+# Command for getting secrets from google secret manager
+exec gcloud --project khan-academy secrets versions access "$VERSION" --secret "$SECRET"
