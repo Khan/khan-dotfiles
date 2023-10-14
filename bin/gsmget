@@ -1,0 +1,37 @@
+#!/bin/sh
+
+SCRIPT=$(basename $0)
+
+usage() {
+    cat << EOF
+usage: $SCRIPT secretname <version>
+  secretname is the name of the secret in Google Secret Manager. For a list of
+  all the secrets, you can visit 
+  https://console.cloud.google.com/security/secret-manager?project=khan-academy
+
+  version is optional. If not specified then you get the latest version
+
+  $SCRIPT Test_secret
+  $SCRIPT Test_secret 1
+  $SCRIPT Test_secret latest
+EOF
+}
+
+SECRET=$1
+VERSION=$2
+
+if [ -z "$SECRET" ]
+then
+  echo "Must provide the name of a GSM secret as the first argument"
+  echo
+  usage
+  exit 1
+fi
+
+if [ -z "$VERSION" ]
+then
+  VERSION="latest"
+fi
+
+# Command for getting secrets from google secret manager
+exec gcloud --project khan-academy secrets versions access "$VERSION" --secret "$SECRET"
