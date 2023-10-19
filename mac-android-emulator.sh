@@ -95,10 +95,10 @@ launch_emulator() {
         # Get name, API, and ABI from user.
         echo "The name of your emulator gives you a way to reference it. You might want to name them with the convention device_API_[api]_[abi]."
         name=$( get_input "Emulator name [test-device]: " "test-device" )
-        echo "API 16 is the oldest API level the KA app supports and API 25 is the newest API."
-        api=$( get_input "API [23]: " "23" )
+        echo "API 23 is the oldest API level the KA app supports and API 31 is the newest API."
+        api=$( get_input "API [31]: " "31" )
         echo "See https://developer.android.com/ndk/guides/abis.html for more information on Android ABIs."
-        abi=$( get_input "ABI [x86_64 if Intel, arm64-v8a if M1/M2]: " "arm64-v8a" )
+        abi=$( get_input "ABI (x86_64 if Intel, arm64-v8a if M1/M2) [arm64-v8a]: " "arm64-v8a" )
 
         ensure_platform_and_abi "$api" "$abi"
 
