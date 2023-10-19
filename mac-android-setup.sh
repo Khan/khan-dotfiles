@@ -63,7 +63,7 @@ configure_codestyle() {
 
     if [ ! -e "$ANDROID_STUDIO_CODESTYLES_PATH"/KhanAcademyAndroid.xml ]; then
         update "Linking Khan Academy codestyle files..."
-        ln -s "$CODESTYLE_SOURCE" "$ANDROID_STUDIO_CODESTYLES_PATH"
+        ln -s -f "$CODESTYLE_SOURCE" "$ANDROID_STUDIO_CODESTYLES_PATH"
     fi
 }
 

@@ -79,7 +79,7 @@ build_apk() {
 
 # Launches an existing emulator or creates an emulator and launches it.
 launch_emulator() {
-    if [ -z "$(emulator -list-avds)" ]; then
+    if [ -z "$($ANDROID_HOME/emulator/emulator -list-avds)" ]; then
         echo "There are no existing emulators."
     else
         echo "Here are existing emulators:"
@@ -98,7 +98,7 @@ launch_emulator() {
         echo "API 16 is the oldest API level the KA app supports and API 25 is the newest API."
         api=$( get_input "API [23]: " "23" )
         echo "See https://developer.android.com/ndk/guides/abis.html for more information on Android ABIs."
-        abi=$( get_input "ABI [x86_64]: " "x86_64" )
+        abi=$( get_input "ABI [x86_64 if Intel, arm64-v8a if M1/M2]: " "arm64-v8a" )
 
         ensure_platform_and_abi "$api" "$abi"
 
@@ -185,7 +185,7 @@ install_apk() {
     if [ "$should_install" = "y" ]; then
         update "Installing APK..."
         # Include -r so we re-install if necessary.
-        adb install -r "$ANDROID_REPO"/app/build/outputs/apk/app-debug.apk
+        adb install -r "$ANDROID_REPO"/app/build/outputs/apk/debug/app-debug.apk
 
         # Disables the annoying error when you launch for the first time
         # where it asks if the app can draw over other apps!
