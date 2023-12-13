@@ -32,9 +32,6 @@ KACLONE_BIN="$DEVTOOLS_DIR/ka-clone/bin/ka-clone"
 # future.
 DIR=$(dirname "$0")
 
-# should we install webapp? (disable for mobile devs or to make testing faster)
-WEBAPP="${WEBAPP:-true}"
-
 # Will contain a string on a mac and be empty on linux
 IS_MAC=$(which sw_vers || echo "")
 IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
@@ -191,6 +188,16 @@ clone_webapp() {
         "Slack to be added."
 }
 
+clone_mobile() {
+    if [ ! -d "$REPOS_DIR/mobile" ]; then
+        update "Cloning mobile repository..."
+        kaclone_repo git@github.com:Khan/mobile "$REPOS_DIR/" -p --email="$gitmail" || add_fatal_error \
+            "Unable to clone Khan/mobile -- perhaps you don't have access? " \
+            "If you can't view https://github.com/Khan/mobile, ask #it in " \
+            "Slack to be added."
+    fi
+}
+
 # clones a specific devtool
 clone_devtool() {
     kaclone_repo "$1" "$DEVTOOLS_DIR" --email="$gitmail"
@@ -218,9 +225,8 @@ kaclone_repair_self() {
 clone_repos() {
     clone_kaclone
     clone_devtools
-    if [ "$WEBAPP" = true ]; then
-        clone_webapp
-    fi
+    clone_webapp
+    clone_mobile
     kaclone_repair_self
 }
 
@@ -262,11 +268,9 @@ install_deps() {
 
     # Install all the requirements for khan
     # This also installs npm deps.
-    if [ "$WEBAPP" = true ]; then
-        echo "Installing webapp dependencies"
-        # This checks for gcloud, so we do it after install_and_setup_gcloud.
-        ( cd "$REPOS_DIR/webapp" && make install_deps )
-    fi
+    echo "Installing webapp dependencies"
+    # This checks for gcloud, so we do it after install_and_setup_gcloud.
+    ( cd "$REPOS_DIR/webapp" && make deps )
 }
 
 install_and_setup_gcloud() {
@@ -281,10 +285,8 @@ download_db_dump() {
 }
 
 create_pg_databases() {
-    if [ "$WEBAPP" = true ]; then
-        echo "Creating postgres databases"
-        ( cd "$REPOS_DIR/webapp" ; make pg_create )
-    fi
+    echo "Creating postgres databases"
+    ( cd "$REPOS_DIR/webapp" ; make pg_create )
 }
 
 # Make sure we store userinfo so we can pass appropriately when ka-cloning.
@@ -320,10 +322,8 @@ update_userinfo() {
 
 # Install webapp's git hooks
 install_hooks() {
-    if [ "$WEBAPP" = true ]; then
-        echo "Installing git hooks"
-        ( cd "$REPOS_DIR/webapp" && make hooks )
-    fi
+    echo "Installing git hooks"
+    ( cd "$REPOS_DIR/webapp" && make hooks )
 }
 
 install_our_lovely_cli() {
