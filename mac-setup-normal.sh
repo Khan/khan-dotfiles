@@ -347,10 +347,16 @@ install_jq() {
 }
 
 install_python_tools() {
-    # We need python3.8 for our python3 services (e.g. ai-guide-core)
+    # Python3 is needed to run the python services (e.g. ai-guide-core).
+    # We pin it at python3.8 at the moment, but will move it to python3.11 soon
+    # TODO(csilvers, GL-1195): remove python3.8 ai-guide-core is on python3.11
     if ! which python3.8 >/dev/null 2>&1; then
         info "Installing python 3.8\n"
         brew install python@3.8
+    fi
+    if ! which python3.11 >/dev/null 2>&1; then
+        info "Installing python 3.11\n"
+        brew install python@3.11
     fi
 
     # We use various python versions (e.g. internal-service)
