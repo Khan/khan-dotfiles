@@ -147,8 +147,10 @@ EOF
     fi
 
     # Python3 is needed to run the python services (e.g. ai-guide-core).
-    # We pin it at python3.8 at the moment.
+    # We pin it at python3.8 at the moment, but will move it to python3.11 soon
+    # TODO(csilvers, GL-1195): remove python3.8 ai-guide-core is on python3.11
     sudo apt-get install -y python3.8 python3.8-venv
+    sudo apt-get install -y python3.11 python3.11-venv
 
     # Python2 is needed for development. First try the Ubuntu 22.04+ packages, then
     # the Ubuntu <22.04 packages if that fails.
