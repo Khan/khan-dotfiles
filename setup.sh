@@ -69,7 +69,7 @@ check_dependencies() {
         exit 1
     fi
 
-    # For convenience, let's mak sure github is in the known-hosts
+    # For convenience, let's make sure github is in the known-hosts
     # file as well.  This is a noop if it's already in there.
     mkdir -p ~/.ssh
     ssh-keyscan -H github.com
