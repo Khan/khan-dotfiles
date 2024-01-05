@@ -72,7 +72,8 @@ check_dependencies() {
     # For convenience, let's make sure github is in the known-hosts
     # file as well.  This is a noop if it's already in there.
     mkdir -p ~/.ssh
-    ssh-keyscan -H github.com
+    grep -q github.com ~/.ssh/known_hosts 2>/dev/null || \
+        ssh-keyscan github.com >> ~/.ssh/khown_hosts
 
     # You need to have run the setup to install binaries: node, npm/etc.
     if ! npm --version >/dev/null; then
