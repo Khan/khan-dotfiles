@@ -84,11 +84,9 @@ install_mac_java() {
     # already installed -- there are different java providers -- so we
     # just always try to install the one we want.  For more info, see
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
-    echo "Installing Adopt Open JDK v11..."
-    if ! brew tap | grep -i "AdoptOpenJDK/openjdk"; then
-        brew tap AdoptOpenJDK/openjdk
-    fi
-    brew install adoptopenjdk11
+    echo "Installing openjdk 11..."
+
+    brew install openjdk@11
 }
 
 install_protoc_common() {
