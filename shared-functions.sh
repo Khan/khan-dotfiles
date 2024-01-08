@@ -84,11 +84,9 @@ install_mac_java() {
     # already installed -- there are different java providers -- so we
     # just always try to install the one we want.  For more info, see
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
-    echo "Installing Adopt Open JDK v11..."
-    if ! brew tap | grep -i "AdoptOpenJDK/openjdk"; then
-        brew tap AdoptOpenJDK/openjdk
-    fi
-    brew install adoptopenjdk11
+    echo "Installing openjdk 11..."
+
+    brew install openjdk@11
 }
 
 install_protoc_common() {
@@ -99,7 +97,7 @@ install_protoc_common() {
     # function. This file is platform dependent.
     zip_url=$1
 
-    # We use protocol buffers in webapp's event log stream infrastructure. This
+    # We use protocol buffers in webapp`'s event log stream infrastructure. This
     # installs the protocol buffer compiler (which generates python & java code
     # from the protocol buffer definitions), as well as a go-based compiler
     # plugin that allows us to generate bigquery schemas as well.
