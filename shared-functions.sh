@@ -97,7 +97,7 @@ install_protoc_common() {
     # function. This file is platform dependent.
     zip_url=$1
 
-    # We use protocol buffers in webapp`'s event log stream infrastructure. This
+    # We use protocol buffers in webapp's event log stream infrastructure. This
     # installs the protocol buffer compiler (which generates python & java code
     # from the protocol buffer definitions), as well as a go-based compiler
     # plugin that allows us to generate bigquery schemas as well.
