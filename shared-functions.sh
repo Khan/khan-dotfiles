@@ -78,6 +78,19 @@ ensure_mac_os() {
     fi
 }
 
+brew_install() {
+  if ! command -v brew >/dev/null 2>&1; then
+      echo "Homebrew is not installed."
+      exit 1
+  fi
+  if ! brew ls $@ >/dev/null 2>&1; then
+      echo "$@ is not installed, installing $@"
+      brew install $@ || echo "Failed to install $@, perhaps it is already installed."
+  else
+      echo "$app already installed"
+  fi
+}
+
 # Mac-specific function to install Java JDK
 install_mac_java() {
     # It's surprisingly difficult to tell what java versions are
@@ -86,7 +99,7 @@ install_mac_java() {
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
     echo "Installing openjdk 11..."
 
-    brew install openjdk@11
+    brew_install openjdk@11
     # Symlink openjdk for the system Java wrappers
     sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
