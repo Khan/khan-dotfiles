@@ -87,6 +87,8 @@ install_mac_java() {
     echo "Installing openjdk 11..."
 
     brew install openjdk@11
+    # Symlink openjdk for the system Java wrappers
+    sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 }
 
 install_protoc_common() {
