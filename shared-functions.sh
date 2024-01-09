@@ -80,7 +80,7 @@ ensure_mac_os() {
 
 # Mac-specific function to install Java JDK
 install_mac_java() {
-    # It's suprisingly difficult to tell what java versions are
+    # It's surprisingly difficult to tell what java versions are
     # already installed -- there are different java providers -- so we
     # just always try to install the one we want.  For more info, see
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
@@ -89,6 +89,22 @@ install_mac_java() {
     brew install openjdk@11
     # Symlink openjdk for the system Java wrappers
     sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+
+    # Ensure JAVA_HOME is set in ~/.profile.khan
+    PROFILE_FILE="$HOME/.profile.khan"
+    JAVA_HOME_STRING='export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
+    PATH_STRING='export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
+    if [ -f "$PROFILE_FILE" ]; then
+        if ! grep -q "$JAVA_HOME_STRING" "$PROFILE_FILE"; then
+            echo "$JAVA_HOME_STRING" >> "$PROFILE_FILE"
+        fi
+        if ! grep -q "$PATH_STRING" "$PROFILE_FILE"; then
+            echo "$PATH_STRING" >> "$PROFILE_FILE"
+        fi
+    else
+        echo "File $PROFILE_FILE does not exist."
+        exit 1
+    fi
 }
 
 install_protoc_common() {

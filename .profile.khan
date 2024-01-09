@@ -106,10 +106,6 @@ if [ `uname -s` = Darwin ]; then
 
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
-
-    # Set JAVA_HOME and add openjdk first in PATH
-    export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk
-    export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
 fi
 
 # If you do NOT want to have the python2 environment auto-activated,
