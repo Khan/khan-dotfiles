@@ -78,17 +78,28 @@ ensure_mac_os() {
     fi
 }
 
+# $1: the package to install
 brew_install() {
-  if ! command -v brew >/dev/null 2>&1; then
-      echo "Homebrew is not installed."
-      exit 1
-  fi
-  if ! brew ls $@ >/dev/null 2>&1; then
-      echo "$@ is not installed, installing $@"
-      brew install $@ || echo "Failed to install $@, perhaps it is already installed."
-  else
-      echo "$app already installed"
-  fi
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew is not installed."
+        exit 1
+    fi
+    if ! brew ls "$@" >/dev/null 2>&1; then
+        echo "$@ is not installed, installing $@"
+        brew install "$@" || echo "Failed to install $@, perhaps it is already installed."
+    else
+        echo "$@ already installed"
+    fi
+}
+
+# $1: the text to add
+# $2: the dotfile to add it to, relative to $HOME.
+add_to_dotfile() {
+    if [ ! -f "$2" ]; then
+        echo "File $2 does not exist."
+        exit 1
+    fi
+    grep -q "$1" "$2" || echo "$1" >> "$2"
 }
 
 # Mac-specific function to install Java JDK
@@ -100,24 +111,17 @@ install_mac_java() {
     echo "Installing openjdk 11..."
 
     brew_install openjdk@11
+
     # Symlink openjdk for the system Java wrappers
     sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
+    # TODO (jwiesebron): Update other parts of dotfiles to use this convention
     PROFILE_FILE="$HOME/.profile.khan"
     JAVA_HOME_STRING='export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
     PATH_STRING='export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
-    if [ -f "$PROFILE_FILE" ]; then
-        if ! grep -q "$JAVA_HOME_STRING" "$PROFILE_FILE"; then
-            echo "$JAVA_HOME_STRING" >> "$PROFILE_FILE"
-        fi
-        if ! grep -q "$PATH_STRING" "$PROFILE_FILE"; then
-            echo "$PATH_STRING" >> "$PROFILE_FILE"
-        fi
-    else
-        echo "File $PROFILE_FILE does not exist."
-        exit 1
-    fi
+    add_to_dotfile "$JAVA_HOME_STRING" "$PROFILE_FILE"
+    add_to_dotfile "$PATH_STRING" "$PROFILE_FILE"
 }
 
 install_protoc_common() {

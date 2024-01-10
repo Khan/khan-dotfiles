@@ -129,5 +129,3 @@ fi
 # TODO(benkraft): If in the future we move to pipenv everywhere, we can
 # dispense with the auto-activated virtualenvs, and get rid of this.
 export PIPENV_IGNORE_VIRTUALENVS=1
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk
-export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
