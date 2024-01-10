@@ -1,5 +1,6 @@
 install:
 	./git_sync.sh
+	$(MAKE) wipe-generated-profile-file
 	$(MAKE) os-install
 	$(MAKE) common-install
 	@echo "***  YOU MUST REBOOT **IF** this was   ***"
@@ -12,6 +13,9 @@ install:
 	@echo "To finish your setup, head back to the"
 	@echo "setup docs:"
 	@echo "  https://khanacademy.atlassian.net/wiki/x/VgKiC"
+
+wipe-generated-profile-file:
+	rm -f ~/.profile-generated.khan && touch ~/.profile-generated.khan
 
 os-install:
 	if [ `uname -s` = Linux ]; then \

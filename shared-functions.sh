@@ -78,15 +78,42 @@ ensure_mac_os() {
     fi
 }
 
+# $1: the package to install
+brew_install() {
+    if ! command -v brew >/dev/null 2>&1; then
+        echo "Homebrew is not installed."
+        exit 1
+    fi
+    if ! brew ls "$@" >/dev/null 2>&1; then
+        echo "$@ is not installed, installing $@"
+        brew install "$@" || echo "Failed to install $@, perhaps it is already installed."
+    else
+        echo "$@ already installed"
+    fi
+}
+
+# $1: the text to add
+add_to_dotfile() {
+    grep -F -q "$1" "$HOME/.profile-generated.khan" || echo "$1" >> "$HOME/.profile-generated.khan" || exit 1
+}
+
 # Mac-specific function to install Java JDK
 install_mac_java() {
-    # It's suprisingly difficult to tell what java versions are
+    # It's surprisingly difficult to tell what java versions are
     # already installed -- there are different java providers -- so we
     # just always try to install the one we want.  For more info, see
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
     echo "Installing openjdk 11..."
 
-    brew install openjdk@11
+    brew_install openjdk@11
+
+    # Symlink openjdk for the system Java wrappers
+    sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+
+    # Ensure JAVA_HOME is set in ~/.profile.khan
+    # TODO (jwiesebron): Update other parts of dotfiles to use this convention
+    add_to_dotfile 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
+    add_to_dotfile 'export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
 }
 
 install_protoc_common() {
