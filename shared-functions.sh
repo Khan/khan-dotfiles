@@ -95,10 +95,8 @@ brew_install() {
 # $1: the text to add
 # $2: the dotfile to add it to, relative to $HOME.
 add_to_dotfile() {
-    if [ ! -f "$2" ]; then
-        echo "File $2 does not exist."
-        exit 1
-    fi
+    # N.B. Since all checked in dotfiles are symlinked and not copied, this
+    # should only be used with generated dotfiles.
     grep -q "$1" "$2" || echo "$1" >> "$2"
 }
 
@@ -117,7 +115,7 @@ install_mac_java() {
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
-    PROFILE_FILE="$HOME/.profile.khan"
+    PROFILE_FILE="$HOME/.profile-generated.khan"
     JAVA_HOME_STRING='export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
     PATH_STRING='export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
     add_to_dotfile "$JAVA_HOME_STRING" "$PROFILE_FILE"

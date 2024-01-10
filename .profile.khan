@@ -129,3 +129,6 @@ fi
 # TODO(benkraft): If in the future we move to pipenv everywhere, we can
 # dispense with the auto-activated virtualenvs, and get rid of this.
 export PIPENV_IGNORE_VIRTUALENVS=1
+
+# Source the generated profile, if it exists.
+[ -f $HOME/.profile-generated.khan ] && source $HOME/.profile-generated.khan
