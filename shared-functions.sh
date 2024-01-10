@@ -92,12 +92,9 @@ brew_install() {
     fi
 }
 
-# $1: the dotfile to add it to, relative to $HOME.
-# $2: the text to add
+# $1: the text to add
 add_to_dotfile() {
-    # N.B. Since all checked in dotfiles are symlinked and not copied, this
-    # should only be used with generated dotfiles.
-    grep -q "$2" "$HOME/$1" || echo "$2" >> "$HOME/$1"
+    grep -F -q "$1" "$HOME/.profile-generated.khan" || echo "$1" >> "$HOME/.profile-generated.khan" || exit 1
 }
 
 # Mac-specific function to install Java JDK
@@ -115,8 +112,8 @@ install_mac_java() {
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
-    add_to_dotfile .profile-generated.khan 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
-    add_to_dotfile .profile-generated.khan 'export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
+    add_to_dotfile 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
+    add_to_dotfile 'export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
 }
 
 install_protoc_common() {
