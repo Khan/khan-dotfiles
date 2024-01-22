@@ -10,9 +10,6 @@ if [ `uname -m` = "arm64" ]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
-# Add frankenserver bins to PATH
-export PATH="$HOME/khan/webapp/third_party/frankenserver:$PATH"
-
 # Add devtools bins to PATH
 # TODO(mroth): rewrite these paths at install time based on user preference
 KA_DEVROOT="$HOME/khan/devtools"
