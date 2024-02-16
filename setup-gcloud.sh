@@ -2,9 +2,6 @@
 # This is used to be in setup.sh: install_and_setup_gcloud()
 # It was broken and is easier to debug separately
 
-# TODO(ericbrown): Shell scripts hard to debug - rewrite in python
-#   shared-functions.sh are an issue
-
 # Bail on any errors
 set -e
 

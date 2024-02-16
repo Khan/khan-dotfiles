@@ -68,20 +68,6 @@ ENV DESIRED_GO_VERSION=1.21
 RUN apt-get install -y golang-${DESIRED_GO_VERSION}
 RUN cp -sf /usr/lib/go-${DESIRED_GO_VERSION}/bin/* /usr/local/bin/
 
-# Python2
-ENV VENV=.virtualenv/khan27
-RUN apt-get install -y python2-dev python-setuptools
-RUN ln -s /usr/bin/python2 /usr/bin/python
-WORKDIR /tmp
-RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-RUN python2 get-pip.py pip==19.3.1
-RUN rm -f get-pip.py
-WORKDIR /root
-RUN pip install virtualenv==20.0.23
-RUN pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
-RUN virtualenv -q --python="$(which python2)" --always-copy "/root/${VENV}"
-RUN /root/${VENV}/bin/pip install -U "pip<20" setuptools
-
 RUN apt-get install -y \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
         imagemagick \
@@ -128,8 +114,6 @@ WORKDIR /home/${USER_NAME}
 RUN mkdir -m 700 .ssh
 RUN mkdir khan
 RUN ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN virtualenv -q --python="$(which python2)" --always-copy "/home/${USER_NAME}/${VENV}"
-RUN /home/${USER_NAME}/${VENV}/bin/pip install -U "pip<20" setuptools
 COPY --chown=${USER_NAME}:${GROUP_NAME} .profile.khan .profile.khan
 COPY --chown=${USER_NAME}:${GROUP_NAME} .bash_profile.khan .bash_profile.khan
 COPY --chown=${USER_NAME}:${GROUP_NAME} .bashrc.khan .bashrc.khan

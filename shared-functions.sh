@@ -166,7 +166,7 @@ install_protoc_common() {
     zip_url=$1
 
     # We use protocol buffers in webapp's event log stream infrastructure. This
-    # installs the protocol buffer compiler (which generates python & java code
+    # installs the protocol buffer compiler (which generates go & java code
     # from the protocol buffer definitions), as well as a go-based compiler
     # plugin that allows us to generate bigquery schemas as well.
 
@@ -212,53 +212,6 @@ has_recent_go() {
     go_minor_version=`expr "$go_version" : '.*go[0-9]*\.\([0-9]*\)'`
     [ "$go_major_version" -gt "$DESIRED_GO_MAJOR_VERISON" \
         -o "$go_minor_version" -ge "$DESIRED_GO_MINOR_VERISON" ]
-}
-
-# Install the version of python2 virtualenv that we want
-install_python2_virtualenv() {
-    # Install virtualenv.
-    # https://docs.google.com/document/d/1zrmm6byPImfbt7wDyS8PpULwnEckSxna2jhSl38cWt8
-    # Must do --force-reinstall or it will NOT automatically overwrite
-    # python3 version of virtualenv if it accidentally gets installed.
-    python2 -m pip install virtualenv==20.0.23 --force-reinstall
-}
-
-# Creates a webapp virtualenv in $1, if none exists, then activates it.
-#
-# Assumes pip and virtualenv are already installed.
-#
-# Arguments:
-#   $1: driectory in which to put the virtualenv, typically ~/.virtualenv/khan27.
-create_and_activate_virtualenv() {
-    # On a arm64 mac, we MUST use the python2 version of virtualenv
-    VIRTUALENV=$(which virtualenv)
-    if [[ -n ${IS_MAC_ARM} ]]; then
-        VIRTUALENV=/usr/local/bin/virtualenv
-        if [[ -z "${VIRTUALENV}" ]]; then
-            /usr/local/bin/python2 -m pip install virtualenv
-        fi
-    fi
-
-    if [ ! -d "$1" ]; then
-        ${VIRTUALENV} -q --python="$(which python2)" --always-copy "$1"
-    fi
-
-    # Activate the virtualenv.
-    . "$1/bin/activate"
-
-    # pip may get broken by virtualenv for some reason. We're better off
-    # calling `python -m pip` so we'll just swap in a script that does
-    # that for us.
-    if ! pip --version 2>/dev/null ; then
-        cp bin/pip `which pip`
-        cp bin/pip2 `which pip2`
-    fi
-
-    # pip20+ stopped supporting python2.7, so we need to make sure
-    # we are using an older pip.
-    if ! pip --version | grep -q "pip 1[0-9]"; then
-        pip install -U "pip<20" setuptools
-    fi
 }
 
 # pip-install something globally.  Recent pythons don't let you do

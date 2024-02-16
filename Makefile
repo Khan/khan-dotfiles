@@ -27,7 +27,3 @@ os-install:
 
 common-install:
 	./setup.sh
-
-virtualenv:
-	./bin/rebuild_virtualenv.sh
-

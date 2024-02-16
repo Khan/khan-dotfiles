@@ -133,11 +133,10 @@ tool_version java -version
 # Python tooling
 header "Python"
 tool_version python --version
-tool_version python2 --version
 tool_version python3 --version
 tool_version pip --version
 kv "VIRTUAL_ENV" "$VIRTUAL_ENV"
-kv "sys.path" "$(python2 -c 'import sys; print sys.path')"
+kv "sys.path" "$(python3 -c 'import sys; print(sys.path)')"
 
 # TODO(dbraley): (l) check software-properties-common
 # TODO(dbraley): (l) check apt-trasport-https

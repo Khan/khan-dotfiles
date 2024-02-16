@@ -132,21 +132,6 @@ install_dotfiles() {
         fi
     done
 
-    # If users are using a shell other than bash, the updates we make won't
-    # get picked up.  They'll have to activate the virtualenv in their shell
-    # config; if they haven't, the rest of the script will fail.
-    # TODO(benkraft): Add more specific instructions for other common shells,
-    # or just write dotfiles for them.
-    shell="`basename "$SHELL"`"
-    if [ -z "$VIRTUAL_ENV" ] && [ "$shell" != bash ] && [ "$shell" != zsh ]; then
-        add_fatal_error "Your default shell is $shell, not bash or zsh, so you'll" \
-                        "need to update its config manually to activate our" \
-                        "virtualenv. You can follow the instructions at" \
-                        "khanacademy.org/r/virtualenvs to create a new" \
-                        "virtualenv and then export its path in the" \
-                        "VIRTUAL_ENV environment variable before trying again."
-    fi
-
     # *.template files are also copied so the user can change them.  Unlike the
     # "default" files above, these do not include KA code, they are merely
     # useful defaults we want to install if the user doesnt have anything
@@ -238,21 +223,11 @@ clone_repos() {
     kaclone_repair_self
 }
 
-# Sets up virtualenv and pipenv
+# Sets up pipenv
 setup_python() {
-    echo "Installing python2 virtualenv"
-    install_python2_virtualenv
-
-    create_and_activate_virtualenv "$ROOT/.virtualenv/khan27"
-
     # Used by various infra projects for managing python3 environment
     echo "Installing pipenv for python3"
-
-    # WARNING: This overrwrites the python2 virtualenv
     pip3_install -q pipenv
-
-    echo "Reinstall python2 virtualenv (will overwrite python3 version)"
-    install_python2_virtualenv
 }
 
 # Must have cloned the repos first.
