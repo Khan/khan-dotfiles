@@ -57,6 +57,23 @@ A few notes to keep in mind:
 Ask in `#infrastructure-devops` if you have any questions, and thanks
 for the contributions!
 
+## Testing `khan-dotfiles` on Linux
+
+It is easy to test the Khan-dotfiles on linux using a Docker container.
+Use a command like `docker run -it ubuntu:22.04` to create a new
+linux instance.  Then run:
+```
+# apt-get install git sudo
+# adduser testuser      # and fill in some random values
+# adduser testuser sudo
+# su - testuser
+$ mkdir -p khan/devtools
+$ cd khan/devtools
+$ git clone https://github.com/Khan/khan-dotfiles
+$ cd khan-dotfiles
+$ make
+```
+
 ## Credits
 
 The `khan-dotfiles` are now maintained by the DevOps group within the
