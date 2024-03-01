@@ -205,8 +205,8 @@ create_and_activate_virtualenv() {
     # Activate the virtualenv.
     . "$1/bin/activate"
 
-    # pip may get broken by virtualenv for some reason. We're better off 
-    # calling `python -m pip` so we'll just swap in a script that does 
+    # pip may get broken by virtualenv for some reason. We're better off
+    # calling `python -m pip` so we'll just swap in a script that does
     # that for us.
     if ! pip --version 2>/dev/null ; then
         cp bin/pip `which pip`
@@ -218,6 +218,13 @@ create_and_activate_virtualenv() {
     if ! pip --version | grep -q "pip 1[0-9]"; then
         pip install -U "pip<20" setuptools
     fi
+}
+
+# pip-install something globally.  Recent pythons don't let you do
+# that (https://peps.python.org/pep-0668/), but we do it anyway.
+# $@: the arguments to `pip install`.
+pip3_install() {
+    pip3 install --break-system-packages "$@" >/dev/null 2>&1 || pip3 install "$@"
 }
 
 # Creates keeper config for command line access
@@ -270,9 +277,7 @@ EOF
 }
 
 # install keeper
-# $1: path to python3 (including python3 binary)
 install_keeper() {
-    python=$1
     # NOTE(miguel): we have had issues in our deploy system and with devs
     # in their local environment with keeper throttling requests since
     # we have upgraded from 16.5.18. So we are moving keeper back to version
@@ -280,7 +285,7 @@ install_keeper() {
     # Version 16.5.18 is what we use in jenkins so we want to match that
     # https://github.com/Khan/aws-config/commit/fd89852562ca3719f8936c04c847ad73d4ba82f8
     version=16.5.18
-    ${python} -m pip install -q keepercommander==${version}
+    pip3_install -q keepercommander==${version}
     # Show the keeper version (and warning if out of date)
     keeper version
     echo "(Any warning above about the latest version can probably be ignored)"

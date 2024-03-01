@@ -247,7 +247,7 @@ setup_python() {
     echo "Installing pipenv for python3"
 
     # WARNING: This overrwrites the python2 virtualenv
-    pip3 install -q pipenv
+    pip3_install -q pipenv
 
     echo "Reinstall python2 virtualenv (will overwrite python3 version)"
     install_python2_virtualenv
