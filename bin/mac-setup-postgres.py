@@ -80,9 +80,7 @@ def install_postgres() -> None:
     subprocess.run(['BREW', 'install', 'postgresql@14.rb'], check=True)
     link_postgres_if_needed('postgresql@14', force=True)
     # Reinstall icu4c 73.2 as it will have got updated to 74.2+ during the 
-    # previous postgresql@14 install. Uninstall first to avoid
-    # reinstalling to avoid permissions errors trying to access files from one
-    # version that don't exist in the other.
+    # previous postgresql@14 install.
     print('Downloading icu4c.rb v73.2')
     subprocess.run(['wget', '-O', 'icu4c.rb', 'https://raw.githubusercontent.com/Homebrew/homebrew-core/74261226614d00a324f31e2936b88e7b73519942/Formula/i/icu4c.rb'], check=True)
     print('Reinstalling icu4c v73.2')
