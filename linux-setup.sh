@@ -196,7 +196,8 @@ EOF
     # redis is needed to run memorystore on dev
     # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
     # python3-venv is needed for the deploy virtualenv
-    # lsof and uuid-runtime are needed to run hotel
+    # cargo is needed to run fastly-khancademy-dev
+    # docker is needed to run dev/server, lsof and uuid-runtime to run hotel
     # TODO(benkraft): Pull the version we want from webapp somehow.
     sudo apt-get install -y git \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
@@ -209,8 +210,9 @@ EOF
         unzip \
         jq \
         libnss3-tools \
-        python3-pip python3-venv \
-        lsof uuid-runtime
+        python3-dev python3-setuptools python3-pip python3-venv \
+        cargo cargo-doc \
+        docker lsof uuid-runtime
 
     # We need npm 8 or greater to support node16.  That's the default
     # for nodejs, but we may have overridden it before in a way that
@@ -244,7 +246,8 @@ EOF
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword diffstat expect gimp \
-        mplayer netcat netpbm screen w3m vim emacs google-chrome-stable
+         mplayer netcat sysdig iftop tcpflow netpbm screen w3m \
+         vim emacs python-mode google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     # This might fail if you already have ack installed, so let it fail silently.
