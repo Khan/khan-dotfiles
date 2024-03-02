@@ -64,7 +64,7 @@ Use a command like `docker run -it ubuntu:22.04` to create a new
 linux instance.  Then run:
 ```
 # apt-get update
-# apt-get install git sudo
+# apt-get install -y git sudo make
 # adduser testuser      # and fill in some random values
 # adduser testuser sudo
 # su - testuser
