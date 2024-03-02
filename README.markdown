@@ -65,8 +65,7 @@ linux instance.  Then run:
 ```
 # apt-get update
 # apt-get install -y git sudo make
-# adduser testuser      # and fill in some random values
-# adduser testuser sudo
+# useradd -U -d /home/testuser -m -s /bin/bash -G sudo testuser
 # su - testuser
 $ mkdir -p khan/devtools
 $ cd khan/devtools
