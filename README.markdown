@@ -63,6 +63,7 @@ It is easy to test the Khan-dotfiles on linux using a Docker container.
 Use a command like `docker run -it ubuntu:22.04` to create a new
 linux instance.  Then run:
 ```
+# apt-get update
 # apt-get install git sudo
 # adduser testuser      # and fill in some random values
 # adduser testuser sudo
