@@ -353,13 +353,7 @@ install_hooks            # pre-req: clone_repos
 download_db_dump         # pre-req: install_deps
 create_pg_databases      # pre-req: install_deps
 create_default_keeper_config # pre-req: update_userinfo
-
-# If brew is installed, run this only with the brew version of python, NOT OSX's python3
-if which brew >/dev/null 2>&1; then
-   install_keeper $(brew --prefix)/bin/python3
-else
-   install_keeper python3
-fi
+install_keeper python3
 
 echo
 echo "---------------------------------------------------------------------"
