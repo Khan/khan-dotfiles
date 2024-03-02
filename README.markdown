@@ -66,6 +66,7 @@ linux instance.  Then run:
 # apt-get update
 # apt-get install -y git sudo make
 # useradd -U -d /home/testuser -m -s /bin/bash -G sudo testuser
+# echo testuser:U6aMy0wojraho | chpasswd -e    # the empty password
 # su - testuser
 $ mkdir -p khan/devtools
 $ cd khan/devtools
