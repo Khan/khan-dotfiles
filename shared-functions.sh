@@ -107,13 +107,23 @@ install_mac_java() {
 
     brew_install openjdk@11
 
-    # Symlink openjdk for the system Java wrappers
-    sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+    # Symlink openjdk for the system Java wrappers.  This supports
+    # both M1 and x86_64 macs.
+    if [ -d /opt/homebrew/opt/openjdk@11 ]; then
+        brew_loc=/opt/homebrew/opt/openjdk@11
+    elif [ -d /usr/local/Cellar/openjdk@11 ]; then
+        brew_loc=/usr/local/Cellar/openjdk@11
+    else
+        error "Could not find the location of java 11, not installing it"
+    fi
+    # Different versions are installed here, we'll take the latest.
+    brew_loc=$(ls -td "$brew_loc"/11.* | head -n1)
+    sudo ln -sfn "$brew_loc"/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
     add_to_dotfile 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
-    add_to_dotfile 'export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
+    add_to_dotfile 'export PATH="'"$brew_loc"/bin':$PATH"'
 }
 
 install_protoc_common() {
@@ -187,7 +197,7 @@ install_python2_virtualenv() {
 # Assumes pip and virtualenv are already installed.
 #
 # Arguments:
-#   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
+#   $1: driectory in which to put the virtualenv, typically ~/.virtualenv/khan27.
 create_and_activate_virtualenv() {
     # On a arm64 mac, we MUST use the python2 version of virtualenv
     VIRTUALENV=$(which virtualenv)
