@@ -112,7 +112,6 @@ install_mac_java() {
     if [ -d /opt/homebrew/opt/openjdk@11 ]; then
         brew_loc=/opt/homebrew/opt/openjdk@11
     elif [ -d /usr/local/Cellar/openjdk@11 ]; then
-        # Different versions are installed here, we'll take the latest
         brew_loc=/usr/local/Cellar/openjdk@11
     else
         error "Could not find the location of java 11, not installing it"
@@ -198,7 +197,7 @@ install_python2_virtualenv() {
 # Assumes pip and virtualenv are already installed.
 #
 # Arguments:
-#   $1: directory in which to put the virtualenv, typically ~/.virtualenv/khan27.
+#   $1: driectory in which to put the virtualenv, typically ~/.virtualenv/khan27.
 create_and_activate_virtualenv() {
     # On a arm64 mac, we MUST use the python2 version of virtualenv
     VIRTUALENV=$(which virtualenv)
