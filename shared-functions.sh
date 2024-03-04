@@ -224,7 +224,14 @@ create_and_activate_virtualenv() {
 # that (https://peps.python.org/pep-0668/), but we do it anyway.
 # $@: the arguments to `pip install`.
 pip3_install() {
-    pip3 install --break-system-packages "$@" >/dev/null 2>&1 || pip3 install "$@"
+    # If brew is installed, use its pip3 instead of the system pip3.
+    if which brew >/dev/null 2>&1 && [ -e "$(brew --prefix)/bin/pip3" ]; then
+        PIP3=$(brew --prefix)/bin/pip3
+    else
+        PIP3=pip3
+    fi
+    "$PIP3" install --break-system-packages "$@" >/dev/null 2>&1 \
+        || "$PIP3" install "$@"
 }
 
 # Creates keeper config for command line access
