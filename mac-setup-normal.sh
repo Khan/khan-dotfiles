@@ -230,6 +230,17 @@ install_node() {
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
         brew link --force --overwrite node@16
+
+        # The latest node@16 formula is hard coded to call icu4c v73.2 but 
+        # homebrew always installs latest dependencies so we need to force the
+        # old icu4c v73.2 formula.
+        info "Downloading node@16 with bindings for icu4c v73.2."
+        wget -O /tmp/icu4c.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/74261226614d00a324f31e2936b88e7b73519942/Formula/i/icu4c.rb
+        info "Installing node@16 with bindings for icu4c v73.2."
+        # icu4c 73.2 formula wants to install latest postgres 14.11_1 but that
+        # wont work and makes a circular dependency on installing icu4c so we
+        # skip the check.
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew reinstall /tmp/icu4c.rb --force --skip-cask-deps
     fi
     # We don't want to force usage of node v16, but we want to make clear we
     # don't support anything else.
