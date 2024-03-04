@@ -173,9 +173,6 @@ tool_version git --version
 kv "user.email" "$(git config user.email)"
 kv "ssh access" "$(ssh -o StrictHostKeyChecking=no -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -T git@github.com 2>&1)"
 
-header "Arcanist"
-tool_version arc version
-
 header "Required Tools"
 # DEV-229
 tool_version jq --version

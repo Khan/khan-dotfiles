@@ -188,7 +188,6 @@ EOF
     sudo apt-get remove -y python3-pip || true
 
     # Needed to develop at Khan: git, node (js).
-    # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # imagemagick is needed for image resizing and other operations
     # lib{xml2,xslt}-dev are needed for lxml
@@ -211,12 +210,6 @@ EOF
         jq \
         libnss3-tools \
         python3-pip
-
-    # There are two different php packages, depending on if you're on Ubuntu
-    # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
-    # both of them.  In 16.04+, php-xml is also a separate package, which we
-    # need too.
-    sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
     # We need npm 8 or greater to support node16.  That's the default
     # for nodejs, but we may have overridden it before in a way that
