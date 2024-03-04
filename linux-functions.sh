@@ -101,7 +101,6 @@ EOF
     #sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
 
     # Needed to develop at Khan: git, python, node (js).
-    # php is needed for phabricator
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # imagemagick is needed for image resizing and other operations
     # lib{xml2,xslt}-dev are needed for lxml
@@ -139,12 +138,6 @@ EOF
         python-dev \
         gcc \
         python3-pip pipenv
-
-    # There are two different php packages, depending on if you're on Ubuntu
-    # 14.04 LTS or 16.04 LTS, and neither version has both.  So we just try
-    # both of them.  In 16.04+, php-xml is also a separate package, which we
-    # need too.
-    sudo apt install -y php-cli php-curl php-xml || sudo apt-get install -y php5-cli php5-curl
 
     # We need npm 6 or greater to support node12.  That's the default
     # for nodejs, but we may have overridden it before in a way that

@@ -1,31 +1,28 @@
 [branch]
   # autosetupmerge auto-adds the --track flag to each git branch,
-  # which is helpful for arc (part of Phabricator).  autosetuprebase
+  # which is helpful for git pr (part of our-lovely-cli).  autosetuprebase
   # means that instead of merging it will rebase.  Weird you need both!
   autosetupmerge = always
   autosetuprebase = always
 
 [alias]
   # Versions of commands that handle submodules properly.
-  # co will also try to convert a phabricator diff-id to a tag if it can.
-  # TODO(csilvers): also work with flags: `git co -t D1234`.
+  # co will also try to convert a git PR to a tag if it can.
   co = "!f() { if [ -n \"$1\" -a -z \"$2\" ]; then git checkout "`revisionid-to-diffid.sh --tag \"$@\"`"; else git checkout \"$@\"; fi && git submodule update --init --recursive; }; f"
   p = "!f() { git pull \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
   m = "!f() { git merge \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
   gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
 
-  # Branch management for dealing with phabricator and github-style deploys.
+  # Branch management for dealing with github-style deploys.
   # e.g. deploy-branch, review-branch, find-reviewers
   # Note that these reference scripts from Khan/git-workflow
   # Those scripts should be installed and part of the default path.
-  phabricator-branch = !git review-branch
   rgrep = !git recursive-grep
   findreviewers = !git find-reviewers ; old-style had no dash in name
 
   # Abbreviations for KA specific tools
   db = !git deploy-branch
   rb = !git review-branch
-  pb = !git review-branch       ; short for 'phabricator branch'
   pr = !git pull-request
   prs = !git pull-requests
 

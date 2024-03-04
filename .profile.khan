@@ -13,7 +13,6 @@ fi
 # Add devtools bins to PATH
 # TODO(mroth): rewrite these paths at install time based on user preference
 KA_DEVROOT="$HOME/khan/devtools"
-export PATH="$KA_DEVROOT/arcanist/khan-bin:$PATH"
 export PATH="$KA_DEVROOT/git-workflow/bin:$PATH"
 export PATH="$KA_DEVROOT/our-lovely-cli/bin:$PATH"
 export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"

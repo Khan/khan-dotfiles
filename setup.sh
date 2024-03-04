@@ -90,7 +90,7 @@ install_dotfiles() {
     rm -rf ~/.config/khan/cache/dotfiles
 
     # Most dotfiles are installed as symlinks.
-    # (But we ignore .git/.arc*/etc which are actually part of the repo!)
+    # (But we ignore .git/etc which are actually part of the repo!)
     #
     # TODO(mroth): for organization, we should keep all dotfiles in a
     # subdirectory, but to make that change will require repairing old symlinks
@@ -217,7 +217,6 @@ clone_devtools() {
     echo "Installing devtools"
     clone_devtool git@github.com:Khan/ka-clone    # already cloned, so will --repair the first time
     clone_devtool git@github.com:Khan/khan-linter
-    clone_devtool git@github.com:Khan/arcanist
     clone_devtool git@github.com:Khan/git-workflow
     clone_devtool git@github.com:Khan/our-lovely-cli
 }
