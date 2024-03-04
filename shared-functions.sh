@@ -107,13 +107,21 @@ install_mac_java() {
 
     brew_install openjdk@11
 
-    # Symlink openjdk for the system Java wrappers
-    sudo ln -sfn /opt/homebrew/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+    # Symlink openjdk for the system Java wrappers.
+    if [ -d /opt/homebrew/opt/openjdk@11 ]; then
+        brew_loc=/opt/homebrew/opt/openjdk@11
+    elif [ -d /usr/local/Cellar/openjdk@11 ]; then
+        # Different versions are installed here, we'll take the latest
+        brew_loc=$(ls -trd /usr/local/Cellar/openjdk@11/11.*)
+    else
+        error "Could not find the location of java 11, not installing it"
+    fi
+    sudo ln -sfn "$brew_loc"/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
     add_to_dotfile 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
-    add_to_dotfile 'export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"'
+    add_to_dotfile 'export PATH="'"$brew_loc"/bin':$PATH"'
 }
 
 install_protoc_common() {
