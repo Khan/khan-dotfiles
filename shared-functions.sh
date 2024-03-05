@@ -112,12 +112,11 @@ install_mac_java() {
     if [ -d /opt/homebrew/opt/openjdk@11 ]; then
         brew_loc=/opt/homebrew/opt/openjdk@11
     elif [ -d /usr/local/Cellar/openjdk@11 ]; then
-        brew_loc=/usr/local/Cellar/openjdk@11
+        # Different versions are installed here, we'll take the latest.
+        brew_loc=$(ls -td /usr/local/Cellar/openjdk@11/11.* | head -n1)
     else
         error "Could not find the location of java 11, not installing it"
     fi
-    # Different versions are installed here, we'll take the latest.
-    brew_loc=$(ls -td "$brew_loc"/11.* | head -n1)
     sudo ln -sfn "$brew_loc"/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
