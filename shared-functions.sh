@@ -121,7 +121,7 @@ install_mac_java() {
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
-    add_to_dotfile 'export JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk-11.jdk'
+    add_to_dotfile 'export JAVA_HOME="$(/usr/libexec/java_home)"'
     add_to_dotfile 'export PATH="'"$brew_loc"/bin':$PATH"'
 }
 
