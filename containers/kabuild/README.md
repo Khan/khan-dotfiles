@@ -24,7 +24,7 @@ The only skaffold command we're really using here is "skaffold build"
 
 ## Why NOT linux-setup.sh
 
-linux-setup.sh & linux-functions.sh could possibly be used instead of
+linux-setup.sh could possibly be used instead of
 doing things explicity in the Dockerfile. But that was tried and there was
 quite a bit to debug. And in the long term, DevOps anticipates that all
 services are built with relatively simple containers instead of a mega

@@ -73,7 +73,10 @@ check_dependencies() {
     # file as well.  This is a noop if it's already in there.
     mkdir -p ~/.ssh
     grep -q github.com ~/.ssh/known_hosts 2>/dev/null || \
-        ssh-keyscan github.com >> ~/.ssh/khown_hosts
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+    # Make sure we have the ssh keys we need to pull from git.
+    maybe_generate_ssh_keys  # in shared-functions.sh
 
     # You need to have run the setup to install binaries: node, npm/etc.
     if ! npm --version >/dev/null; then
@@ -336,9 +339,9 @@ install_our_lovely_cli() {
   npm install
 }
 
-install_dotfiles
-
 check_dependencies
+
+install_dotfiles
 
 update_userinfo
 
@@ -352,7 +355,7 @@ install_hooks            # pre-req: clone_repos
 download_db_dump         # pre-req: install_deps
 create_pg_databases      # pre-req: install_deps
 create_default_keeper_config # pre-req: update_userinfo
-install_keeper python3
+install_keeper
 
 echo
 echo "---------------------------------------------------------------------"

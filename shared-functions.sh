@@ -1,5 +1,37 @@
 bad_usage_get_yn_input=100
 
+# for printing standard echoish messages
+notice() {
+    printf "         $1\n"
+}
+
+# for printing logging messages that *may* be replaced by
+# a success/warn/error message
+info() {
+    printf "  [ \033[00;34m..\033[0m ] $1"
+}
+
+# for printing prompts that expect user input and will be
+# replaced by a success/warn/error message
+user() {
+    printf "\r  [ \033[0;33m??\033[0m ] $1 "
+}
+
+# for replacing previous input prompts with success messages
+success() {
+    printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
+}
+
+# for replacing previous input prompts with warnings
+warn() {
+    printf "\r\033[2K  [\033[0;33mWARN\033[0m] $1\n"
+}
+
+# for replacing previous prompts with errors
+error() {
+    printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
+}
+
 # Replacement for clone_repo() function using ka-clone tool for local config
 # If run on an existing repository, will *update* and do --repair
 # Arguments:
@@ -292,7 +324,39 @@ EOF
     fi
 }
 
-# install keeper
+maybe_generate_ssh_keys() {
+  # Create a public key if need be.
+  info "Checking for ssh keys"
+  mkdir -p ~/.ssh
+  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ]; then
+    # TODO(ebrown): Verify these key(s) have passphrases on them
+    success "Found existing ssh keys"
+  else
+    echo
+    echo "Creating your ssh key pair for this machine"
+    echo "Please DO NOT use an empty passphrase"
+    APPLE_SSH_ADD_BEHAVIOR=macos ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa
+    # Old: ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
+    success "Generated an rsa ssh key at ~/.ssh/id_ecdsa"
+    echo "Your ssh public key is:"
+    cat ~/.ssh/id_ecdsa.pub
+    echo "Please manually copy this public key to https://github.com/settings/keys."
+    read -p "Press enter when you've done this..."
+  fi
+
+  # Add the keys to the keychain if needed
+  if [ -z "`ssh-add -l 2>/dev/null`" ]; then
+      ssh-add >/dev/null || {
+          # ssh-agent isn't running, let's fix that
+          eval $(ssh-agent -s)
+          ssh-add
+      }
+      success "Added key to your keychain"
+  fi
+
+  return 0
+}
+
 install_keeper() {
     # NOTE(miguel): we have had issues in our deploy system and with devs
     # in their local environment with keeper throttling requests since

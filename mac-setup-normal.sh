@@ -35,38 +35,6 @@ DEVTOOLS_DIR="$REPOS_DIR/devtools"
 # Load shared setup functions.
 . "$DEVTOOLS_DIR"/khan-dotfiles/shared-functions.sh
 
-# for printing standard echoish messages
-notice () {
-    printf "         $1\n"
-}
-
-# for printing logging messages that *may* be replaced by
-# a success/warn/error message
-info () {
-    printf "  [ \033[00;34m..\033[0m ] $1"
-}
-
-# for printing prompts that expect user input and will be
-# replaced by a success/warn/error message
-user () {
-    printf "\r  [ \033[0;33m??\033[0m ] $1 "
-}
-
-# for replacing previous input prompts with success messages
-success () {
-    printf "\r\033[2K  [ \033[00;32mOK\033[0m ] $1\n"
-}
-
-# for replacing previous input prompts with warnings
-warn () {
-    printf "\r\033[2K  [\033[0;33mWARN\033[0m] $1\n"
-}
-
-# for replacing previous prompts with errors
-error () {
-    printf "\r\033[2K  [\033[0;31mFAIL\033[0m] $1\n"
-}
-
 trap exit_warning EXIT   # from shared-functions.sh
 
 
@@ -77,31 +45,6 @@ update_path() {
     # (This assumes you're running mac-setup.sh from the khan-dotfiles
     # directory.)
     . .profile.khan
-}
-
-maybe_generate_ssh_keys () {
-  # Create a public key if need be.
-  info "Checking for ssh keys"
-  mkdir -p ~/.ssh
-  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ]
-  then
-    # TODO(ebrown): Verify these key(s) have passphrases on them
-    success "Found existing ssh keys"
-  else
-    echo
-    echo "Creating your ssh key pair for this machine"
-    echo "Please DO NOT use an empty passphrase"
-    APPLE_SSH_ADD_BEHAVIOR=macos ssh-keygen -t ecdsa -f ~/.ssh/id_ecdsa
-    # Old: ssh-keygen -q -N "" -t rsa -f ~/.ssh/id_rsa
-    success "Generated an rsa ssh key at ~/.ssh/id_ecdsa"
-    APPLE_SSH_ADD_BEHAVIOR=macos ssh-add -K
-    success "Added key to your keychain"
-    echo "Your ssh public key is:"
-    cat ~/.ssh/id_ecdsa.pub
-    echo "Please manually copy this public key to https://github.com/settings/keys."
-    read -p "Press enter when you've done this..."
-  fi
-  return 0
 }
 
 copy_ssh_key () {

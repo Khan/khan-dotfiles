@@ -91,7 +91,8 @@ install_packages() {
     # This is needed to get the add-apt-repository command.
     # apt-transport-https may not be strictly necessary, but can help
     # for future updates.
-    sudo apt-get install -y software-properties-common apt-transport-https
+    sudo apt-get install -y software-properties-common apt-transport-https \
+         wget gnupg
 
     # To get the most recent nodejs, later.
     if ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
@@ -133,10 +134,10 @@ EOF
 
     # To get chrome, later.
     if [ ! -s /etc/apt/sources.list.d/google-chrome.list ]; then
-        echo "deb http://dl.google.com/linux/chrome/deb/ stable main" \
-            | sudo tee /etc/apt/sources.list.d/google-chrome.list
         wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub \
-            | sudo apt-key add -
+            | sudo gpg --no-default-keyring --keyring /etc/apt/keyrings/google-chrome.gpg --import
+        echo 'deb [signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main' \
+            | sudo tee /etc/apt/sources.list.d/google-chrome.list
         updated_apt_repo=yes
     fi
 
@@ -147,9 +148,7 @@ EOF
     fi
 
     # Python3 is needed to run the python services (e.g. ai-guide-core).
-    # We pin it at python3.8 at the moment, but will move it to python3.11 soon
-    # TODO(csilvers, GL-1195): remove python3.8 ai-guide-core is on python3.11
-    sudo apt-get install -y python3.8 python3.8-venv
+    # We are on python3.11 now
     sudo apt-get install -y python3.11 python3.11-venv
 
     # Python2 is needed for development. First try the Ubuntu 22.04+ packages, then
@@ -197,6 +196,9 @@ EOF
     #   services. We standardize on version 16.
     # redis is needed to run memorystore on dev
     # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
+    # python3-venv is needed for the deploy virtualenv
+    # cargo is needed to run fastly-khancademy-dev
+    # docker is needed to run dev/server, lsof and uuid-runtime to run hotel
     # TODO(benkraft): Pull the version we want from webapp somehow.
     sudo apt-get install -y git \
         libfreetype6 libfreetype6-dev libpng-dev libjpeg-dev \
@@ -209,7 +211,9 @@ EOF
         unzip \
         jq \
         libnss3-tools \
-        python3-pip
+        python3-dev python3-setuptools python3-pip python3-venv \
+        cargo cargo-doc \
+        docker lsof uuid-runtime
 
     # We need npm 8 or greater to support node16.  That's the default
     # for nodejs, but we may have overridden it before in a way that
@@ -243,7 +247,8 @@ EOF
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword diffstat expect gimp \
-        mplayer netcat netpbm screen w3m vim emacs google-chrome-stable
+         mplayer netcat iftop tcpflow netpbm screen w3m \
+         vim emacs google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     # This might fail if you already have ack installed, so let it fail silently.
@@ -325,7 +330,7 @@ install_postgresql() {
 }
 
 install_rust() {
-    builddir=$(mktemp -d -t rustup.XXXXX) 
+    builddir=$(mktemp -d -t rustup.XXXXX)
 
     (
         cd "$builddir"
