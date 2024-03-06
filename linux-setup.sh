@@ -246,7 +246,7 @@ EOF
 
     # Not needed for Khan, but useful things to have.
     sudo apt-get install -y ntp abiword diffstat expect gimp \
-         mplayer netcat sysdig iftop tcpflow netpbm screen w3m \
+         mplayer netcat iftop tcpflow netpbm screen w3m \
          vim emacs google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
