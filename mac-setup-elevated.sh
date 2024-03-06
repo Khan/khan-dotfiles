@@ -68,7 +68,7 @@ echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
 if [[ $(uname -m) = "arm64" ]]; then
-    # install rosetta on M1 (required for openjdk, python2 and other things)
+    # install rosetta on M1 (required for openjdk and other things)
     # This will work here, but it requires input and I'd rather just have it in docs
     #sudo softwareupdate --install-rosetta
 

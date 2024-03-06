@@ -40,7 +40,7 @@ if [[ -e "/usr/local/bin/brew" ]]; then
     sudo rm -rf /usr/local/var/postgresql*
 fi
 
-echo "Removing khan python2 virtualenv..."
+echo "Removing the (obsolete) khan python2 virtualenv..."
 rm -rf ~/.virtualenv/khan27
 
 echo "Removing other things that may upgrade if user reinstalls..."

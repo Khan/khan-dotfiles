@@ -126,7 +126,7 @@ EOF
         updated_apt_repo=yes
     fi
 
-    # To get python3.8, later.
+    # To get the most recent python, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q deadsnakes; then
         sudo add-apt-repository -y ppa:deadsnakes/ppa
         updated_apt_repo=yes
@@ -151,40 +151,8 @@ EOF
     # We are on python3.11 now
     sudo apt-get install -y python3.11 python3.11-venv
 
-    # Python2 is needed for development. First try the Ubuntu 22.04+ packages, then
-    # the Ubuntu <22.04 packages if that fails.
-    sudo apt-get install -y python2-dev python-setuptools || sudo apt-get install -y python-dev python-mode python-setuptools
-
-    # This is needed for Ubuntu >=20, but not prior ones. It no longer exists
-    # as of Ubuntu 22.04.
-    sudo apt-get install -y python-is-python2 || true
-
-    # If we're on Ubuntu 22.04+, installing python-is-python2 didn't do anything, so
-    # we create the symlink ourselves.
-    if ! [ -f /usr/bin/python ]; then
-        sudo ln -s /usr/bin/python2 /usr/bin/python
-    fi
-
     # Install curl for setup script usage
     sudo apt-get install -y curl
-
-    # Install pip manually.
-    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
-    # Match webapp's version.
-    sudo python2 get-pip.py pip==19.3.1
-    # Delete get-pip.py after we're finish running it.
-    rm -f get-pip.py
-
-    # Install virtualenv and pychecker manually; ubuntu
-    # dropped support for them in ubuntu >=20 (since they're python2)
-    sudo pip install virtualenv==20.0.23
-    sudo pip install http://sourceforge.net/projects/pychecker/files/pychecker/0.8.19/pychecker-0.8.19.tar.gz/download
-
-    # get-pip.py will remove the system pip3 binary if it previously existed,
-    # but it won't remove the package, so installing the package again won't
-    # restore it. Here we remove the package if it exists, so that the next
-    # apt-get command will install it properly.
-    sudo apt-get remove -y python3-pip || true
 
     # Needed to develop at Khan: git, node (js).
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
@@ -212,6 +180,7 @@ EOF
         jq \
         libnss3-tools \
         python3-dev python3-setuptools python3-pip python3-venv \
+        python-is-python3 \
         cargo cargo-doc \
         docker lsof uuid-runtime
 

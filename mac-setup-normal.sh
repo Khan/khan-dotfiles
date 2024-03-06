@@ -153,17 +153,6 @@ update_git() {
     fi
 }
 
-install_python2() {
-    # We only do this if python2 == /usr/bin/python2, which means it's system python
-    if [ "$(which python2)" != "/usr/bin/python2" ]; then
-      success "Already running a non-system python2."
-      return
-    fi
-
-    info "Installing python2 from khan/repo. This may take a few minutes."
-    brew86 install khan/repo/python@2
-}
-
 install_node() {
     if ! which node >/dev/null 2>&1; then
         # Install node 16: It's LTS and the latest version supported on
@@ -302,12 +291,6 @@ install_jq() {
 
 install_python_tools() {
     # Python3 is needed to run the python services (e.g. ai-guide-core).
-    # We pin it at python3.8 at the moment, but will move it to python3.11 soon
-    # TODO(csilvers, GL-1195): remove python3.8 ai-guide-core is on python3.11
-    if ! which python3.8 >/dev/null 2>&1; then
-        info "Installing python 3.8\n"
-        brew install python@3.8
-    fi
     if ! which python3.11 >/dev/null 2>&1; then
         info "Installing python 3.11\n"
         brew install python@3.11
@@ -318,13 +301,6 @@ install_python_tools() {
     if ! brew ls pyenv >/dev/null 2>&1; then
         info "Installing pyenv\n"
         brew install pyenv
-        # At the moment, we depend on MacOS coming with python 2.7. If that
-        # stops, or we want to align the python versions with the linux
-        # dotfiles more effectively, we could do it with pyenv:
-        # `pyenv install 2.7.16 ; pyenv global 2.7.16`
-        # Because the linux dotfiles do not yet install pyenv, holding off on
-        # using pyenv to enforce python version until either that happens, or
-        # MacOs stops including python 2.7 by default.
     else
         success "pyenv already installed"
     fi
@@ -365,8 +341,6 @@ install_wget
 install_openssl
 install_jq
 update_git
-
-"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-python2.py
 
 install_node
 install_go

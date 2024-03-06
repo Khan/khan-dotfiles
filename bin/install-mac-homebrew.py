@@ -117,7 +117,7 @@ class HomebrewInstaller:
         # unbeknownst!)
         # subprocess.run(['brew', 'tap', 'brew/cask-versions'], check=True)
 
-        # This is where we store our own formula, including a python@2 backport
+        # This is where we store our own formulas.
         subprocess.run(brew_runner + ["tap", "khan/repo"], check=True)
 
     def validate_and_install_homebrew(self):

@@ -57,16 +57,6 @@ if which brew >/dev/null 2>&1; then
         mkdir -p "$KA_CONFIG_CACHE_DIR"
         echo $BREW_PREFIX > $BREW_PREFIX_HINT_FILE
     fi
-
-    # Add the unversioned binaries from our backported homebrew python@2 formula,
-    # if they have brew and have our python@2 formula installed
-    # See: https://github.com/Khan/homebrew-repo/blob/master/Formula/python%402.rb
-
-    # This will exist if native python2 is installed (usually only on intel)
-    PY2_BIN=$BREW_PREFIX
-    # On a M1 machine, we run python2 via rosetta out of /usr/local
-    [ -d "$PY2_BIN" ] || PY2_BIN="/usr/local/opt/python@2"
-    export PATH="$PY2_BIN/libexec/bin:$PATH"
 fi
 
 # Make sure git (and other apps) prefer 'vim' to 'vi'.
@@ -103,28 +93,6 @@ if [ `uname -s` = Darwin ]; then
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
 fi
-
-# If you do NOT want to have the python2 environment auto-activated,
-# add the following to the top of your ~/.profile script:
-#   export DO_NOT_ACTIVATE_VIRTUALENV_KHAN27=1
-#
-if [ -z "$DO_NOT_ACTIVATE_VIRTUALENV_KHAN27" ]; then
-    # Activate Python2.7 virtualenv if present
-    # This is desirable if you're touching the python monolith
-    if [ -s ~/.virtualenv/khan27/bin/activate ]; then
-        . ~/.virtualenv/khan27/bin/activate
-    else
-        echo "[WARN]  Could not find '~/.virtualenv/khan27/bin/activate'"\
-          "- All processes that depend on Python may be negatively impacted."\
-          "Please run 'make' from the dotfiles directory to fix this."
-    fi
-fi
-
-# Since we auto-activate the khan27 virtualenv, we don't want pipenv using any
-# virtualenv it happens to find itself in, but instead to use its own.
-# TODO(benkraft): If in the future we move to pipenv everywhere, we can
-# dispense with the auto-activated virtualenvs, and get rid of this.
-export PIPENV_IGNORE_VIRTUALENVS=1
 
 # Source the generated profile, if it exists.
 [ -f $HOME/.profile-generated.khan ] && source $HOME/.profile-generated.khan
