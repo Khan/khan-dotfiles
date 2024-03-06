@@ -91,7 +91,8 @@ install_packages() {
     # This is needed to get the add-apt-repository command.
     # apt-transport-https may not be strictly necessary, but can help
     # for future updates.
-    sudo apt-get install -y software-properties-common apt-transport-https wget
+    sudo apt-get install -y software-properties-common apt-transport-https \
+         wget gnupg
 
     # To get the most recent nodejs, later.
     if ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
@@ -133,10 +134,10 @@ EOF
 
     # To get chrome, later.
     if [ ! -s /etc/apt/sources.list.d/google-chrome.list ]; then
-        echo "deb http://dl.google.com/linux/chrome/deb/ stable main" \
-            | sudo tee /etc/apt/sources.list.d/google-chrome.list
         wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub \
-            | sudo apt-key add -
+            | sudo gpg --no-default-keyring --keyring /etc/apt/keyrings/google-chrome.gpg --import
+        echo 'deb [signed-by=/etc/apt/keyrings/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main' \
+            | sudo tee /etc/apt/sources.list.d/google-chrome.list
         updated_apt_repo=yes
     fi
 
