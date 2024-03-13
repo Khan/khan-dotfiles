@@ -298,6 +298,7 @@ install_python_tools() {
     # The python3 cask does not install `python` as a symlink, so we do.
     if ! [ -e /usr/local/bin/python ]; then
         ln -snf python3 /usr/local/bin/python
+        ln -snf pip3 /usr/local/bin/pip
     fi
 
     # We use various python versions (e.g. internal-service)
