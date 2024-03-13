@@ -295,6 +295,10 @@ install_python_tools() {
         info "Installing python 3.11\n"
         brew install python@3.11
     fi
+    # The python3 cask does not install `python` as a symlink, so we do.
+    if ! [ -e /usr/local/bin/python ]; then
+        ln -snf python3 /usr/local/bin/python
+    fi
 
     # We use various python versions (e.g. internal-service)
     # and use Pyenv, pipenv as environment manager
