@@ -167,8 +167,14 @@ clone_repo() {
 }
 
 clone_kaclone() {
-    echo "Installing ka-clone tool"
-    clone_repo git@github.com:Khan/ka-clone "$DEVTOOLS_DIR"
+    if [ -d "$DEVTOOLS_DIR/ka-clone" ]; then
+        echo "Updating ka-clone tool"
+        git -C "$DEVTOOLS_DIR/ka-clone" checkout master
+        git -C "$DEVTOOLS_DIR/ka-clone" pull
+    else
+        echo "Installing ka-clone tool"
+        clone_repo git@github.com:Khan/ka-clone "$DEVTOOLS_DIR"
+    fi
 }
 
 clone_webapp() {
