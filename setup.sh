@@ -169,9 +169,8 @@ clone_repo() {
 clone_kaclone() {
     if [ -d "$DEVTOOLS_DIR/ka-clone" ]; then
         echo "Updating ka-clone tool"
-        cd "$DEVTOOLS_DIR/ka-clone"
-        git checkout master
-        git pull
+        git -C "$DEVTOOLS_DIR/ka-clone" checkout master
+        git -C "$DEVTOOLS_DIR/ka-clone" pull
     else
         echo "Installing ka-clone tool"
         clone_repo git@github.com:Khan/ka-clone "$DEVTOOLS_DIR"
