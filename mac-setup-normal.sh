@@ -155,37 +155,26 @@ update_git() {
 
 install_node() {
     if ! which node >/dev/null 2>&1; then
-        # Install node 16: It's LTS and the latest version supported on
+        # Install node 20: It's LTS and the latest version supported on
         # appengine standard.
-        brew install node@16
+        brew install node@20
 
         # We need this because brew doesn't link /usr/local/bin/node
         # by default when installing non-latest node.
-        brew link --force --overwrite node@16
-
-        # The latest node@16 formula is hard coded to call icu4c v73.2 but 
-        # homebrew always installs latest dependencies so we need to force the
-        # old icu4c v73.2 formula.
-        info "Downloading node@16 with bindings for icu4c v73.2."
-        wget -O /tmp/icu4c.rb https://raw.githubusercontent.com/Homebrew/homebrew-core/74261226614d00a324f31e2936b88e7b73519942/Formula/i/icu4c.rb
-        info "Installing node@16 with bindings for icu4c v73.2."
-        # icu4c 73.2 formula wants to install latest postgres 14.11_1 but that
-        # wont work and makes a circular dependency on installing icu4c so we
-        # skip the check.
-        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 brew reinstall /tmp/icu4c.rb --force --skip-cask-deps
+        brew link --force --overwrite node@20
     fi
-    # We don't want to force usage of node v16, but we want to make clear we
+    # We don't want to force usage of node v20, but we want to make clear we
     # don't support anything else.
-    if ! node --version | grep "v16" >/dev/null ; then
-        notice "Your version of node is $(node --version). We currently only support v16."
-        if brew ls --versions node@16 >/dev/null ; then
-            notice "You do however have node 16 installed."
+    if ! node --version | grep "v20" >/dev/null ; then
+        notice "Your version of node is $(node --version). We currently only support v20."
+        if brew ls --versions node@20 >/dev/null ; then
+            notice "You do however have node 20 installed."
             notice "Consider running:"
         else
             notice "Consider running:"
-            notice "\t${tty_bold}brew install node@16${tty_normal}"
+            notice "\t${tty_bold}brew install node@20${tty_normal}"
         fi
-        notice "\t${tty_bold}brew link --force --overwrite node@16${tty_normal}"
+        notice "\t${tty_bold}brew link --force --overwrite node@20${tty_normal}"
         read -p "Press enter to continue..."
     fi
 }
