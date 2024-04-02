@@ -13,8 +13,6 @@
 # may be useful to use homebrew to install python3 before running python3
 # scripts.
 
-# TODO(ericbrown): Why do we support anything other than postgresql@14 ?
-
 import os
 import re
 import subprocess
@@ -37,13 +35,6 @@ def get_brewname():
                             capture_output=True)
     if result.returncode == 0:
         return POSTGRES_FORMULA
-
-    # TODO(ericbrown): Remove when sure this is no longer needed
-    # I believe this code is from when postgresql 11 was the current version
-    result = subprocess.run([BREW, 'ls', 'postgres', '--versions'],
-                            capture_output=True, text=True)
-    if result.returncode == 0 and re.search(r'\s11\.\d', result.stdout):
-        return "postgresql"
 
     # There is no postgresql installed
     return None
@@ -71,8 +62,8 @@ def link_postgres_if_needed(brewname, force=False):
 
 
 def install_postgres() -> None:
-    subprocess.run(['BREW', 'install', 'postgresql@14'], check=True)
-    link_postgres_if_needed('postgresql@14', force=True)
+    subprocess.run(['BREW', 'install', POSTGRES_FORMULA], check=True)
+    link_postgres_if_needed(POSTGRES_FORMULA, force=True)
 
 
 def is_postgres_running(brewname: str) -> bool:
@@ -116,6 +107,20 @@ def setup_postgres() -> None:
         brewname = POSTGRES_FORMULA
         install_postgres()
     else:
+        # The homebrew team only tests the latest versions of every package
+        # together so make sure we're on latest.
+        print(f'{SCRIPT}: {BREW} upgrade {brewname}')
+        result = subprocess.run([BREW, 'upgrade', POSTGRES_FORMULA],
+                                capture_output=True, check=True)
+
+        # Initiate and wait for restart if an upgrade happened. Otherwise the
+        # service won't be ready in time for does_postgres_user_exist().
+        if (re.search(r'Upgrading \d+ outdated package',
+                      result.stdout.decode('utf-8'))):
+            print(f'{SCRIPT}: {BREW} services restart {brewname}')
+            subprocess.run([BREW, 'services', 'restart', POSTGRES_FORMULA],
+                           check=True)
+
         # Sometimes postgresql gets unlinked if dev is tweaking their env
         # Force in case user has another version of postgresql installed too
         link_postgres_if_needed(brewname, force=True)
