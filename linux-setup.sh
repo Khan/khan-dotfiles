@@ -102,19 +102,22 @@ install_packages() {
         updated_apt_repo=yes
     fi
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_16.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_16.x
-        wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -
+       ! grep -q node_20.x /etc/apt/sources.list.d/nodesource.list; then
+        # This is a simplified version of https://deb.nodesource.com/setup_20.x
+        sudo mkdir -p /usr/share/keyrings
+        sudo rm -f /usr/share/keyrings/nodesource.gpg
+        sudo rm -f /etc/apt/sources.list.d/nodesource.list
+        curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/nodesource.gpg
         cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
-deb-src https://deb.nodesource.com/node_16.x `lsb_release -c -s` main
+deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main
 EOF
         sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
 
-        # Pin nodejs to 16.x, otherwise apt might update it in newer Ubuntu versions
+        # Pin nodejs to the version-specific nodesource repo, otherwise apt might update
+        # it in newer Ubuntu versions
         cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
 Package: nodejs
-Pin: version 16.*
+Pin: origin deb.nodesource.com
 Pin-Priority: 999
 EOF
         updated_apt_repo=yes
