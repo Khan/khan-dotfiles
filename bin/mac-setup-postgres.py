@@ -14,7 +14,6 @@
 # scripts.
 
 # TODO(ericbrown): Why do we support anything other than postgresql@14 ?
-# TODO(ericbrown): mac-setup.sh used to tweak icu4c - obsolete now?
 
 import os
 import re
@@ -72,24 +71,8 @@ def link_postgres_if_needed(brewname, force=False):
 
 
 def install_postgres() -> None:
-    # Install an older formula for postgres that is pinned to call icu4c 73.2 
-    # as that is the latest node@16 supports.
-    print('Downloading postgresql@14 with icu4c.rb 73.2 bindings')
-    subprocess.run(['wget', '-O', '/tmp/postgresql@14.rb', 'https://raw.githubusercontent.com/Homebrew/homebrew-core/521c3b3f579cd4df16e0b85b26a49e47d2daf9c6/Formula/p/postgresql@14.rb'], check=True)
-    print('Installing postgresql@14 with icu4c.rb 73.2 bindings')
-    subprocess.run(['BREW', 'install', '/tmp/postgresql@14.rb'], check=True)
+    subprocess.run(['BREW', 'install', 'postgresql@14'], check=True)
     link_postgres_if_needed('postgresql@14', force=True)
-    # Reinstall icu4c 73.2 as it will have got updated to 74.2+ during the 
-    # previous postgresql@14 install.
-    print('Downloading icu4c.rb v73.2')
-    subprocess.run(['wget', '-O', '/tmp/icu4c.rb', 'https://raw.githubusercontent.com/Homebrew/homebrew-core/74261226614d00a324f31e2936b88e7b73519942/Formula/i/icu4c.rb'], check=True)
-    print('Reinstalling icu4c v73.2')
-    my_env = os.environ.copy()
-    # icu4c 73.2 formula wants to install latest postgres 14.11_1 but that wont
-    # work and makes a circular dependency on installing icu4c so we skip the
-    # check.
-    my_env["HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK"] = "1"
-    subprocess.run(['BREW', 'reinstall', '/tmp/icu4c.rb', '--force', '--skip-cask-deps'], check=True, env=my_env)
 
 
 def is_postgres_running(brewname: str) -> bool:
