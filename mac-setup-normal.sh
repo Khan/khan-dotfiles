@@ -154,7 +154,7 @@ update_git() {
 
 # install_or_upgrade_brew_formula ensures the latest version of the passed
 # formula is installed as the homebrew team only tests the latest versions of
-# every package together.
+# every formula together.
 install_or_upgrade_brew_formula() {
     formulaName=$1
     
@@ -168,9 +168,9 @@ install_or_upgrade_brew_formula() {
 }
 
 install_node() {
-    # We need to uninstall the deprecated node@16 homebrew package if it is
+    # We need to uninstall the deprecated node@16 homebrew formula if it is
     # installed so its dependencies don't conflict with the dependencies of the
-    # latest postgresql@14 homebrew package.
+    # latest postgresql@14 homebrew formula.
     if brew ls --versions node@16 >/dev/null ; then
         brew uninstall node@16
     fi
@@ -316,7 +316,7 @@ install_python_tools() {
         info "Installing python 3.11\n"
         brew install python@3.11
     fi
-    # The python3 cask does not install `python` as a symlink, so we do.
+    # The python3 formula does not install `python` as a symlink, so we do.
     if ! [ -e /usr/local/bin/python ]; then
         ln -snf python3 /usr/local/bin/python
     fi
