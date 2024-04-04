@@ -110,16 +110,15 @@ def setup_postgres() -> None:
         # The homebrew team only tests the latest versions of every package
         # together so make sure we're on latest.
         print(f'{SCRIPT}: {BREW} upgrade {brewname}')
-        result = subprocess.run([BREW, 'upgrade', POSTGRES_FORMULA],
-                                capture_output=True, check=True)
+        result = subprocess.check_output([BREW, 'upgrade', POSTGRES_FORMULA])
 
         # Initiate and wait for restart if an upgrade happened. Otherwise the
         # service won't be ready in time for does_postgres_user_exist().
         if (re.search(r'Upgrading \d+ outdated package',
-                      result.stdout.decode('utf-8'))):
+                      result.decode('utf-8'))):
             print(f'{SCRIPT}: {BREW} services restart {brewname}')
-            subprocess.run([BREW, 'services', 'restart', POSTGRES_FORMULA],
-                           check=True)
+            subprocess.check_call([BREW, 'services', 'restart',
+                                   POSTGRES_FORMULA])
 
         # Sometimes postgresql gets unlinked if dev is tweaking their env
         # Force in case user has another version of postgresql installed too

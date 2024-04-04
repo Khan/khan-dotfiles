@@ -152,6 +152,21 @@ update_git() {
     fi
 }
 
+# install_or_upgrade_brew_formula ensures the latest version of the passed
+# formula is installed as the homebrew team only tests the latest versions of
+# every package together.
+install_or_upgrade_brew_formula() {
+    formulaName=$1
+    
+    if brew ls --versions "$formulaName" >/dev/null ; then
+        info "Upgrading brew formula $formulaName\n"
+        brew upgrade "$formulaName"
+    else
+        info "Installing brew formula $formulaName\n"
+        brew install "$formulaName"
+    fi
+}
+
 install_node() {
     # We need to uninstall the deprecated node@16 homebrew package if it is
     # installed so its dependencies don't conflict with the dependencies of the
@@ -160,25 +175,32 @@ install_node() {
         brew uninstall node@16
     fi
 
+    # Upgrade brew-installed node@20 if it is already installed.
+    if brew ls --versions node@20 >/dev/null ; then
+        install_or_upgrade_brew_formula node@20
+    fi
+
+    # Install node@20 homebrew formula if no node binary is found in $PATH.
     if ! which node >/dev/null 2>&1; then
         # Install node 20: It's LTS and the latest version supported on
         # appengine standard.
-        brew install node@20
+        install_or_upgrade_brew_formula node@20
 
         # We need this because brew doesn't link /opt/homebrew/bin/node
         # (/usr/local/bin/node on x86) by default when installing non-latest
         # node.
         brew link --force --overwrite node@20
     fi
+
+    # At this point, users should have a node binary, whether it's from homebrew
+    # (preferred), NVM or standard install.
+
     # We don't want to force usage of node v20, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v20" >/dev/null ; then
         notice "Your version of node is $(node --version). We currently only support v20."
         if brew ls --versions node@20 >/dev/null ; then
-            # The homebrew team only tests the latest versions of every package
-            # together so make sure we're on latest.
-            brew upgrade node@20
-            notice "You do however have node 20 installed."
+            notice "You do however have node 20 installed via brew."
             notice "Consider running:"
         else
             notice "Consider running:"
