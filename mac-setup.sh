@@ -51,7 +51,7 @@ echo
 echo "Running Khan Installation Script 1.2"
 
 if ! sw_vers -productVersion 2>/dev/null | grep -q '10\.1[12345]\.' ; then
-    echo "This is tested on macOS 13 (Ventura)."
+    echo "This is tested on macOS 14 (Sonoma)."
     echo
     echo "If you find that this works on a newer version of macOS, "
     echo "please update this message."
