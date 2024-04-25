@@ -335,8 +335,6 @@ install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud
 install_hooks            # pre-req: clone_repos
 download_db_dump         # pre-req: install_deps
 create_pg_databases      # pre-req: install_deps
-create_default_keeper_config # pre-req: update_userinfo
-install_keeper
 
 echo
 echo "---------------------------------------------------------------------"
