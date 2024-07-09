@@ -54,8 +54,8 @@ copy_ssh_key () {
   then
     pbcopy < ~/.ssh/id_dsa.pub
   elif [ -e ~/.ssh/id_ecdsa ]
-  then 
-    pbcopy < ~/.ssh/id_ecdsa.pub 
+  then
+    pbcopy < ~/.ssh/id_ecdsa.pub
   else
     error "no ssh public keys found"
     exit
