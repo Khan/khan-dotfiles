@@ -68,8 +68,8 @@ register_ssh_keys() {
 # $1: "true"|"false" to end the auth cycle
 verify_ssh_auth () {
     ssh_host="git@github.com"
-    webpage_url="https://github.com/settings/ssh"
-    instruction="Click 'Add SSH Key', paste into the box, and hit 'Add key'"
+    webpage_url="https://github.com/settings/ssh/new"
+    instruction="Paste into the 'key' box, and hit 'Add key'"
     info "Checking for GitHub ssh auth"
     # ssh returns 1 if auth succeeds, 255 if it fails (and 130 if passphrase is wrong)
     if [ $(ssh -T $ssh_host >/dev/null; echo $?) -ne 1 ]; then
