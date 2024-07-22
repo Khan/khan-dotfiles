@@ -47,7 +47,10 @@ update_path() {
 }
 
 copy_ssh_key () {
-  if [ -e ~/.ssh/id_rsa ]
+  if [ -e ~/.ssh/id_ecdsa ]
+  then
+    pbcopy < ~/.ssh/id_ecdsa.pub
+  elif [ -e ~/.ssh/id_rsa ]
   then
     pbcopy < ~/.ssh/id_rsa.pub
   elif [ -e ~/.ssh/id_dsa ]
@@ -157,7 +160,7 @@ update_git() {
 # every formula together.
 install_or_upgrade_brew_formula() {
     formulaName=$1
-    
+
     if brew ls --versions "$formulaName" >/dev/null ; then
         info "Upgrading brew formula $formulaName\n"
         brew upgrade "$formulaName"
