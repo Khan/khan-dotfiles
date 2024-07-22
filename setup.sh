@@ -317,7 +317,7 @@ install_hooks() {
 
 install_our_lovely_cli() {
   cd "$DEVTOOLS_DIR/our-lovely-cli"
-  make
+  make all
 }
 
 check_dependencies
