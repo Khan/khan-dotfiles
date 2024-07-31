@@ -30,6 +30,9 @@
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
   update-submodule = !bash -c 'git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate\\ for\\ ${1%/} -m Test\\ plan: -m None && git push' --
+  pup = "!git push origin $(git branch-name)"
+  pown = "!git pull origin $(git branch-name)"
+  pupl = pup --force-with-lease
 
   # Commands for manipulating deploy tags.
   # which-deploy: in which deploy did this commit first go out?
