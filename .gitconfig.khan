@@ -1,7 +1,12 @@
 [branch]
   # autosetupmerge auto-adds the --track flag to each git branch,
-  # which is helpful for git pr (part of our-lovely-cli).  autosetuprebase
-  # means that instead of merging it will rebase.  Weird you need both!
+  # which is helpful for git pr (part of our-lovely-cli). autosetuprebase
+  # means that instead of merging it will rebase. Weird you need both!
+  # NOTE (Lilli): It feels weird that you would need both, because the
+  # names of the config options *suggest* that they are related to each other,
+  # but they are not. autosetupmerge is about which branch your new branch will
+  # track, the one off of which it was checked out from, or the same-name remote.
+  # And autosetuprebase is about rebasing or merging when you pull.
   autosetupmerge = always
   autosetuprebase = always
 
@@ -30,6 +35,9 @@
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
   update-submodule = !bash -c 'git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate\\ for\\ ${1%/} -m Test\\ plan: -m None && git push' --
+  pup = "!git push origin $(git branch-name)"
+  pown = "!git pull origin $(git branch-name)"
+  pupl = pup --force-with-lease
 
   # Commands for manipulating deploy tags.
   # which-deploy: in which deploy did this commit first go out?
