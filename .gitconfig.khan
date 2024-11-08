@@ -52,6 +52,7 @@
   # For after a commit fails with lint, and it says 'commit message saved...'
   recommit = "!git commit -F \"`git rev-parse --git-dir`\"/commit.save"
 
+  # For getting a list of commits that are on the current branch but not on the provided branch, but also copying them to the clipboard
   clog = "!f() { git log \"$1\"..HEAD --oneline --pretty=format:\"%h %s\" --no-color | tee /dev/tty | pbcopy; }; f"
 
   # For getting changes made in the current week by the current user
