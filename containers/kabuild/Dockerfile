@@ -128,9 +128,4 @@ RUN cat bashrc.default .bashrc > .bashrc.new
 RUN mv .bashrc.new .bashrc
 RUN rm -f bashrc.default
 
-RUN mkdir -p /tmp/rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs --output /tmp/rust/rustup-init.sh
-RUN bash /tmp/rust/rustup-init.sh -y --profile default --no-modify-path
-RUN rm -rf /tmp/rust
-
 CMD tail -f /dev/null
