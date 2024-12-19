@@ -66,8 +66,5 @@
   ls-ignored = ls-files --exclude-standard --ignored --others
   conflicts = diff --name-only --diff-filter=U
 
-[commit]
-  template = ~/.git_template/commit_template
-
 [push]
   default = simple
