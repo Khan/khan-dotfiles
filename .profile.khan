@@ -23,6 +23,8 @@ export PATH="$HOME/go/bin:$PATH"
 
 export MANPATH="$KA_DEVROOT/our-lovely-cli/man:$MANPATH"
 
+# Alias our git-jira command to just 'jira'.
+alias jira="git jira"
 
 # Add our go-binaries home to PATH.
 # TODO(csilvers): move this back above the devtools ones after we get
@@ -85,8 +87,8 @@ if [ `uname -s` = Darwin ]; then
     export LDFLAGS="-L/usr/local/opt/openssl/lib $LDFLAGS"
     export CPPFLAGS="-I/usr/local/opt/openssl/include $CPPFLAGS"
     export CFLAGS="-I/usr/local/include -L/usr/local/lib $CFLAGS"
-    
-    # Ingore some warnings that were being escalated as errors when compiling 
+
+    # Ingore some warnings that were being escalated as errors when compiling
     # golangci-lint plugins. See DEV-821 for more info.
     export CGO_CPPFLAGS="-Wno-error -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-builtin-requires-header $CGO_CPPFLAGS"
 
