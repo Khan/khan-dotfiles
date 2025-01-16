@@ -14,9 +14,9 @@
   # Versions of commands that handle submodules properly.
   # co will also try to convert a git PR to a tag if it can.
   co = "!f() { if [ -n \"$1\" -a -z \"$2\" ]; then git checkout "`revisionid-to-diffid.sh --tag \"$@\"`"; else git checkout \"$@\"; fi && git submodule update --init --recursive; }; f"
-  p = "!f() { git pull \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
-  m = "!f() { git merge \"$@\" && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
-  gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive && if [ -s tools/hook-check.sh ]; then tools/hook-check.sh --fast; fi; }; f"
+  p = "!f() { git pull \"$@\" && git submodule update --init --recursive; fi; }; f"
+  m = "!f() { git merge \"$@\" && git submodule update --init --recursive; fi; }; f"
+  gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive; fi; }; f"
 
   # Branch management for dealing with github-style deploys.
   # e.g. deploy-branch, review-branch, find-reviewers
