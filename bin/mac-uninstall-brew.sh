@@ -47,5 +47,10 @@ echo "Removing other things that may upgrade if user reinstalls..."
 sudo rm -rf ~/Library/Caches/pip
 sudo rm -rf ~/.npm
 sudo rm -rf ~/.yarnrc
+# NOTE(john): We could delete the pnpm store, however pnpm's store isn't
+# just a cache, it's all the packages installed by pnpm. It symlinks to
+# the global store, so deleting it would require reinstalling all the
+# packages. If we do want to delete it, I think this would work:
+# sudo rm -rf "$(pnpm store path)"
 sudo rm -rf ~/go
 echo "Done"

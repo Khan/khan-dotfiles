@@ -252,6 +252,14 @@ install_deps() {
             sudo npm install -g yarn
         fi
     fi
+
+    # Need to install pnpm first before run `make install_deps`
+    # in webapp.
+    echo "Installing pnpm"
+    if ! which pnpm >/dev/null 2>&1; then
+        curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.0.0 sh -
+    fi
+
     # By default, third party Go tools are install to this directory
     mkdir -p "$ROOT"/go/bin
 
