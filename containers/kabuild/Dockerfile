@@ -81,8 +81,8 @@ RUN apt-get install -y \
 RUN pip3 install -q pipenv
 RUN npm install -g yarn
 # Install pnpm, following:
-# https://pnpm.io/installation
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
+# https://pnpm.io/installation#using-corepack
+RUN corepack enable pnpm
 
 # protoc
 RUN mkdir -p /tmp/protoc
