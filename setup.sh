@@ -258,7 +258,7 @@ install_deps() {
     # Following: https://pnpm.io/installation#using-corepack
     echo "Installing pnpm"
     if ! which pnpm >/dev/null 2>&1; then
-        if [[ -n "${IS_MAC}" ]]; then
+        if [ -n "${IS_MAC}" ]; then
             if ! which corepack >/dev/null 2>&1; then
                 brew install corepack
             fi
