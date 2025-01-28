@@ -255,9 +255,15 @@ install_deps() {
 
     # Need to install pnpm first before run `make install_deps`
     # in webapp.
+    # Following: https://pnpm.io/installation#using-corepack
     echo "Installing pnpm"
     if ! which pnpm >/dev/null 2>&1; then
-        curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.0.0 sh -
+        if [ -n "${IS_MAC}" ]; then
+            if ! which corepack >/dev/null 2>&1; then
+                brew install corepack
+            fi
+        fi
+        corepack enable pnpm
     fi
 
     # By default, third party Go tools are install to this directory
