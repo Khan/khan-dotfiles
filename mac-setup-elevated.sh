@@ -58,7 +58,7 @@ install_protoc() {
 
     # The mac and linux installation process is the same from here on out aside
     # from the platform-dependent zip archive.
-    install_protoc_common https://github.com/protocolbuffers/protobuf/releases/download/v3.4.0/protoc-3.4.0-osx-x86_64.zip
+    install_protoc_common osx x86_64
 }
 
 # TODO(ericbrown): Detect pre-requisites (i.e. brew, etc.)

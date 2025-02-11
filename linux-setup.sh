@@ -245,7 +245,7 @@ EOF
 install_protoc() {
     # The linux and mac installation process is the same aside from the
     # platform-dependent zip archive.
-    install_protoc_common https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
+    install_protoc_common linux x86_64
 }
 
 install_watchman() {

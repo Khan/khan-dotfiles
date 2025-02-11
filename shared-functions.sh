@@ -157,23 +157,35 @@ install_mac_java() {
     add_to_dotfile 'export PATH="'"$brew_loc"/bin':$PATH"'
 }
 
+# You can find the latest version at:
+# https://github.com/protocolbuffers/protobuf/releases/latest
+# NOTE: if you update this, update the version to match in
+# * Khan/webapp:Makefile
+# * Khan/webapp:.github/workflows/gqlgen-update.yaml
+# * Khan/webapp:dataflow/shared/genproto/build.gradle.kts
+# * Khan/aws-config:jenkins/setup.sh
+# * Khan/aws-config:jenkins/worker-setup.sh
+PROTOC_VERSION=29.3
+
 install_protoc_common() {
     # Platform independent installation of protoc.
-    # usage: install_protoc_common <zip_url>
+    # usage: install_protoc_common <os> <arch>
+    # os: `linux` or `osx`
+    # arch: `x86_86` or `aarch` or `universal_binary` (for osx only)
 
     # The URL of the protoc zip file is passed as the first argument to this
     # function. This file is platform dependent.
-    zip_url=$1
+    zip_url=https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-$1-$2.zip
 
     # We use protocol buffers in webapp's event log stream infrastructure. This
     # installs the protocol buffer compiler (which generates go & java code
     # from the protocol buffer definitions), as well as a go-based compiler
     # plugin that allows us to generate bigquery schemas as well.
 
-    if ! which protoc >/dev/null || ! protoc --version | grep -q 3.4.0; then
-        echo "Installing protoc"
+    if ! which protoc-${PROTOC_VERSION} >/dev/null; then
+        echo "Installing protoc version ${PROTOC_VERSION}"
         mkdir -p /tmp/protoc
-        wget -O /tmp/protoc/protoc-3.4.0.zip "$zip_url"
+        wget -O /tmp/protoc/protoc.zip "$zip_url"
         # Change directories within a subshell so that we don't have to worry
         # about changing back to the current directory when done.
         (
@@ -181,17 +193,17 @@ install_protoc_common() {
             # This puts the compiler itself into ./bin/protoc and several
             # definitions into ./include/google/protobuf we move them both
             # into /usr/local.
-            unzip -q protoc-3.4.0.zip
+            unzip -q protoc.zip
             # Move the protoc binary to the final location and set the
             # permissions as needed.
-            sudo install -m755 ./bin/protoc /usr/local/bin
-            # Remove old versions of the includes, if they exist
-            sudo rm -rf /usr/local/include/google/protobuf
+            sudo install -m755 ./bin/protoc /usr/local/bin/protoc-${PROTOC_VERSION}
+            # This probably isn't necessary, but just to be safe.
+            sudo rm -rf /usr/local/include/google/protobuf-${PROTOC_VERSION}
             sudo mkdir -p /usr/local/include/google
             # Move the protoc include files to the final location and set the
             # permissions as needed.
-            sudo mv ./include/google/protobuf /usr/local/include/google/
-            sudo chmod -R a+rX /usr/local/include/google/protobuf
+            sudo mv ./include/google/protobuf /usr/local/include/google/protobuf-${PROTOC_VERSION}
+            sudo chmod -R a+rX /usr/local/include/google/protobuf-${PROTOC_VERSION}
         )
         rm -rf /tmp/protoc
     else
