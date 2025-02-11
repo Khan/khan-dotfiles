@@ -171,7 +171,7 @@ install_protoc_common() {
     # Platform independent installation of protoc.
     # usage: install_protoc_common <os> <arch>
     # os: `linux` or `osx`
-    # arch: `x86_86` or `aarch` or `universal_binary` (for osx only)
+    # arch: `x86_64` or `aarch` or `universal_binary` (for osx only)
 
     # The URL of the protoc zip file is passed as the first argument to this
     # function. This file is platform dependent.
