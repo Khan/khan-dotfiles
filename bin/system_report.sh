@@ -124,7 +124,6 @@ tool_version psql --version
 header "Java"
 tool_version java -version
 
-# TODO(dbraley): (A) check protoc
 # TODO(dbraley): (A) check watchman
 # TODO(dbraley): (A) check mac apps
 
