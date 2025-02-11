@@ -198,12 +198,12 @@ install_protoc_common() {
             # permissions as needed.
             sudo install -m755 ./bin/protoc /usr/local/bin/protoc-${PROTOC_VERSION}
             # This probably isn't necessary, but just to be safe.
-            sudo rm -rf /usr/local/include/google/protobuf-${PROTOC_VERSION}
-            sudo mkdir -p /usr/local/include/google
+            sudo rm -rf /usr/local/include/protobuf-${PROTOC_VERSION}
+            sudo mkdir -p /usr/local/include/protobuf-${PROTOC_VERSION}/google
             # Move the protoc include files to the final location and set the
             # permissions as needed.
-            sudo mv ./include/google/protobuf /usr/local/include/google/protobuf-${PROTOC_VERSION}
-            sudo chmod -R a+rX /usr/local/include/google/protobuf-${PROTOC_VERSION}
+            sudo mv ./include/google/protobuf /usr/local/include/protobuf-${PROTOC_VERSION}/google/
+            sudo chmod -R a+rX /usr/local/include/protobuf-${PROTOC_VERSION}
         )
         rm -rf /tmp/protoc
     else
