@@ -152,7 +152,7 @@ EOF
 
     # Python3 is needed to run the python services (e.g. ai-guide-core).
     # We are on python3.11 now
-    sudo apt-get install -y python3.11 python3.11-venv
+    sudo apt-get install -y python3.11 python3.11-venv python3.11-dev
 
     # Install curl for setup script usage
     sudo apt-get install -y curl
