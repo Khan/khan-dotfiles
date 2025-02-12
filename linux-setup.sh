@@ -242,12 +242,6 @@ EOF
     install_mkcert
 }
 
-install_protoc() {
-    # The linux and mac installation process is the same aside from the
-    # platform-dependent zip archive.
-    install_protoc_common https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
-}
-
 install_watchman() {
     if ! which watchman ; then
         update "Installing watchman..."
@@ -352,7 +346,6 @@ echo "This setup script needs your password to install things as root."
 sudo sh -c 'echo Thanks'
 
 install_packages
-install_protoc
 install_watchman
 setup_clock
 config_inotify

@@ -84,19 +84,6 @@ RUN npm install -g yarn
 # https://pnpm.io/installation#using-corepack
 RUN corepack enable pnpm
 
-# protoc
-RUN mkdir -p /tmp/protoc
-RUN wget -O /tmp/protoc/protoc-3.4.0.zip https://github.com/google/protobuf/releases/download/v3.4.0/protoc-3.4.0-linux-x86_64.zip
-WORKDIR /tmp/protoc
-RUN unzip -q protoc-3.4.0.zip
-RUN install -m755 ./bin/protoc /usr/local/bin
-RUN rm -rf /usr/local/include/google/protobuf
-RUN mkdir -p /usr/local/include/google
-RUN mv ./include/google/protobuf /usr/local/include/google/
-RUN chmod -R a+rX /usr/local/include/google/protobuf
-WORKDIR /root
-RUN rm -rf /tmp/protoc
-
 WORKDIR /root
 
 ENV GROUP_NAME=khandev

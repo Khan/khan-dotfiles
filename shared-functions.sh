@@ -157,48 +157,6 @@ install_mac_java() {
     add_to_dotfile 'export PATH="'"$brew_loc"/bin':$PATH"'
 }
 
-install_protoc_common() {
-    # Platform independent installation of protoc.
-    # usage: install_protoc_common <zip_url>
-
-    # The URL of the protoc zip file is passed as the first argument to this
-    # function. This file is platform dependent.
-    zip_url=$1
-
-    # We use protocol buffers in webapp's event log stream infrastructure. This
-    # installs the protocol buffer compiler (which generates go & java code
-    # from the protocol buffer definitions), as well as a go-based compiler
-    # plugin that allows us to generate bigquery schemas as well.
-
-    if ! which protoc >/dev/null || ! protoc --version | grep -q 3.4.0; then
-        echo "Installing protoc"
-        mkdir -p /tmp/protoc
-        wget -O /tmp/protoc/protoc-3.4.0.zip "$zip_url"
-        # Change directories within a subshell so that we don't have to worry
-        # about changing back to the current directory when done.
-        (
-            cd /tmp/protoc
-            # This puts the compiler itself into ./bin/protoc and several
-            # definitions into ./include/google/protobuf we move them both
-            # into /usr/local.
-            unzip -q protoc-3.4.0.zip
-            # Move the protoc binary to the final location and set the
-            # permissions as needed.
-            sudo install -m755 ./bin/protoc /usr/local/bin
-            # Remove old versions of the includes, if they exist
-            sudo rm -rf /usr/local/include/google/protobuf
-            sudo mkdir -p /usr/local/include/google
-            # Move the protoc include files to the final location and set the
-            # permissions as needed.
-            sudo mv ./include/google/protobuf /usr/local/include/google/
-            sudo chmod -R a+rX /usr/local/include/google/protobuf
-        )
-        rm -rf /tmp/protoc
-    else
-        echo "protoc already installed"
-    fi
-}
-
 DESIRED_GO_MAJOR_VERISON=1
 DESIRED_GO_MINOR_VERISON=22
 DESIRED_GO_VERSION="$DESIRED_GO_MAJOR_VERISON.$DESIRED_GO_MINOR_VERISON"
