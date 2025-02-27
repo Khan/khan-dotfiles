@@ -329,9 +329,13 @@ install_hooks() {
     ( cd "$REPOS_DIR/webapp" && make hooks )
 }
 
-install_our_lovely_cli() {
-  cd "$DEVTOOLS_DIR/our-lovely-cli"
-  yarn install
+install_our_lovely_cli_deps() {
+    cd "$DEVTOOLS_DIR/our-lovely-cli"
+    if [ -f "yarn.lock" ]; then
+        yarn install
+    else
+        pnpm install
+    fi
 }
 
 check_dependencies
@@ -343,12 +347,12 @@ update_userinfo
 # the order for these is (mostly!) important, beware
 setup_python
 clone_repos
-install_our_lovely_cli   # pre-req: clone_repos
-install_and_setup_gcloud # pre-req: setup_python
-install_deps             # pre-reqs: clone_repos, install_and_setup_gcloud
-install_hooks            # pre-req: clone_repos
-download_db_dump         # pre-req: install_deps
-create_pg_databases      # pre-req: install_deps
+install_and_setup_gcloud     # pre-req: setup_python
+install_deps                 # pre-reqs: clone_repos, install_and_setup_gcloud
+install_our_lovely_cli_deps  # pre-req: clone_repos, install_deps
+install_hooks                # pre-req: clone_repos
+download_db_dump             # pre-req: install_deps
+create_pg_databases          # pre-req: install_deps
 
 echo
 echo "---------------------------------------------------------------------"
