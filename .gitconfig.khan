@@ -20,7 +20,7 @@
 
   # Branch management for dealing with github-style deploys.
   # e.g. deploy-branch, review-branch, find-reviewers
-  # Note that these reference scripts from Khan/git-workflow
+  # Note that these reference scripts from Khan/our-lovely-cli
   # Those scripts should be installed and part of the default path.
   rgrep = !git recursive-grep
   findreviewers = !git find-reviewers ; old-style had no dash in name

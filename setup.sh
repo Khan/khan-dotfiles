@@ -211,7 +211,6 @@ clone_devtools() {
     echo "Installing devtools"
     clone_devtool git@github.com:Khan/ka-clone    # already cloned, so will --repair the first time
     clone_devtool git@github.com:Khan/khan-linter
-    clone_devtool git@github.com:Khan/git-workflow
     clone_devtool git@github.com:Khan/our-lovely-cli
 }
 
