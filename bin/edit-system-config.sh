@@ -42,9 +42,3 @@ ZSHSHARE="/usr/local/share/zsh"
 if [[ -d "${ZSHSHARE}" ]]; then
     chmod -R 755 "${ZSHSHARE}"
 fi
-
-if ! grep -q khanacademy.dev /etc/hosts; then
-    echo "Adding khanacademy.dev to /etc/hosts"
-    echo "127.0.0.1 storage.khanacademy.dev khanacademy.dev www.khanacademy.dev" | \
-        sudo tee -a /etc/hosts
-fi
