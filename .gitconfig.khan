@@ -42,7 +42,7 @@
   # Here are some new aliases that we wanted to share, but that could be the same as people's custom
   # aliases, so this link takes you to a doc on how to fix that while preserving this file under
   # source control.
-  notyours = "!sh -c \"echo 'khan command \\033[4;33mgit ${GIT_ALIAS_NAME:-unknown}\\033[0m: \\033[34mhttps://khanacademy.org/r/gitfaq#id-6d95\\033[0m'\""
+  notyours = "!sh -c \"echo 'khan command \\033[4;33mgit ${GIT_ALIAS_NAME:-unknown}\\033[0m | \\033[34mhttps://khanacademy.org/r/gitfaq#id-6d95\\033[0m'\""
 
 	# Needed for merge queues, updates local deploy branch with changes on origin/<master|main>
 	mm = "!f() { \
