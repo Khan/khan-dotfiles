@@ -39,6 +39,20 @@
   pown = "!git pull origin $(git branch-name)"
   pupl = pup --force-with-lease
 
+  # Here are some new aliases that we wanted to share, but that could be the same as people's custom
+  # aliases, so this link takes you to a doc on how to fix that while preserving this file under
+  # source control.
+  notyours = "!sh -c \"echo 'khan command \\033[4;33mgit ${GIT_ALIAS_NAME:-unknown}\\033[0m: \\033[34mhttps://khanacademy.org/r/gitfaq#id-6d95\\033[0m'\""
+
+	# Needed for merge queues, updates local deploy branch with changes on origin/<master|main>
+	mm = "!f() { \
+	      GIT_ALIAS_NAME=mm git notyours && \
+	      git co $1 && \
+	      (git pown || echo '⚠️  git pull failed, continuing...') && \
+	      git fetch origin "$(git symbolic-ref refs/remotes/origin/HEAD | awk -F'/' '{print $NF}')" && \
+	      git merge --no-edit origin/"$(git symbolic-ref refs/remotes/origin/HEAD | awk -F'/' '{print $NF}')" \
+	      && git pup; }; f"
+
   # Commands for manipulating deploy tags.
   # which-deploy: in which deploy did this commit first go out?
   # prev-deploy and next-deploy: what deploys came before and after this one?
