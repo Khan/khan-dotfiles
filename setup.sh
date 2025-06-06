@@ -198,6 +198,16 @@ clone_mobile() {
     fi
 }
 
+clone_frontend() {
+    if [ ! -d "$REPOS_DIR/frontend" ]; then
+        update "Cloning frontend repository..."
+        kaclone_repo git@github.com:Khan/frontend "$REPOS_DIR/" -p --email="$gitmail" || add_fatal_error \
+            "Unable to clone Khan/frontend -- perhaps you don't have access? " \
+            "If you can't view https://github.com/Khan/frontend, ask #it in " \
+            "Slack to be added."
+    fi
+}
+
 # clones a specific devtool
 clone_devtool() {
     kaclone_repo "$1" "$DEVTOOLS_DIR" --email="$gitmail"
@@ -225,6 +235,7 @@ clone_repos() {
     clone_devtools
     clone_webapp
     clone_mobile
+    clone_frontend
     kaclone_repair_self
 }
 
@@ -269,10 +280,12 @@ install_deps() {
     mkdir -p "$ROOT"/go/bin
 
     # Install all the requirements for khan
-    # This also installs npm deps.
     echo "Installing webapp dependencies"
     # This checks for gcloud, so we do it after install_and_setup_gcloud.
     ( cd "$REPOS_DIR/webapp" && make deps )
+
+    echo "Installing frontend dependencies"
+    ( cd "$REPOS_DIR/frontend" && pnpm auth && pnpm install )
 }
 
 install_and_setup_gcloud() {
