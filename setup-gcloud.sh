@@ -50,7 +50,7 @@ PATH="$DEVTOOLS_DIR/google-cloud-sdk/bin:$PATH"
 
 echo "$SCRIPT: Using DEVTOOLS_DIR=${DEVTOOLS_DIR}"
 
-version=466.0.0  # should match webapp's MAX_SUPPORTED_VERSION
+version=539.0.0  # should match webapp's MAX_SUPPORTED_VERSION
 # This `if` fails if gcloud isn't installed, *or* if it's old.
 if ! gcloud version 2>&1 | fgrep -q "$version"; then
     echo "$SCRIPT: Installing Google Cloud SDK (gcloud)"
