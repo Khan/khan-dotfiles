@@ -1,4 +1,0 @@
-.git
-containers/kabuild/k8s*.yaml
-containers/kabuild/Makefile
-*.md
