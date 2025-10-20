@@ -37,7 +37,9 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Enable autocompletion for git. Should use git-completion.zsh, but it seems problematic on mac
 autoload -Uz compinit && compinit
-source "$DIR/git-completion.bash"
+if [ -f "$DIR/git-completion.bash" ]; then
+  source "$DIR/git-completion.bash"
+fi
 
 # Similarly for gcloud, if available
 if ! which gcloud >/dev/null; then
@@ -52,19 +54,21 @@ if [ "$(uname -s)" = "Darwin" ] && [ "$(uname -m)" = "arm64" ]; then
   alias brew86="arch -x86_64 /usr/local/bin/brew $@"
 fi
 
-# Setting this allows us to store ssh-keys in the keychain without generating
-# a warning.  See ssh-add man page.
-export APPLE_SSH_ADD_BEHAVIOR=macos
+# macOS only: Setting this allows us to store ssh-keys in the keychain without
+# generating a warning. See ssh-add man page.
+if [ "$(uname -s)" = "Darwin" ]; then
+  export APPLE_SSH_ADD_BEHAVIOR=macos
 
-# Add ssh keys stored in the keychain to the ssh-agent
-# Note: IF you have an identity in ~/.ssh and DO NOT have a passphrase already
-#   in the keychain, you will be prompted for a passphrase.  This is because
-#   ssh-add will try to add the key to the agent, and will prompt for a
-#   passphrase if it doesn't have one in the keychain.
-#   If you have a passphrase in the keychain, you will not be prompted.
-#   If you don't have an identity in ~/.ssh, you will not be prompted.
-#   If you have an identity in ~/.ssh and DO have a passphrase in the keychain,
-#   you will not be prompted.
-#   (Being prompted should NOT happen if you ran ssh-add -K when you first
-#    created the key.)
-ssh-add -K
+  # Add ssh keys stored in the keychain to the ssh-agent
+  # Note: IF you have an identity in ~/.ssh and DO NOT have a passphrase already
+  #   in the keychain, you will be prompted for a passphrase.  This is because
+  #   ssh-add will try to add the key to the agent, and will prompt for a
+  #   passphrase if it doesn't have one in the keychain.
+  #   If you have a passphrase in the keychain, you will not be prompted.
+  #   If you don't have an identity in ~/.ssh, you will not be prompted.
+  #   If you have an identity in ~/.ssh and DO have a passphrase in the keychain,
+  #   you will not be prompted.
+  #   (Being prompted should NOT happen if you ran ssh-add -K when you first
+  #    created the key.)
+  ssh-add -K
+fi
