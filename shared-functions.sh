@@ -110,6 +110,150 @@ ensure_mac_os() {
     fi
 }
 
+# Detect the Linux distribution
+# Returns: "ubuntu", "fedora", or "unknown"
+detect_linux_distro() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        case "$ID" in
+            ubuntu|debian)
+                echo "ubuntu"
+                ;;
+            fedora|fedora-asahi-remix)
+                echo "fedora"
+                ;;
+            *)
+                # Check ID_LIKE as fallback (e.g., for Fedora derivatives)
+                case "$ID_LIKE" in
+                    *fedora*)
+                        echo "fedora"
+                        ;;
+                    *debian*|*ubuntu*)
+                        echo "ubuntu"
+                        ;;
+                    *)
+                        echo "unknown"
+                        ;;
+                esac
+                ;;
+        esac
+    else
+        echo "unknown"
+    fi
+}
+
+# Check if we're on macOS
+is_mac() {
+    [ "$(uname -s)" = "Darwin" ]
+}
+
+# Check if we're on Linux
+is_linux() {
+    [ "$(uname -s)" = "Linux" ]
+}
+
+# Get normalized architecture name (returns "x86_64" or "aarch64")
+get_arch() {
+    local arch="$(uname -m)"
+    case "$arch" in
+        arm64)
+            echo "aarch64"
+            ;;
+        aarch64)
+            echo "aarch64"
+            ;;
+        x86_64|amd64)
+            echo "x86_64"
+            ;;
+        *)
+            echo "$arch"
+            ;;
+    esac
+}
+
+# Check if we're on ARM architecture (works for both macOS arm64 and Linux aarch64)
+is_arm() {
+    local arch="$(get_arch)"
+    [ "$arch" = "aarch64" ]
+}
+
+# Package manager abstraction - install packages based on the distribution
+# Usage: pkg_install package1 [package2 ...]
+# Note: This handles simple package name mappings. For more complex installs,
+# use distro-specific functions.
+pkg_install() {
+    local distro=$(detect_linux_distro)
+    case "$distro" in
+        ubuntu)
+            sudo apt-get install -y "$@"
+            ;;
+        fedora)
+            sudo dnf install -y "$@"
+            ;;
+        *)
+            err_and_exit "Unsupported distribution: $distro"
+            ;;
+    esac
+}
+
+# Update package repositories
+pkg_update() {
+    local distro=$(detect_linux_distro)
+    case "$distro" in
+        ubuntu)
+            sudo apt-get update -qq -y
+            ;;
+        fedora)
+            sudo dnf check-update -q -y || true
+            ;;
+        *)
+            err_and_exit "Unsupported distribution: $distro"
+            ;;
+    esac
+}
+
+# Map package names between distributions
+# Usage: map_package_name <generic_name>
+# Returns the distro-specific package name
+map_package_name() {
+    local pkg="$1"
+    local distro=$(detect_linux_distro)
+
+    case "$distro" in
+        fedora)
+            case "$pkg" in
+                openjdk-11-jdk) echo "java-11-openjdk-devel" ;;
+                software-properties-common) echo "dnf-plugins-core" ;;
+                apt-transport-https) echo "" ;;  # Not needed on Fedora
+                libfreetype6) echo "freetype" ;;
+                libfreetype6-dev) echo "freetype-devel" ;;
+                libpng-dev) echo "libpng-devel" ;;
+                libjpeg-dev) echo "libjpeg-turbo-devel" ;;
+                libxslt1-dev) echo "libxslt-devel" ;;
+                libyaml-dev) echo "libyaml-devel" ;;
+                libncurses-dev) echo "ncurses-devel" ;;
+                libreadline-dev) echo "readline-devel" ;;
+                python3-dev) echo "python3-devel" ;;
+                python3-setuptools) echo "python3-setuptools" ;;
+                python3-pip) echo "python3-pip" ;;
+                python3-venv) echo "python3-virtualenv" ;;
+                python-is-python3) echo "" ;;  # Fedora's python is python3 by default
+                ack-grep) echo "ack" ;;
+                libnss3-tools) echo "nss-tools" ;;
+                cargo-doc) echo "" ;;  # Not a separate package on Fedora
+                uuid-runtime) echo "uuid" ;;
+                *) echo "$pkg" ;;  # Return as-is if no mapping exists
+            esac
+            ;;
+        ubuntu)
+            echo "$pkg"  # Return as-is for Ubuntu
+            ;;
+        *)
+            echo "$pkg"
+            ;;
+    esac
+}
+
 # $1: the package to install
 brew_install() {
     if ! command -v brew >/dev/null 2>&1; then
