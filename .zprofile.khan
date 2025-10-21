@@ -37,7 +37,8 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 # Enable autocompletion for git. Should use git-completion.zsh, but it seems problematic on mac
 autoload -Uz compinit && compinit
-if [ -f "$DIR/git-completion.bash" ]; then
+# Only source bash completion on macOS - Linux has native zsh git completion
+if [ "$(uname -s)" = "Darwin" ] && [ -f "$DIR/git-completion.bash" ]; then
   source "$DIR/git-completion.bash"
 fi
 
