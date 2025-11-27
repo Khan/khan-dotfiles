@@ -135,21 +135,21 @@ install_mac_java() {
     # already installed -- there are different java providers -- so we
     # just always try to install the one we want.  For more info, see
     #   https://github.com/Khan/khan-dotfiles/pull/61/files#r964917242
-    echo "Installing openjdk 11..."
+    echo "Installing openjdk 21..."
 
-    brew_install openjdk@11
+    brew_install openjdk@21
 
     # Symlink openjdk for the system Java wrappers.  This supports
     # both M1 and x86_64 macs.
-    if [ -d /opt/homebrew/opt/openjdk@11 ]; then
-        brew_loc=/opt/homebrew/opt/openjdk@11
-    elif [ -d /usr/local/Cellar/openjdk@11 ]; then
+    if [ -d /opt/homebrew/opt/openjdk@21 ]; then
+        brew_loc=/opt/homebrew/opt/openjdk@21
+    elif [ -d /usr/local/Cellar/openjdk@21 ]; then
         # Different versions are installed here, we'll take the latest.
-        brew_loc=$(ls -td /usr/local/Cellar/openjdk@11/11.* | head -n1)
+        brew_loc=$(ls -td /usr/local/Cellar/openjdk@21/21.* | head -n1)
     else
-        error "Could not find the location of java 11, not installing it"
+        error "Could not find the location of java 21, not installing it"
     fi
-    sudo ln -sfn "$brew_loc"/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
+    sudo ln -sfn "$brew_loc"/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk
 
     # Ensure JAVA_HOME is set in ~/.profile.khan
     # TODO (jwiesebron): Update other parts of dotfiles to use this convention
