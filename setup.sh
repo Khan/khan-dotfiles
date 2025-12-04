@@ -34,7 +34,12 @@ DIR=$(dirname "$0")
 
 # Will contain a string on a mac and be empty on linux
 IS_MAC=$(which sw_vers || echo "")
-IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
+# Use the new is_arm() function which works for both macOS and Linux
+if is_arm && is_mac; then
+    IS_MAC_ARM="arm64"
+else
+    IS_MAC_ARM=""
+fi
 
 # On a clean install of Mac OS X, /opt/homebrew/bin is not in the PATH.
 # Thus, stuff installed with the arm64 version of homebrew is not visible.
@@ -272,8 +277,11 @@ install_deps() {
             if ! which corepack >/dev/null 2>&1; then
                 brew install corepack
             fi
+            corepack enable pnpm
+        else
+            # Linux requires sudo for corepack to create symlinks in /usr/bin
+            sudo corepack enable pnpm
         fi
-        corepack enable pnpm
     fi
 
     # By default, third party Go tools are install to this directory
@@ -282,10 +290,25 @@ install_deps() {
     # Install all the requirements for khan
     echo "Installing webapp dependencies"
     # This checks for gcloud, so we do it after install_and_setup_gcloud.
-    ( cd "$REPOS_DIR/webapp" && make deps )
+
+    # Temporarily unset SSH_ASKPASS to avoid credential helper issues during Go module downloads
+    # Go runs git in non-interactive mode and SSH_ASKPASS can interfere
+    unset SSH_ASKPASS
+    unset GIT_ASKPASS
+
+    if ! ( cd "$REPOS_DIR/webapp" && make deps ); then
+        echo "WARNING: Failed to install some webapp dependencies."
+        echo "This may be due to missing GitHub credentials for private Go modules."
+        echo "You can run 'cd ~/khan/webapp && make deps' later to complete this."
+        warnings="$warnings\nWARNING: Webapp dependencies incomplete. Run 'cd ~/khan/webapp && make deps' later."
+    fi
 
     echo "Installing frontend dependencies"
-    ( cd "$REPOS_DIR/frontend" && pnpm auth && pnpm install )
+    if ! ( cd "$REPOS_DIR/frontend" && pnpm auth && pnpm install ); then
+        echo "WARNING: Failed to install frontend dependencies."
+        echo "You can run 'cd ~/khan/frontend && pnpm install' later to complete this."
+        warnings="$warnings\nWARNING: Frontend dependencies incomplete. Run 'cd ~/khan/frontend && pnpm install' later."
+    fi
 }
 
 install_and_setup_gcloud() {
@@ -335,6 +358,17 @@ update_userinfo() {
     fi
 }
 
+# Configure Git to use SSH for Khan Academy GitHub repos
+# This is needed for Go modules to access private Khan repos
+configure_git_ssh() {
+    echo "Configuring Git to use SSH for Khan Academy GitHub repos"
+    git config --global url."ssh://git@github.com/Khan/".insteadOf "https://github.com/Khan/"
+
+    # Tell Go that github.com/Khan repos are private (don't use public proxies/checksums)
+    # This ensures Go uses our Git config above
+    go env -w GOPRIVATE="github.com/Khan/*"
+}
+
 # Install webapp's git hooks
 install_hooks() {
     echo "Installing git hooks"
@@ -359,8 +393,9 @@ update_userinfo
 # the order for these is (mostly!) important, beware
 setup_python
 clone_repos
+configure_git_ssh            # pre-req: check_dependencies (for git)
 install_and_setup_gcloud     # pre-req: setup_python
-install_deps                 # pre-reqs: clone_repos, install_and_setup_gcloud
+install_deps                 # pre-reqs: clone_repos, install_and_setup_gcloud, configure_git_ssh
 install_our_lovely_cli_deps  # pre-req: clone_repos, install_deps
 install_hooks                # pre-req: clone_repos
 download_db_dump             # pre-req: install_deps

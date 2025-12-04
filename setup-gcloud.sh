@@ -59,9 +59,20 @@ if ! gcloud version 2>&1 | fgrep -q "$version"; then
     # consistent across platforms; this also makes dotfiles simpler.
     # Also (2021), brew does not supply the version we want on M1.
     arch="$(uname -m)"
-    # Use rosetta for gcloud on M1
-    [ `uname -m` = "arm64" ] && arch="x86_64"
-    platform="$(uname -s | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz)-$arch"
+    os="$(uname -s)"
+
+    # Handle architecture mapping
+    # On macOS ARM (M1/M2), use rosetta (x86_64) for gcloud
+    # On Linux ARM (aarch64), gcloud has native ARM builds
+    if [ "$os" = "Darwin" ] && [ "$arch" = "arm64" ]; then
+        # macOS ARM - use x86_64 via Rosetta
+        arch="x86_64"
+    elif [ "$arch" = "aarch64" ]; then
+        # Linux ARM - use native arm build
+        arch="arm"
+    fi
+
+    platform="$(echo "$os" | tr ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz)-$arch"
     gcloud_url="https://storage.googleapis.com/cloud-sdk-release/google-cloud-sdk-$version-$platform.tar.gz"
     echo "$SCRIPT: Installing from $gcloud_url"
     local_archive_filename="/tmp/gcloud-$version.tar.gz"
@@ -71,13 +82,6 @@ if ! gcloud version 2>&1 | fgrep -q "$version"; then
         rm -rf google-cloud-sdk  # just in case an old one is hanging out
         tar -xzf "$local_archive_filename"
     )
-fi
-
-if [ -z "$(gcloud auth list --format='value(account)')" ]; then
-    echo "$SCRIPT: Follow these instructions to authorize gcloud (twice)..."
-    gcloud auth login ${GCLOUD_AUTH_ARGS}
-    gcloud auth application-default login ${GCLOUD_AUTH_ARGS}
-    gcloud auth configure-docker us-central1-docker.pkg.dev
 fi
 
 echo "$SCRIPT: Ensuring gcloud is up to date and has the right components."
@@ -98,6 +102,38 @@ gcloud components install --quiet app-engine-java app-engine-python \
 # Turn off checking for updates automatically -- having gcloud always say
 # "you can update!" is not useful when we don't want you to!
 gcloud config set component_manager/disable_update_check true
+
+# Check authentication after everything is installed
+# Need to check both regular auth AND application-default credentials
+needs_auth=false
+needs_app_default=false
+
+if [ -z "$(gcloud auth list --format='value(account)' 2>/dev/null)" ]; then
+    needs_auth=true
+fi
+
+# Check if application-default credentials exist
+if ! gcloud auth application-default print-access-token >/dev/null 2>&1; then
+    needs_app_default=true
+fi
+
+if [ "$needs_auth" = true ] || [ "$needs_app_default" = true ]; then
+    echo "$SCRIPT: Follow these instructions to authorize gcloud..."
+
+    if [ "$needs_auth" = true ]; then
+        echo "$SCRIPT: Step 1: Regular authentication"
+        gcloud auth login ${GCLOUD_AUTH_ARGS}
+    fi
+
+    if [ "$needs_app_default" = true ]; then
+        echo "$SCRIPT: Step 2: Application default credentials"
+        gcloud auth application-default login ${GCLOUD_AUTH_ARGS}
+    fi
+fi
+
+# Always configure Docker authentication (safe to run multiple times)
+echo "$SCRIPT: Configuring Docker authentication..."
+gcloud auth configure-docker us-central1-docker.pkg.dev --quiet 2>/dev/null || true
 
 echo
 echo "$SCRIPT: gcloud ${version} installed and configured!"
