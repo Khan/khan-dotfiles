@@ -23,7 +23,7 @@ DEVTOOLS_DIR="$REPOS_DIR/devtools"
 trap exit_warning EXIT   # from shared-functions.sh
 
 install_java() {
-    sudo apt-get install -y openjdk-11-jdk
+    sudo apt-get install -y openjdk-21-jdk
     # We ask you to select a java version (interactively) in case you have more
     # than one installed.  If there's only one, it'll just select that version
     # by default.
