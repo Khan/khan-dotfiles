@@ -223,9 +223,12 @@ maybe_generate_ssh_keys() {
 # Scripts should call "trap exit_warning EXIT" near the top to enable,
 # then "trap - EXIT" just before exiting on success.
 exit_warning() {
-    echo "***        FATAL ERROR: khan-dotfiles crashed!         ***"
-    echo "***     Please check the dev setup docs for common     ***"
-    echo "***  errors, or send the output above to @dev-support. ***"
-    echo "***  Once you've resolved the problem, re-run 'make'.  ***"
-    echo "***     Khan dev tools WILL NOT WORK until you do!     ***"
+    echo "***           FATAL ERROR: khan-dotfiles crashed!             ***"
+    echo "***                                                           ***"
+    echo "***    Please check the dev setup docs for common errors, or     ***"
+    echo "***  send the output above to @dev-support in the #1s-and-0s     ***"
+    echo "***  channel. Once you've resolved the problem, re-run 'make'.   ***"
+    echo "***                                                           ***"
+    echo "***        Khan dev tools WILL NOT WORK until you do!         ***"
+    echo "***                                                           ***"
 }
