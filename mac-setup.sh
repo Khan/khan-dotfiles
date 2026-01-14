@@ -50,8 +50,8 @@ DEVTOOLS_DIR="$REPOS_DIR/devtools"
 echo
 echo "Running Khan Installation Script 1.2"
 
-if ! sw_vers -productVersion 2>/dev/null | grep -q '^1[0-5]\.' ; then
-    echo "This is tested on macOS 15 (Sequoia)."
+if ! sw_vers -productVersion 2>/dev/null | grep -q -E '^(1[0-9]|2[0-6])\.' ; then
+    echo "This is tested on macOS 26 (Tahoe)."
     echo
     echo "If you find that this works on a newer version of macOS, "
     echo "please update this message and the grep of this if statement."
