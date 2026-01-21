@@ -201,9 +201,6 @@ install_node() {
     # Download and install pnpm:
     corepack enable pnpm
 
-    # Verify pnpm version:
-    pnpm -v
-
     # We don't want to force usage of node v20, but we want to make clear we
     # don't support anything else.
     if ! node --version | grep "v20" >/dev/null ; then
