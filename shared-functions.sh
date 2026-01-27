@@ -222,7 +222,7 @@ map_package_name() {
     case "$distro" in
         fedora)
             case "$pkg" in
-                openjdk-11-jdk) echo "java-11-openjdk-devel" ;;
+                openjdk-21-jdk) echo "java-21-openjdk-devel" ;;
                 software-properties-common) echo "dnf-plugins-core" ;;
                 apt-transport-https) echo "" ;;  # Not needed on Fedora
                 libfreetype6) echo "freetype" ;;

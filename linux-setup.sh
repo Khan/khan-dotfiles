@@ -68,8 +68,28 @@ install_go() {
                 sudo cp -sf /usr/lib/"go-$DESIRED_GO_VERSION"/bin/* /usr/local/bin/
                 ;;
             fedora)
-                # Fedora ships recent Go in the main repos
-                sudo dnf install -y golang
+                # Fedora repos may not have the desired Go version, so we install
+                # directly from golang.org to ensure we get the right version.
+                local arch=$(get_arch)
+                local go_arch="amd64"
+                if [ "$arch" = "aarch64" ]; then
+                    go_arch="arm64"
+                fi
+
+                local go_tarball="go${DESIRED_GO_VERSION}.linux-${go_arch}.tar.gz"
+                local go_url="https://go.dev/dl/${go_tarball}"
+
+                echo "Downloading Go ${DESIRED_GO_VERSION} from ${go_url}..."
+                curl -fsSL "$go_url" -o "/tmp/${go_tarball}"
+
+                # Remove any existing Go installation and extract new one
+                sudo rm -rf /usr/local/go
+                sudo tar -C /usr/local -xzf "/tmp/${go_tarball}"
+                rm -f "/tmp/${go_tarball}"
+
+                # Link to /usr/local/bin so it's on PATH
+                sudo ln -sf /usr/local/go/bin/go /usr/local/bin/go
+                sudo ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
                 ;;
         esac
     else
