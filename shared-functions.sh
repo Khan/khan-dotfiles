@@ -110,6 +110,108 @@ ensure_mac_os() {
     fi
 }
 
+# Detect the Linux distribution
+# Returns: "ubuntu", "fedora", or "unknown"
+detect_linux_distro() {
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        case "$ID" in
+            ubuntu|debian)
+                echo "ubuntu"
+                ;;
+            fedora|fedora-asahi-remix)
+                echo "fedora"
+                ;;
+            *)
+                # Check ID_LIKE as fallback (e.g., for Fedora derivatives)
+                case "$ID_LIKE" in
+                    *fedora*)
+                        echo "fedora"
+                        ;;
+                    *debian*|*ubuntu*)
+                        echo "ubuntu"
+                        ;;
+                    *)
+                        echo "unknown"
+                        ;;
+                esac
+                ;;
+        esac
+    else
+        echo "unknown"
+    fi
+}
+
+# Check if we're on macOS
+is_mac() {
+    [ "$(uname -s)" = "Darwin" ]
+}
+
+# Check if we're on Linux
+is_linux() {
+    [ "$(uname -s)" = "Linux" ]
+}
+
+# Get normalized architecture name (returns "x86_64" or "aarch64")
+get_arch() {
+    local arch="$(uname -m)"
+    case "$arch" in
+        arm64)
+            echo "aarch64"
+            ;;
+        aarch64)
+            echo "aarch64"
+            ;;
+        x86_64|amd64)
+            echo "x86_64"
+            ;;
+        *)
+            echo "$arch"
+            ;;
+    esac
+}
+
+# Check if we're on ARM architecture (works for both macOS arm64 and Linux aarch64)
+is_arm() {
+    local arch="$(get_arch)"
+    [ "$arch" = "aarch64" ]
+}
+
+# Package manager abstraction - install packages based on the distribution
+# Usage: pkg_install package1 [package2 ...]
+# Note: This handles simple package name mappings. For more complex installs,
+# use distro-specific functions.
+pkg_install() {
+    local distro=$(detect_linux_distro)
+    case "$distro" in
+        ubuntu)
+            sudo apt-get install -y "$@"
+            ;;
+        fedora)
+            sudo dnf install -y "$@"
+            ;;
+        *)
+            err_and_exit "Unsupported distribution: $distro"
+            ;;
+    esac
+}
+
+# Update package repositories
+pkg_update() {
+    local distro=$(detect_linux_distro)
+    case "$distro" in
+        ubuntu)
+            sudo apt-get update -qq -y
+            ;;
+        fedora)
+            sudo dnf check-update -q -y || true
+            ;;
+        *)
+            err_and_exit "Unsupported distribution: $distro"
+            ;;
+    esac
+}
+
 # $1: the package to install
 brew_install() {
     if ! command -v brew >/dev/null 2>&1; then
