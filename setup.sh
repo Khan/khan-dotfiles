@@ -293,6 +293,8 @@ install_deps() {
 
     # Temporarily unset SSH_ASKPASS to avoid credential helper issues during Go module downloads
     # Go runs git in non-interactive mode and SSH_ASKPASS can interfere
+    local saved_ssh_askpass="${SSH_ASKPASS:-}"
+    local saved_git_askpass="${GIT_ASKPASS:-}"
     unset SSH_ASKPASS
     unset GIT_ASKPASS
 
@@ -308,6 +310,14 @@ install_deps() {
         echo "WARNING: Failed to install frontend dependencies."
         echo "You can run 'cd ~/khan/frontend && pnpm install' later to complete this."
         warnings="$warnings\nWARNING: Frontend dependencies incomplete. Run 'cd ~/khan/frontend && pnpm install' later."
+    fi
+
+    # Restore SSH_ASKPASS and GIT_ASKPASS if they were previously set
+    if [ -n "$saved_ssh_askpass" ]; then
+        export SSH_ASKPASS="$saved_ssh_askpass"
+    fi
+    if [ -n "$saved_git_askpass" ]; then
+        export GIT_ASKPASS="$saved_git_askpass"
     fi
 }
 

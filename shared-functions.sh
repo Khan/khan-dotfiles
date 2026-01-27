@@ -212,48 +212,6 @@ pkg_update() {
     esac
 }
 
-# Map package names between distributions
-# Usage: map_package_name <generic_name>
-# Returns the distro-specific package name
-map_package_name() {
-    local pkg="$1"
-    local distro=$(detect_linux_distro)
-
-    case "$distro" in
-        fedora)
-            case "$pkg" in
-                openjdk-21-jdk) echo "java-21-openjdk-devel" ;;
-                software-properties-common) echo "dnf-plugins-core" ;;
-                apt-transport-https) echo "" ;;  # Not needed on Fedora
-                libfreetype6) echo "freetype" ;;
-                libfreetype6-dev) echo "freetype-devel" ;;
-                libpng-dev) echo "libpng-devel" ;;
-                libjpeg-dev) echo "libjpeg-turbo-devel" ;;
-                libxslt1-dev) echo "libxslt-devel" ;;
-                libyaml-dev) echo "libyaml-devel" ;;
-                libncurses-dev) echo "ncurses-devel" ;;
-                libreadline-dev) echo "readline-devel" ;;
-                python3-dev) echo "python3-devel" ;;
-                python3-setuptools) echo "python3-setuptools" ;;
-                python3-pip) echo "python3-pip" ;;
-                python3-venv) echo "python3-virtualenv" ;;
-                python-is-python3) echo "" ;;  # Fedora's python is python3 by default
-                ack-grep) echo "ack" ;;
-                libnss3-tools) echo "nss-tools" ;;
-                cargo-doc) echo "" ;;  # Not a separate package on Fedora
-                uuid-runtime) echo "uuid" ;;
-                *) echo "$pkg" ;;  # Return as-is if no mapping exists
-            esac
-            ;;
-        ubuntu)
-            echo "$pkg"  # Return as-is for Ubuntu
-            ;;
-        *)
-            echo "$pkg"
-            ;;
-    esac
-}
-
 # $1: the package to install
 brew_install() {
     if ! command -v brew >/dev/null 2>&1; then

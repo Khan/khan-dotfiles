@@ -78,14 +78,19 @@ install_go() {
 
                 local go_tarball="go${DESIRED_GO_VERSION}.linux-${go_arch}.tar.gz"
                 local go_url="https://go.dev/dl/${go_tarball}"
+                local go_tmp="/tmp/${go_tarball}"
 
                 echo "Downloading Go ${DESIRED_GO_VERSION} from ${go_url}..."
-                curl -fsSL "$go_url" -o "/tmp/${go_tarball}"
+                curl -fsSL "$go_url" -o "$go_tmp"
 
                 # Remove any existing Go installation and extract new one
                 sudo rm -rf /usr/local/go
-                sudo tar -C /usr/local -xzf "/tmp/${go_tarball}"
-                rm -f "/tmp/${go_tarball}"
+                if ! sudo tar -C /usr/local -xzf "$go_tmp"; then
+                    rm -f "$go_tmp"
+                    echo "Failed to extract Go tarball"
+                    exit 1
+                fi
+                rm -f "$go_tmp"
 
                 # Link to /usr/local/bin so it's on PATH
                 sudo ln -sf /usr/local/go/bin/go /usr/local/bin/go
@@ -490,7 +495,10 @@ install_watchman() {
         (
             # Adapted from https://medium.com/@saurabh.friday/install-watchman-on-ubuntu-18-04-ba23c56eb23a
             cd "$builddir"
-            git checkout tags/v4.9.0
+            if ! git checkout tags/v4.9.0 2>/dev/null; then
+                echo "Failed to checkout watchman v4.9.0 tag"
+                exit 1
+            fi
 
             # Make sure pkg-config is in PATH
             export PKG_CONFIG=/usr/bin/pkg-config
@@ -589,28 +597,29 @@ install_postgresql() {
 install_fastly() {
     local distro=$(detect_linux_distro)
     local arch=$(get_arch)
+    # There's no need to update the version regularly, fastly self updates
+    local fastly_version="3.3.0"
     builddir=$(mktemp -d -t fastly.XXXXX)
 
     (
         cd "$builddir"
-        # There's no need to update the version regularly, fastly self updates
         case "$distro" in
             ubuntu)
                 if [ "$arch" = "aarch64" ]; then
-                    curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_arm64.deb
-                    sudo apt install ./fastly_3.3.0_linux_arm64.deb
+                    curl -LO "https://github.com/fastly/cli/releases/download/v${fastly_version}/fastly_${fastly_version}_linux_arm64.deb"
+                    sudo apt install "./fastly_${fastly_version}_linux_arm64.deb"
                 else
-                    curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_amd64.deb
-                    sudo apt install ./fastly_3.3.0_linux_amd64.deb
+                    curl -LO "https://github.com/fastly/cli/releases/download/v${fastly_version}/fastly_${fastly_version}_linux_amd64.deb"
+                    sudo apt install "./fastly_${fastly_version}_linux_amd64.deb"
                 fi
                 ;;
             fedora)
                 if [ "$arch" = "aarch64" ]; then
-                    curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_arm64.rpm
-                    sudo dnf install -y ./fastly_3.3.0_linux_arm64.rpm
+                    curl -LO "https://github.com/fastly/cli/releases/download/v${fastly_version}/fastly_${fastly_version}_linux_arm64.rpm"
+                    sudo dnf install -y "./fastly_${fastly_version}_linux_arm64.rpm"
                 else
-                    curl -LO https://github.com/fastly/cli/releases/download/v3.3.0/fastly_3.3.0_linux_amd64.rpm
-                    sudo dnf install -y ./fastly_3.3.0_linux_amd64.rpm
+                    curl -LO "https://github.com/fastly/cli/releases/download/v${fastly_version}/fastly_${fastly_version}_linux_amd64.rpm"
+                    sudo dnf install -y "./fastly_${fastly_version}_linux_amd64.rpm"
                 fi
                 ;;
         esac
