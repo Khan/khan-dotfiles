@@ -272,6 +272,12 @@ install_deps() {
             if ! which corepack >/dev/null 2>&1; then
                 brew install corepack
             fi
+            # Remove stale corepack symlinks that may conflict with
+            # `corepack enable`. This can happen if a previous install failed
+            # or if node was installed via Homebrew with its own corepack.
+            # See: EEXIST error when symlink already exists
+            brew_bin="$(brew --prefix)/bin"
+            rm -f "$brew_bin/pnpm" "$brew_bin/pnpx" 2>/dev/null || true
         fi
         corepack enable pnpm
     fi
