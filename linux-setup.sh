@@ -45,6 +45,69 @@ install_go() {
     fi
 }
 
+install_mise() {
+    if ! which mise >/dev/null 2>&1; then
+        info "Installing mise\n"
+        sudo apt update -y && sudo apt install -y curl
+        sudo install -dm 755 /etc/apt/keyrings
+        curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.asc 1> /dev/null
+        echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list
+        sudo apt update -y
+        sudo apt install -y mise
+    else
+        success "mise already installed"
+    fi
+
+    # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
+    # For fish, we need to add it to the fish config file directly.
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        local rcfile=~/.config/fish/config.fish
+        local activate_line='mise activate fish --shims | source'
+        if [ -f "$rcfile" ] && grep -qF 'mise activate' "$rcfile"; then
+            success "mise activate already in $rcfile"
+        else
+            info "Adding mise activate to $rcfile\n"
+            mkdir -p ~/.config/fish
+            echo "$activate_line" >> "$rcfile"
+        fi
+    fi
+}
+
+uninstall_nvm() {
+    # Remove nvm configuration lines from shell rc files.
+    # These lines may have trailing comments, so we match from the start
+    # of the line up to (and including) any trailing comment.
+    for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc; do
+        if [ -f "$rcfile" ]; then
+            sed -i '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
+            sed -i '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
+            sed -i '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
+        fi
+    done
+
+    # Remove the nvm installation directory.
+    if [ -d "$HOME/.nvm" ]; then
+        rm -rf "$HOME/.nvm"
+    fi
+}
+
+uninstall_node() {
+    # Remove the nodesource apt repo and nodejs apt package if present,
+    # since we now manage node via mise.
+    if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
+        sudo rm -f /etc/apt/sources.list.d/nodesource.list
+        sudo rm -f /etc/apt/preferences.d/nodejs
+        sudo rm -f /usr/share/keyrings/nodesource.gpg
+        sudo apt-get update -qq -y
+    fi
+    if dpkg -l nodejs 2>/dev/null | grep -q ^ii; then
+        sudo apt-get purge -y nodejs
+    fi
+
+    # Uninstall nvm if it's installed.
+    
+}
+
 # Builds and installs `mkcert` which is used by the following things in
 # webapp:
 # - https://khanacademy.dev
@@ -94,35 +157,6 @@ install_packages() {
     sudo apt-get install -y software-properties-common apt-transport-https \
          wget gnupg
 
-    # To get the most recent nodejs, later.
-    if ls /etc/apt/sources.list.d/ 2>&1 | grep -q chris-lea-node_js; then
-        # We used to use the (obsolete) chris-lea repo, remove that if needed
-        sudo add-apt-repository -y -r ppa:chris-lea/node.js
-        sudo rm -f /etc/apt/sources.list.d/chris-lea-node_js*
-        updated_apt_repo=yes
-    fi
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q nodesource || \
-       ! grep -q node_20.x /etc/apt/sources.list.d/nodesource.list; then
-        # This is a simplified version of https://deb.nodesource.com/setup_20.x
-        sudo mkdir -p /usr/share/keyrings
-        sudo rm -f /usr/share/keyrings/nodesource.gpg
-        sudo rm -f /etc/apt/sources.list.d/nodesource.list
-        curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /usr/share/keyrings/nodesource.gpg
-        cat <<EOF | sudo tee /etc/apt/sources.list.d/nodesource.list
-deb [signed-by=/usr/share/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main
-EOF
-        sudo chmod a+rX /etc/apt/sources.list.d/nodesource.list
-
-        # Pin nodejs to the version-specific nodesource repo, otherwise apt might update
-        # it in newer Ubuntu versions
-        cat <<EOF | sudo tee /etc/apt/preferences.d/nodejs
-Package: nodejs
-Pin: origin deb.nodesource.com
-Pin-Priority: 999
-EOF
-        updated_apt_repo=yes
-    fi
-
     # To get the most recent git, later.
     if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q git-core-ppa; then
         sudo add-apt-repository -y ppa:git-core/ppa
@@ -157,14 +191,13 @@ EOF
     # Install curl for setup script usage
     sudo apt-get install -y curl
 
-    # Needed to develop at Khan: git, node (js).
+    # Needed to develop at Khan:
+    # git is needed for version control and to clone our repositories
     # lib{freetype6{,-dev},{png,jpeg}-dev} are needed for PIL
     # imagemagick is needed for image resizing and other operations
     # lib{xml2,xslt}-dev are needed for lxml
     # libyaml-dev is needed for pyyaml
     # libncurses-dev and libreadline-dev are needed for readline
-    # nodejs is used for various frontendy stuff in webapp, as well as our js
-    #   services. We standardize on version 16.
     # redis is needed to run memorystore on dev
     # libnss3-tools is a pre-req for mkcert, see install_mkcert for details.
     # python3-venv is needed for the deploy virtualenv
@@ -177,7 +210,6 @@ EOF
         libxslt1-dev \
         libyaml-dev \
         libncurses-dev libreadline-dev \
-        nodejs \
         redis-server \
         unzip \
         jq \
@@ -187,32 +219,10 @@ EOF
         cargo cargo-doc \
         docker lsof uuid-runtime
 
-    # We need npm 8 or greater to support node16.  That's the default
-    # for nodejs, but we may have overridden it before in a way that
-    # makes it impossible to upgrade, so we reinstall nodejs if our
-    # npm version is 5.x.x, 6.x.x, or 7.x.x.
-    if expr "`npm --version`" : '5\|6\|7' >/dev/null 2>&1; then
-        sudo apt-get purge -y nodejs
-        sudo apt-get install -y "nodejs"
-    fi
-
-    # Ubuntu installs as /usr/bin/nodejs but the rest of the world expects
-    # it to be `node`.
-    if ! [ -f /usr/bin/node ] && [ -f /usr/bin/nodejs ]; then
-        sudo ln -s /usr/bin/nodejs /usr/bin/node
-    fi
-
-    # Ubuntu's nodejs doesn't install npm, but if you get it from the PPA,
-    # it does (and conflicts with the separate npm package).  So install it
-    # if and only if it hasn't been installed already.
-    if ! which npm >/dev/null 2>&1 ; then
-        sudo apt-get install -y npm
-    fi
-    # Make sure we have the preferred version of npm
-    # TODO(benkraft): Pull this version number from webapp somehow.
-    # We need npm 8 or greater to support node16. This is a particular npm8
-    # version known to work.
-    sudo npm install -g npm@8.11.0
+    # Uninstall other Node.js installations to avoid conflicts with the
+    # mise installation.  `mise` installs `node` in `install_deps` in setup.sh.
+    uninstall_node
+    uninstall_nvm
 
     # Not technically needed to develop at Khan, but we assume you have it.
     sudo apt-get install -y unrar ack-grep
