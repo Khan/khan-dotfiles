@@ -261,7 +261,7 @@ install_deps() {
     echo "Installing global dependencies"
 
     # Creates or updates ~/.config/mise/config.toml
-    mise use node@20.20.0
+    mise use -g node@20.20.0
 
     # Verify the Node.js version:
     node -v # Should print "v20.20.0".
