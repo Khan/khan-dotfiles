@@ -237,7 +237,7 @@ setup_mise() {
     # Symlink the mise global config.
     mkdir -p ~/.config/mise
 
-    ln -sfn ~/khan/devtools/khan-dotfiles/mise/config.toml ~/.config/mise/config.toml
+    ln -sfn ~/khan/devtools/khan-dotfiles/mise_config.toml ~/.config/mise/config.toml
 
     # Run in a subshell so the cd to ~ doesn't affect the caller's directory.
     # mise install picks up project-local configs from the current directory,
