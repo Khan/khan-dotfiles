@@ -239,14 +239,21 @@ setup_mise() {
 
     ln -sfn ~/khan/devtools/khan-dotfiles/mise/config.toml ~/.config/mise/config.toml
 
-    # Installs tools defined in ~/.config/mise/config.toml globally.
-    mise install
+    # Run in a subshell so the cd to ~ doesn't affect the caller's directory.
+    # mise install picks up project-local configs from the current directory,
+    # so cd to ~ to ensure only the global config is used.
+    (
+        cd ~
 
-    # Download and install pnpm:
-    corepack enable pnpm
+        # Installs tools defined in ~/.config/mise/config.toml globally.
+        mise install
 
-    # This ensures that shims for `pnpm` are created
-    mise reshim
+        # Download and install pnpm:
+        corepack enable pnpm
+
+        # This ensures that shims for `pnpm` are created
+        mise reshim
+    )
 
     node_version=$(node -v)
     pnpm_version=$(pnpm -v)
