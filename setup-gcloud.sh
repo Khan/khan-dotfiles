@@ -88,13 +88,19 @@ gcloud components update --quiet --version="$version"
 # - app-engine-python: potentially useful for deploying ai-guide-core?
 # - bq: biquery tool used by webapp and many humans
 # - cloud-datastore-emulator: used by all dev servers (or rather will be
-#   "soon" as of March 2019)
+#   "soon" as of March 2019).
+#
+#   TODO(marksandstrom): Update the firestore emulator description below once
+#   we remove the datastore emulator.
+#
+# - cloud-firestore-emulator: will be replacing the datastore emulator
 # - gsutil: GCS client used by "make current.sqlite" and sometimes humans
 # - pubsub-emulator: used in the devserver and for inter-service
 #   communication
 # - beta: used for the command to start the pubsub emulator
 gcloud components install --quiet app-engine-java app-engine-python \
-    bq cloud-datastore-emulator gsutil pubsub-emulator beta kubectl
+    bq cloud-datastore-emulator cloud-firestore-emulator gsutil \
+    pubsub-emulator beta kubectl
 
 # Turn off checking for updates automatically -- having gcloud always say
 # "you can update!" is not useful when we don't want you to!
