@@ -1,0 +1,13 @@
+[settings]
+trusted_config_paths = [
+    '~/khan/webapp',
+    '~/khan/frontend',
+    '~/khan/perseus',
+    '~/khan/wonder-blocks',
+    '~/khan/wonder-stuff',
+    '~/khan/event-schemas',
+    '~/khan/devtools/our-lovely-cli',
+]
+
+[tools]
+node = "20.20"

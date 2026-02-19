@@ -1,12 +1,17 @@
 #!/bin/bash
 
-# Shared functions for mac setup scripts. Source this file after
+# Shared functions for linux setup scripts. Source this file after
 # sourcing shared-functions.sh.
 
-install_mise_mac() {
+install_mise_linux() {
     if ! which mise >/dev/null 2>&1; then
         info "Installing mise\n"
-        brew install mise
+        sudo apt update -y && sudo apt install -y curl
+        sudo install -dm 755 /etc/apt/keyrings
+        curl -fSs https://mise.jdx.dev/gpg-key.pub | sudo tee /etc/apt/keyrings/mise-archive-keyring.asc 1> /dev/null
+        echo "deb [signed-by=/etc/apt/keyrings/mise-archive-keyring.asc] https://mise.jdx.dev/deb stable main" | sudo tee /etc/apt/sources.list.d/mise.list
+        sudo apt update -y
+        sudo apt install -y mise
     else
         success "mise already installed"
     fi
@@ -26,18 +31,17 @@ install_mise_mac() {
     fi
 }
 
-uninstall_node_mac() {
-    # We need to uninstall the deprecated node@16 homebrew formula if it is
-    # installed so its dependencies don't conflict with the dependencies of the
-    # latest postgresql@14 homebrew formula.
-    if brew ls --versions node@16 >/dev/null ; then
-        brew uninstall node@16
+uninstall_node_linux() {
+    # Remove the nodesource apt repo and nodejs apt package if present,
+    # since we now manage node via mise.
+    if [ -f /etc/apt/sources.list.d/nodesource.list ]; then
+        sudo rm -f /etc/apt/sources.list.d/nodesource.list
+        sudo rm -f /etc/apt/preferences.d/nodejs
+        sudo rm -f /usr/share/keyrings/nodesource.gpg
+        sudo apt-get update -qq -y
     fi
-
-    # Uninstall node@20.  We need to update to 20.20.0 to address a security
-    # issue but the node@20 cask is no longer being updated.
-    if brew ls --versions node@20 >/dev/null ; then
-        brew uninstall node@20
+    if dpkg -l nodejs 2>/dev/null | grep -q ^ii; then
+        sudo apt-get purge -y nodejs
     fi
 
     # Remove nvm configuration lines from shell rc files.
@@ -45,9 +49,9 @@ uninstall_node_mac() {
     # of the line up to (and including) any trailing comment.
     for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc; do
         if [ -f "$rcfile" ]; then
-            sed -i '' '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
-            sed -i '' '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
-            sed -i '' '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
+            sed -i '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
+            sed -i '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
+            sed -i '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
         fi
     done
 

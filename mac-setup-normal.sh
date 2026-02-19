@@ -328,13 +328,16 @@ install_wget
 install_openssl
 install_jq
 update_git
-install_mise
 
 install_go
+
 # Uninstall other Node.js installations to avoid conflicts with the
-# mise installation.  `mise` installs `node` in `install_deps` in setup.sh.
-uninstall_node
-uninstall_nvm
+# mise installation.
+uninstall_node_mac
+
+# `mise` is used to manage `node` and other tools.
+# The actual installation of these tools is done in `setup_mise` in setup.sh.
+install_mise_mac
 
 "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 

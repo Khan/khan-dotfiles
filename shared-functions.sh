@@ -232,3 +232,24 @@ exit_warning() {
     echo "***        Khan dev tools WILL NOT WORK until you do!         ***"
     echo "***                                                           ***"
 }
+
+setup_mise() {
+    # Symlink the mise global config.
+    mkdir -p ~/.config/mise
+
+    ln -sfn ~/khan/devtools/khan-dotfiles/mise/config.toml ~/.config/mise/config.toml
+
+    # Installs tools defined in ~/.config/mise/config.toml globally.
+    mise install
+
+    # Download and install pnpm:
+    corepack enable pnpm
+
+    # This ensures that shims for `pnpm` are created
+    mise reshim
+
+    node_version=$(node -v)
+    pnpm_version=$(pnpm -v)
+
+    success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+}

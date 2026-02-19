@@ -260,18 +260,6 @@ setup_python() {
 install_deps() {
     echo "Installing global dependencies"
 
-    # Creates or updates ~/.config/mise/config.toml
-    mise use -g node@20.20.0
-
-    # Verify the Node.js version:
-    node -v # Should print "v20.20.0".
-
-    # Download and install pnpm:
-    corepack enable pnpm
-
-    # This ensures that shims for `pnpm` are created
-    mise reshim
-
     # By default, third party Go tools are install to this directory
     mkdir -p "$ROOT"/go/bin
 
@@ -346,6 +334,12 @@ check_dependencies
 
 install_dotfiles
 
+# mac-normal-setup.sh and linux-setup.sh are responsible for installing `mise`.
+# This symlinks mise/config.toml to ~/.config/mise/config.toml and runs various
+# `mise` commands to install `node`, `pnpm`, and any other tools specified in
+# the config.toml.
+setup_mise
+
 update_userinfo
 
 # the order for these is (mostly!) important, beware
@@ -368,5 +362,8 @@ if [ -n "$warnings" ]; then
 else
     echo "DONE!"
 fi
+
+echo
+echo "Please restart your terminal to pick up all environment changes."
 
 trap - EXIT
