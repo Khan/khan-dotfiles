@@ -237,7 +237,7 @@ setup_mise() {
     # Symlink the mise global config.
     mkdir -p ~/.config/mise
 
-    ln -sfn ~/khan/devtools/khan-dotfiles/mise_config.toml ~/.config/mise/config.toml
+    ln -sfn "$DEVTOOLS_DIR"/khan-dotfiles/mise_config.toml ~/.config/mise/config.toml
 
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
     # For fish, we need to add it to the fish config file directly.

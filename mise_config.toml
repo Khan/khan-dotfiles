@@ -4,6 +4,7 @@ trusted_config_paths = [
     '~/khan/event-schemas',
     '~/khan/frontend',
     '~/khan/mise-demo',
+    '~/khan/mobile',
     '~/khan/perseus',
     '~/khan/webapp',
     '~/khan/wonder-blocks',
