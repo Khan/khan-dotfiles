@@ -263,7 +263,7 @@ setup_mise() {
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
     # For fish, we need to add it to the fish config file directly.
     if [ "$(basename "$SHELL")" = "fish" ]; then
-        echo '~/.local/bin/mise activate fish | source' >> ~/.config/fish/config.fish
+        echo '~/.local/bin/mise activate fish | source' >> ~/.config/fish/conf.d/mise.fish
     fi
 
     # Installs tools defined in ~/.config/mise/config.toml globally.
