@@ -239,27 +239,6 @@ setup_mise() {
 
     ln -sfn ~/khan/devtools/khan-dotfiles/mise_config.toml ~/.config/mise/config.toml
 
-    # Activate mise for managing tool versions (e.g. node).
-    # We use --shims so that tools managed by mise will work properly
-    # inside of AI agent sandboxes.
-    if which mise >/dev/null 2>&1; then
-        case "$(basename "$SHELL")" in
-            zsh)
-                eval "$(mise activate zsh --shims)"
-                ;;
-            fish)
-                ~/.local/bin/mise activate fish | source
-                ;;
-            bash)
-                eval "$(mise activate bash --shims)"
-                ;;
-            *)
-                echo "Warning: mise activation is not supported for $SHELL." >&2
-                echo "You will need to run 'mise use' manually when cd'ing into a directory with a mise.toml file." >&2
-                ;;
-        esac
-    fi
-
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
     # For fish, we need to add it to the fish config file directly.
     if [ "$(basename "$SHELL")" = "fish" ]; then
@@ -273,6 +252,4 @@ setup_mise() {
     pnpm_version=$(pnpm -v)
 
     success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
-
-    info "Please start a new shell to finish activating mise.\n"
 }

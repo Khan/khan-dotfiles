@@ -19,6 +19,9 @@ export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-dotfiles/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+# NOTE(kevinb): We do this instead of `mise activate <shell_name> --shims` and
+# it seems to work fine.
+PATH="$HOME/.local/share/mise/shims:$PATH"
 
 export MANPATH="$KA_DEVROOT/our-lovely-cli/man:$MANPATH"
 
@@ -93,28 +96,6 @@ if [ `uname -s` = Darwin ]; then
 
     # We use the timeout command a lot, but os x calls it `gtimeout`.
     alias timeout=gtimeout
-fi
-
-# Activate mise for managing tool versions (e.g. node).
-# We use --shims so that tools managed by mise will work properly
-# inside of AI agent sandboxes.
-if which mise >/dev/null 2>&1; then
-    case "$(basename "$SHELL")" in
-        zsh)
-            eval "$(mise activate zsh --shims)"
-            ;;
-        fish)
-            # fish does not source .profile.khan; fish activation is
-            # configured separately by setup_mise.
-            ;;
-        bash)
-            eval "$(mise activate bash --shims)"
-            ;;
-        *)
-            echo "Warning: mise activation is not supported for $SHELL." >&2
-            echo "You will need to run 'mise install' manually when cd'ing into a directory with a mise.toml file." >&2
-            ;;
-    esac
 fi
 
 # Source the generated profile, if it exists.
