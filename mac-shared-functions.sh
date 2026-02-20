@@ -27,20 +27,27 @@ install_mise_mac() {
 }
 
 uninstall_node_mac() {
-    # We need to uninstall the deprecated node@16 homebrew formula if it is
-    # installed so its dependencies don't conflict with the dependencies of the
-    # latest postgresql@14 homebrew formula.
+    # Uninstall node@16 if it was installed via brew
     if brew ls --versions node@16 >/dev/null ; then
         brew uninstall node@16
     fi
 
-    # Uninstall node@20.  We need to update to 20.20.0 to address a security
-    # issue but the node@20 cask is no longer being updated.
+    # Uninstall node@20 if it was installed via brew
     if brew ls --versions node@20 >/dev/null ; then
         brew uninstall node@20
     fi
 
-    # Remove nvm configuration lines from shell rc files.
+    # Uninstall nvm if it was installed via brew.
+    if brew ls --versions nvm >/dev/null 2>&1; then
+        brew uninstall nvm
+    fi
+
+    # Uninstall fnm if it was installed via brew.
+    if brew ls --versions fnm >/dev/null 2>&1; then
+        brew uninstall fnm
+    fi
+
+    # Remove nvm and fnm configuration lines from shell rc files.
     # These lines may have trailing comments, so we match from the start
     # of the line up to (and including) any trailing comment.
     for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc; do
@@ -48,8 +55,15 @@ uninstall_node_mac() {
             sed -i '' '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
             sed -i '' '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
             sed -i '' '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
+            sed -i '' '/^eval "\$(fnm env --use-on-cd)"/d' "$rcfile"
         fi
     done
+
+    # Remove fnm configuration line from fish config if present.
+    local fish_config=~/.config/fish/config.fish
+    if [ -f "$fish_config" ]; then
+        sed -i '' '/^fnm env --use-on-cd | source/d' "$fish_config"
+    fi
 
     # Remove the nvm installation directory.
     if [ -d "$HOME/.nvm" ]; then
