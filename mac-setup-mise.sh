@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# This script can be run independently to set up Node.js via mise.
-# It also cleans up old node homebrew formulas and nvm installations.
+# This script can use to install `mise` on MacOS independently of the rest
+# of the khan-dotfiles setup.
+#
+# It also cleans up old installations of `node` to avoid conflicts with the
+# `mise` installation.
 
 # Bail on any errors
 set -e
@@ -18,5 +21,6 @@ uninstall_node_mac
 # `mise` is a tool used for managing tools.
 install_mise_mac
 
-# Use `mise` to install `node`, `pnpm`, and other tools and set up shims.
+# finish setting up `mise` and install all of the tools it manages
+# such as `node`, `pnpm`, etc.
 setup_mise
