@@ -163,7 +163,8 @@ install_packages() {
     uninstall_node_linux
 
     # `mise` is used to manage `node` and other tools.
-    # The actual installation of these tools is done in `setup_mise` in setup.sh.
+    # The actual installation of these tools is done in setup.sh when we call
+    # `setup_mise`.
     install_mise_linux
 
     # Not technically needed to develop at Khan, but we assume you have it.

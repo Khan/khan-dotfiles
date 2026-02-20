@@ -27,14 +27,9 @@ install_mise_mac() {
 }
 
 uninstall_node_mac() {
-    # Uninstall node@16 if it was installed via brew
-    if brew ls --versions node@16 >/dev/null ; then
-        brew uninstall node@16
-    fi
-
-    # Uninstall node@20 if it was installed via brew
-    if brew ls --versions node@20 >/dev/null ; then
-        brew uninstall node@20
+    # Uninstall all versions of node installed with brew
+    if brew ls --versions node >/dev/null 2>&1; then
+        brew uninstall node --force
     fi
 
     # Uninstall nvm if it was installed via brew.
@@ -50,7 +45,7 @@ uninstall_node_mac() {
     # Remove nvm and fnm configuration lines from shell rc files.
     # These lines may have trailing comments, so we match from the start
     # of the line up to (and including) any trailing comment.
-    for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc; do
+    for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc .zprofile; do
         if [ -f "$rcfile" ]; then
             sed -i '' '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
             sed -i '' '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
