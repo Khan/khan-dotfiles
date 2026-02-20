@@ -56,13 +56,6 @@ fi
 # a warning.  See ssh-add man page.
 export APPLE_SSH_ADD_BEHAVIOR=macos
 
-# Activate mise for managing tool versions (e.g. node).
-# We use --shims so that tools managed by mise will work properly
-# inside of AI agent sandboxes.
-if which mise >/dev/null 2>&1; then
-    eval "$(mise activate zsh --shims)"
-fi
-
 # Add ssh keys stored in the keychain to the ssh-agent
 # Note: IF you have an identity in ~/.ssh and DO NOT have a passphrase already
 #   in the keychain, you will be prompted for a passphrase.  This is because

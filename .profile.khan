@@ -99,7 +99,22 @@ fi
 # We use --shims so that tools managed by mise will work properly
 # inside of AI agent sandboxes.
 if which mise >/dev/null 2>&1; then
-    eval "$(mise activate bash --shims)"
+    case "$(basename "$SHELL")" in
+        zsh)
+            eval "$(mise activate zsh --shims)"
+            ;;
+        fish)
+            # fish does not source .profile.khan; fish activation is
+            # configured separately by setup_mise.
+            ;;
+        bash)
+            eval "$(mise activate bash --shims)"
+            ;;
+        *)
+            echo "Warning: mise activation is not supported for $SHELL." >&2
+            echo "You will need to run 'mise install' manually when cd'ing into a directory with a mise.toml file." >&2
+            ;;
+    esac
 fi
 
 # Source the generated profile, if it exists.

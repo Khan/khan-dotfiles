@@ -10,58 +10,81 @@ install_mise_mac() {
     else
         success "mise already installed"
     fi
-
-    # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
-    # For fish, we need to add it to the fish config file directly.
-    if [ "$(basename "$SHELL")" = "fish" ]; then
-        local rcfile=~/.config/fish/config.fish
-        local activate_line='mise activate fish --shims | source'
-        if [ -f "$rcfile" ] && grep -qF 'mise activate' "$rcfile"; then
-            success "mise activate already in $rcfile"
-        else
-            info "Adding mise activate to $rcfile\n"
-            mkdir -p ~/.config/fish
-            echo "$activate_line" >> "$rcfile"
-        fi
-    fi
 }
 
 uninstall_node_mac() {
-    # Uninstall all versions of node installed with brew
-    if brew ls --versions node >/dev/null 2>&1; then
-        brew uninstall node --force
-    fi
+    # --- Detect phase: determine what changes are needed ---
+    local has_node_brew=false has_node16_brew=false has_node20_brew=false
+    local has_nvm_brew=false has_fnm_brew=false has_nvm_dir=false
+    local fish_has_fnm=false
+    local -a rc_files_with_nvm=()
+    local fish_config=~/.config/fish/config.fish
 
-    # Uninstall nvm if it was installed via brew.
-    if brew ls --versions nvm >/dev/null 2>&1; then
-        brew uninstall nvm
-    fi
+    brew ls --versions node >/dev/null 2>&1 && has_node_brew=true
+    brew ls --versions node@16 >/dev/null 2>&1 && has_node16_brew=true
+    brew ls --versions node@20 >/dev/null 2>&1 && has_node20_brew=true
+    brew ls --versions nvm >/dev/null 2>&1 && has_nvm_brew=true
+    brew ls --versions fnm >/dev/null 2>&1 && has_fnm_brew=true
+    [ -d "$HOME/.nvm" ] && has_nvm_dir=true
+    [ -f "$fish_config" ] && grep -qF 'fnm env --use-on-cd | source' "$fish_config" && fish_has_fnm=true
 
-    # Uninstall fnm if it was installed via brew.
-    if brew ls --versions fnm >/dev/null 2>&1; then
-        brew uninstall fnm
-    fi
-
-    # Remove nvm and fnm configuration lines from shell rc files.
-    # These lines may have trailing comments, so we match from the start
-    # of the line up to (and including) any trailing comment.
-    for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc .zprofile; do
-        if [ -f "$rcfile" ]; then
-            sed -i '' '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
-            sed -i '' '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
-            sed -i '' '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
-            sed -i '' '/^eval "\$(fnm env --use-on-cd)"/d' "$rcfile"
+    for rcfile in ~/.bashrc ~/.bash_profile ~/.zshrc ~/.zprofile; do
+        if [ -f "$rcfile" ] && grep -qE '^export NVM_DIR=|^\[ -s "\$NVM_DIR|^eval "\$\(fnm env' "$rcfile"; then
+            rc_files_with_nvm+=("$rcfile")
         fi
     done
 
-    # Remove fnm configuration line from fish config if present.
-    local fish_config=~/.config/fish/config.fish
-    if [ -f "$fish_config" ]; then
-        sed -i '' '/^fnm env --use-on-cd | source/d' "$fish_config"
+    # --- Build list of pending changes ---
+    local -a changes=()
+    $has_node_brew   && changes+=("Uninstall node (brew formula)")
+    $has_node16_brew && changes+=("Uninstall node@16 (brew formula)")
+    $has_node20_brew && changes+=("Uninstall node@20 (brew formula)")
+    $has_nvm_brew && changes+=("Uninstall nvm (brew formula)")
+    $has_fnm_brew && changes+=("Uninstall fnm (brew formula)")
+    for rcfile in "${rc_files_with_nvm[@]}"; do
+        changes+=("Remove nvm/fnm config lines from $rcfile")
+    done
+    $fish_has_fnm && changes+=("Remove fnm config line from $fish_config")
+    $has_nvm_dir  && changes+=("Remove ~/.nvm directory")
+
+    [ ${#changes[@]} -eq 0 ] && return
+
+    # --- Prompt phase: show list and ask once ---
+    notice "The following changes will be made to remove old Node.js installations:"
+    for change in "${changes[@]}"; do
+        notice "  - $change"
+    done
+    echo
+    if [ "$(get_yn_input "Proceed with the above changes?" y)" != "y" ]; then
+        return
     fi
 
-    # Remove the nvm installation directory.
-    if [ -d "$HOME/.nvm" ]; then
+    # --- Execute phase ---
+    if $has_node_brew; then
+        brew uninstall node
+    fi
+    if $has_node16_brew; then
+        brew uninstall node@16
+    fi
+    if $has_node20_brew; then
+        brew uninstall node@20
+    fi
+    if $has_nvm_brew; then
+        brew uninstall nvm
+    fi
+    if $has_fnm_brew; then
+        brew uninstall fnm
+    fi
+    for rcfile in "${rc_files_with_nvm[@]}"; do
+        sed -i '' '/^export NVM_DIR="\$HOME\/\.nvm"/d' "$rcfile"
+        sed -i '' '/^\[ -s "\$NVM_DIR\/nvm\.sh" \]/d' "$rcfile"
+        sed -i '' '/^\[ -s "\$NVM_DIR\/bash_completion" \]/d' "$rcfile"
+        sed -i '' '/^eval "\$(fnm env --use-on-cd)"/d' "$rcfile"
+    done
+    if $fish_has_fnm; then
+        sed -i '' '/^fnm env --use-on-cd | source/d' "$fish_config"
+    fi
+    if $has_nvm_dir; then
         rm -rf "$HOME/.nvm"
     fi
 }

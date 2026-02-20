@@ -10,9 +10,5 @@ trusted_config_paths = [
 ]
 
 [tools]
-# NOTE: We don't use `mise` to manage `pnpm`.  Instead each repo has a
-# `packageManager` field in its package.json that specifies the version
-# of `pnpm` to use.  `node` will no longer be shipping `corepack` in
-# version 25 so we will need to update this config to include `pnpm` at
-# that point.
 node = "20.20"
+pnpm = "10.26.0"
