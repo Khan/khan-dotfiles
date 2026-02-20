@@ -255,7 +255,7 @@ setup_mise() {
                 ;;
             *)
                 echo "Warning: mise activation is not supported for $SHELL." >&2
-                echo "You will need to run 'mise install' manually when cd'ing into a directory with a mise.toml file." >&2
+                echo "You will need to run 'mise use' manually when cd'ing into a directory with a mise.toml file." >&2
                 ;;
         esac
     fi
