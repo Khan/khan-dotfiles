@@ -248,6 +248,17 @@ setup_mise() {
     # Installs tools defined in ~/.config/mise/config.toml globally.
     mise install
 
+    local mise_shims="$HOME/.local/share/mise/shims"
+
+    if [ "$(which node)" != "$mise_shims/node" ]; then
+        error "node is not resolving to the mise shim (got $(which node))\n"
+        return 1
+    fi
+    if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
+        error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
+        return 1
+    fi
+
     node_version=$(node -v)
     pnpm_version=$(pnpm -v)
 
