@@ -244,7 +244,7 @@ setup_mise() {
         "$HOME/.zshrc"
         "$HOME/.config/fish/config.fish"
     )
-    local _answer _tmp _config_file
+    local _answer _tmp _config_file _removed_activate=false
     for _config_file in "${_config_files[@]}"; do
         if [ -f "$_config_file" ] && grep -q 'mise activate' "$_config_file"; then
             notice "Found 'mise activate ...' in $_config_file."
@@ -254,6 +254,7 @@ setup_mise() {
                 _tmp=$(mktemp)
                 grep -v 'mise activate' "$_config_file" > "$_tmp" && mv "$_tmp" "$_config_file"
                 success "Removed mise activate command from $_config_file"
+                _removed_activate=true
             else
                 warn "Skipped removing from $_config_file"
             fi
@@ -282,6 +283,8 @@ setup_mise() {
     # Uninstall any existing node installations which may not have been configured
     # to with `postinstall = "corepack enable"`.
     mise uninstall node --all
+    rm -rf "$HOME/.local/share/mise/installs/node"
+    rm -rf "$HOME/.local/share/mise/installs/pnpm"
 
     # Installs tools defined in ~/.config/mise/config.toml globally.
     mise install
@@ -301,4 +304,8 @@ setup_mise() {
     pnpm_version=$(pnpm -v)
 
     success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+
+    if $_removed_activate; then
+        notice "Shell config files were modified. Please open a new shell for the changes to take effect."
+    fi
 }
