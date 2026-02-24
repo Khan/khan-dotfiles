@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # This installs binaries that you need to develop at Khan Academy.
 # The OS-independent setup.sh assumes all this stuff has been

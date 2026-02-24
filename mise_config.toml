@@ -12,5 +12,4 @@ trusted_config_paths = [
 ]
 
 [tools]
-node = "20.20"
-pnpm = "10.26.0"
+node = { version = "20.20", postinstall = "corepack enable" }
