@@ -13,7 +13,9 @@ install_mise_linux() {
         sudo apt update -y
         sudo apt install -y mise
     else
-        success "mise already installed"
+        info "Updating mise\n"
+        sudo apt update -y && sudo apt install -y mise
+        success "mise updated to $(mise --version)"
     fi
 }
 

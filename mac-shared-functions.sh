@@ -8,7 +8,9 @@ install_mise_mac() {
         info "Installing mise\n"
         brew install mise
     else
-        success "mise already installed"
+        info "Updating mise\n"
+        brew upgrade mise
+        success "mise updated to $(mise --version)"
     fi
 }
 
