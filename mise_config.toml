@@ -1,2 +1,5 @@
+[settings]
+trusted_config_paths = ['~/khan/']
+
 [tools]
 node = { version = "20.20", postinstall = "corepack enable" }
