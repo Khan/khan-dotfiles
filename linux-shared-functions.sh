@@ -19,6 +19,15 @@ install_mise_linux() {
     fi
 }
 
+# Returns true if a binary is on PATH and not provided by mise shims.
+_non_mise_binary_on_path() {
+    local bin="$1"
+    local bin_path
+    bin_path="$(which "$bin" 2>/dev/null)" || return 1
+    [[ "$bin_path" == "$HOME/.local/share/mise/shims/"* ]] && return 1
+    return 0
+}
+
 uninstall_node_linux() {
     # --- Detect phase: determine what changes are needed ---
     local has_nodesource=false has_nodejs_pkg=false has_nvm_dir=false
@@ -43,7 +52,14 @@ uninstall_node_linux() {
     done
     $has_nvm_dir && changes+=("Remove ~/.nvm directory")
 
-    [ ${#changes[@]} -eq 0 ] && return
+    if [ ${#changes[@]} -eq 0 ]; then
+        # Check if node or pnpm still exist on the current path
+        if _non_mise_binary_on_path node || _non_mise_binary_on_path pnpm; then
+            error "node and/or pnpm are still on the current PATH but no managed installations were found."
+            exit 1
+        fi
+        return
+    fi
 
     # --- Prompt phase: show list and ask once ---
     notice "The following changes will be made to remove old Node.js installations:"
@@ -72,5 +88,11 @@ uninstall_node_linux() {
     done
     if $has_nvm_dir; then
         rm -rf "$HOME/.nvm"
+    fi
+
+    # Check if node or pnpm still exist on the current path
+    if _non_mise_binary_on_path node || _non_mise_binary_on_path pnpm; then
+        error "node and/or pnpm are still on the current PATH. Uninstall may have failed."
+        exit 1
     fi
 }
