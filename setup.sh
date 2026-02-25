@@ -147,7 +147,17 @@ install_dotfiles() {
     done
 
     # Make sure we pick up any changes we've made, so later steps of install don't fail.
-    . ~/.profile
+    case "$(basename "$SHELL")" in
+        zsh)
+            . ~/.zprofile
+            ;;
+        bash)
+            . ~/.profile
+            ;;
+        *)
+            . ~/.profile
+            ;;
+    esac
 }
 
 # clone a repository without any special sauce. should only be used in order to
@@ -250,38 +260,6 @@ setup_python() {
 install_deps() {
     echo "Installing global dependencies"
 
-    # Need to install yarn first before run `make install_deps`
-    # in webapp.
-    echo "Installing yarn"
-    if ! which yarn >/dev/null 2>&1; then
-        if [[ -n "${IS_MAC}" ]]; then
-            # Mac does not require root - npm is in /usr/local via brew
-            npm install -g yarn
-        else
-            # Linux requires sudo permissions
-            sudo npm install -g yarn
-        fi
-    fi
-
-    # Need to install pnpm first before run `make install_deps`
-    # in webapp.
-    # Following: https://pnpm.io/installation#using-corepack
-    echo "Installing pnpm"
-    if ! which pnpm >/dev/null 2>&1; then
-        if [ -n "${IS_MAC}" ]; then
-            if ! which corepack >/dev/null 2>&1; then
-                brew install corepack
-            fi
-            # Remove stale corepack symlinks that may conflict with
-            # `corepack enable`. This can happen if a previous install failed
-            # or if node was installed via Homebrew with its own corepack.
-            # See: EEXIST error when symlink already exists
-            brew_bin="$(brew --prefix)/bin"
-            rm -f "$brew_bin/pnpm" "$brew_bin/pnpx" 2>/dev/null || true
-        fi
-        corepack enable pnpm
-    fi
-
     # By default, third party Go tools are install to this directory
     mkdir -p "$ROOT"/go/bin
 
@@ -349,16 +327,18 @@ install_hooks() {
 
 install_our_lovely_cli_deps() {
     cd "$DEVTOOLS_DIR/our-lovely-cli"
-    if [ -f "yarn.lock" ]; then
-        yarn install
-    else
-        pnpm install
-    fi
+    pnpm install
 }
 
 check_dependencies
 
 install_dotfiles
+
+# mac-normal-setup.sh and linux-setup.sh are responsible for installing `mise`.
+# This symlinks mise/config.toml to ~/.config/mise/config.toml and runs various
+# `mise` commands to install `node`, `pnpm`, and any other tools specified in
+# the config.toml.
+setup_mise
 
 update_userinfo
 
@@ -382,5 +362,8 @@ if [ -n "$warnings" ]; then
 else
     echo "DONE!"
 fi
+
+echo
+echo "Please restart your terminal to pick up all environment changes."
 
 trap - EXIT

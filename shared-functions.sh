@@ -232,3 +232,79 @@ exit_warning() {
     echo "***        Khan dev tools WILL NOT WORK until you do!         ***"
     echo "***                                                           ***"
 }
+
+setup_mise() {
+    # Check for and remove 'mise activate ...' commands from shell config files.
+    # These conflict with the shims-based approach we use.
+    local _config_files=(
+        "$HOME/.profile"
+        "$HOME/.bash_profile"
+        "$HOME/.bashrc"
+        "$HOME/.zprofile"
+        "$HOME/.zshrc"
+        "$HOME/.config/fish/config.fish"
+    )
+    local _answer _tmp _config_file _removed_activate=false
+    for _config_file in "${_config_files[@]}"; do
+        if [ -f "$_config_file" ] && grep -q 'mise activate' "$_config_file"; then
+            notice "Found 'mise activate ...' in $_config_file."
+            notice "This is not needed when using mise shims and should be removed."
+            _answer=$(get_yn_input "Remove it from $_config_file?" "y")
+            if [ "$_answer" = "y" ]; then
+                _tmp=$(mktemp)
+                grep -v 'mise activate' "$_config_file" > "$_tmp" && mv "$_tmp" "$_config_file"
+                success "Removed mise activate command from $_config_file"
+                _removed_activate=true
+            else
+                warn "Skipped removing from $_config_file"
+            fi
+        fi
+    done
+
+    # Symlink the mise global config.
+    mkdir -p ~/.config/mise
+
+    local _mise_config="$HOME/.config/mise/config.toml"
+    if [ -f "$_mise_config" ] && [ ! -L "$_mise_config" ]; then
+        notice "Found existing $_mise_config that is not a symlink."
+        notice "Moving it to $_mise_config.bak before creating symlink."
+        mv "$_mise_config" "$_mise_config.bak"
+        success "Moved $_mise_config to $_mise_config.bak"
+    fi
+
+    ln -sfn "$DEVTOOLS_DIR"/khan-dotfiles/mise_config.toml "$_mise_config"
+
+    # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
+    # For fish, we need to add it to the fish config file directly.
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        echo '~/.local/bin/mise activate fish | source' >> ~/.config/fish/conf.d/mise.fish
+    fi
+
+    # Uninstall any existing node installations which may not have been configured
+    # to with `postinstall = "corepack enable"`.
+    rm -rf "$HOME/.local/share/mise/installs/node"
+    rm -rf "$HOME/.local/share/mise/installs/pnpm"
+
+    # Installs tools defined in ~/.config/mise/config.toml globally.
+    mise install
+
+    local mise_shims="$HOME/.local/share/mise/shims"
+
+    if [ "$(which node)" != "$mise_shims/node" ]; then
+        error "node is not resolving to the mise shim (got $(which node))\n"
+        return 1
+    fi
+    if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
+        error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
+        return 1
+    fi
+
+    node_version=$(node -v)
+    pnpm_version=$(pnpm -v)
+
+    success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+
+    if $_removed_activate; then
+        notice "Shell config files were modified. Please open a new shell for the changes to take effect."
+    fi
+}

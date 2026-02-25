@@ -10,8 +10,20 @@ if [ `uname -m` = "arm64" ]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
-# Add devtools bins to PATH
-# TODO(mroth): rewrite these paths at install time based on user preference
+# Trust mise.toml config files in Khan repos.
+KA_ROOT="$HOME/khan"
+export MISE_TRUSTED_CONFIG_PATHS="\
+$KA_DEVROOT/our-lovely-cli:\
+$KA_ROOT/event-schemas:\
+$KA_ROOT/frontend:\
+$KA_ROOT/mise-demo:\
+$KA_ROOT/mobile:\
+$KA_ROOT/perseus:\
+$KA_ROOT/webapp:\
+$KA_ROOT/wonder-blocks:\
+$KA_ROOT/wonder-stuff"
+
+# Add devtools bins to path
 KA_DEVROOT="$HOME/khan/devtools"
 export PATH="$KA_DEVROOT/our-lovely-cli/bin:$PATH"
 export PATH="$KA_DEVROOT/ka-clone/bin:$PATH"
@@ -19,6 +31,9 @@ export PATH="$KA_DEVROOT/khan-linter/bin:$PATH"
 export PATH="$KA_DEVROOT/google-cloud-sdk/bin:$PATH"
 export PATH="$KA_DEVROOT/khan-dotfiles/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
+# NOTE(kevinb): We do this instead of `mise activate <shell_name> --shims` and
+# it seems to work fine.
+export PATH="$HOME/.local/share/mise/shims:$PATH"
 
 export MANPATH="$KA_DEVROOT/our-lovely-cli/man:$MANPATH"
 
