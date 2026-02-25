@@ -10,19 +10,6 @@ if [ `uname -m` = "arm64" ]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
-# Trust mise.toml config files in Khan repos.
-KA_ROOT="$HOME/khan"
-export MISE_TRUSTED_CONFIG_PATHS="\
-$KA_DEVROOT/our-lovely-cli:\
-$KA_ROOT/event-schemas:\
-$KA_ROOT/frontend:\
-$KA_ROOT/mise-demo:\
-$KA_ROOT/mobile:\
-$KA_ROOT/perseus:\
-$KA_ROOT/webapp:\
-$KA_ROOT/wonder-blocks:\
-$KA_ROOT/wonder-stuff"
-
 # Add devtools bins to path
 KA_DEVROOT="$HOME/khan/devtools"
 export PATH="$KA_DEVROOT/our-lovely-cli/bin:$PATH"
