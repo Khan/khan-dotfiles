@@ -1,15 +1,2 @@
-[settings]
-trusted_config_paths = [
-    '~/khan/devtools/our-lovely-cli',
-    '~/khan/event-schemas',
-    '~/khan/frontend',
-    '~/khan/mise-demo',
-    '~/khan/mobile',
-    '~/khan/perseus',
-    '~/khan/webapp',
-    '~/khan/wonder-blocks',
-    '~/khan/wonder-stuff',
-]
-
 [tools]
 node = { version = "20.20", postinstall = "corepack enable" }

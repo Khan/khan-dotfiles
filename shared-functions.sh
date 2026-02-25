@@ -282,7 +282,6 @@ setup_mise() {
 
     # Uninstall any existing node installations which may not have been configured
     # to with `postinstall = "corepack enable"`.
-    mise uninstall node --all
     rm -rf "$HOME/.local/share/mise/installs/node"
     rm -rf "$HOME/.local/share/mise/installs/pnpm"
 
