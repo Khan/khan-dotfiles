@@ -13,11 +13,7 @@ install_mise_mac() {
 
     if ! which mise >/dev/null 2>&1; then
         info "Installing mise\n"
-
-        # Although many users don't use Fish, setting this here prevents
-        # auto-activation during install _and_ doesn't bother other shells at
-        # all.
-        env MISE_FISH_AUTO_ACTIVATE=0 brew install mise
+        brew install mise
     else
         info "Updating mise\n"
         brew upgrade mise
