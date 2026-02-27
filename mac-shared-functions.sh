@@ -4,6 +4,13 @@
 # sourcing shared-functions.sh.
 
 install_mise_mac() {
+    # This deactivates Mise's automatic activation for Fish as we want to
+    # use shims and not Homebrew's auto-activated default!
+    # See: https://mise.jdx.dev/configuration.html#mise-fish-auto-activate-1
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        fish --command "set -U MISE_FISH_AUTO_ACTIVATE 0"
+    fi
+
     if ! which mise >/dev/null 2>&1; then
         info "Installing mise\n"
         brew install mise
@@ -79,7 +86,14 @@ uninstall_node_mac() {
 
     # --- Execute phase ---
     if $has_node_brew; then
-        brew uninstall node
+        # We _try_ to uninstall node, but if it's depended on by other pacakges,
+        # we can't. So in that case we fall back to simply unlinking it so it no
+        # longer appears in the `bin` folder for Homebrew. Packages that depend
+        # on it will continue to work after unlinking it.
+        if ! (brew uninstall node > /dev/null 2>&1); then
+           warn "We could not uninstall the Homebrew version of node. We will unlink it so that it does not conflict with the Mise-managed version that will be installed."
+           brew unlink node
+        fi
     fi
     if $has_node16_brew; then
         brew uninstall node@16

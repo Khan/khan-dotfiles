@@ -243,6 +243,7 @@ setup_mise() {
         "$HOME/.zprofile"
         "$HOME/.zshrc"
         "$HOME/.config/fish/config.fish"
+        "$HOME/.config/fish/conf.d/mise.fish"
     )
     local _answer _tmp _config_file _removed_activate=false
     for _config_file in "${_config_files[@]}"; do
@@ -252,7 +253,7 @@ setup_mise() {
             _answer=$(get_yn_input "Remove it from $_config_file?" "y")
             if [ "$_answer" = "y" ]; then
                 _tmp=$(mktemp)
-                grep -v 'mise activate' "$_config_file" > "$_tmp" && mv "$_tmp" "$_config_file"
+                grep -v 'mise activate' "$_config_file" > "$_tmp" || mv "$_tmp" "$_config_file"
                 success "Removed mise activate command from $_config_file"
                 _removed_activate=true
             else
@@ -275,9 +276,12 @@ setup_mise() {
     ln -sfn "$DEVTOOLS_DIR"/khan-dotfiles/mise_config.toml "$_mise_config"
 
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
-    # For fish, we need to add it to the fish config file directly.
+    # Since we don't manage equivalent files for Fish in this repo, we need to
+    # add the activation to the appropriate Fish config.
     if [ "$(basename "$SHELL")" = "fish" ]; then
-        echo '~/.local/bin/mise activate fish | source' >> ~/.config/fish/conf.d/mise.fish
+        # We've already deleted any `mise activate` from this file earlier, so
+        # we can simply add it safely without fear of duplicating the line.
+        echo "mise activate --shims fish | source" >> ~/.config/fish/conf.d/mise.fish
     fi
 
     # Uninstall any existing node installations which may not have been configured
@@ -287,6 +291,15 @@ setup_mise() {
 
     # Installs tools defined in ~/.config/mise/config.toml globally.
     mise install
+
+    # For the Fish shell we can't do the extra verification as _this_ script is
+    # not running in Fish. So we simply exit and leave it to the user to verify.
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        echo
+        success "Mise installed and activated for the Fish shell."
+        notice "Please open a new shell session for changes to take effect (you can verify everything is correct by running 'which node' and 'which pnpm' in a new Fish shell. They should both point to the mise shims folder."
+        return
+    fi
 
     local mise_shims="$HOME/.local/share/mise/shims"
 
