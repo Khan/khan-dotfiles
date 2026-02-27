@@ -243,6 +243,7 @@ setup_mise() {
         "$HOME/.zprofile"
         "$HOME/.zshrc"
         "$HOME/.config/fish/config.fish"
+        "$HOME/.config/fish/conf.d/mise.fish"
     )
     local _answer _tmp _config_file _removed_activate=false
     for _config_file in "${_config_files[@]}"; do
@@ -252,7 +253,7 @@ setup_mise() {
             _answer=$(get_yn_input "Remove it from $_config_file?" "y")
             if [ "$_answer" = "y" ]; then
                 _tmp=$(mktemp)
-                grep -v 'mise activate' "$_config_file" > "$_tmp" && mv "$_tmp" "$_config_file"
+                grep -v 'mise activate' "$_config_file" > "$_tmp" || mv "$_tmp" "$_config_file"
                 success "Removed mise activate command from $_config_file"
                 _removed_activate=true
             else
@@ -277,7 +278,9 @@ setup_mise() {
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
     # Since we don't manage equivalent files for Fish in this repo, we need to
     # add the activation to the appropriate Fish config.
-    if [[ ! -f ~/.config/fish/conf.d/mise.fish ]] || ! grep "mise activate" ~/.config/fish/conf.d/mise.fish; then
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        # We've already deleted any `mise activate` from this file earlier, so
+        # we can simply add it safely without fear of duplicating the line.
         echo "mise activate --shims fish | source" >> ~/.config/fish/conf.d/mise.fish
     fi
 
