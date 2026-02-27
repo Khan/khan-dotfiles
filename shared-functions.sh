@@ -289,27 +289,32 @@ setup_mise() {
     # Installs tools defined in ~/.config/mise/config.toml globally.
     mise install
 
+    # For the Fish shell we can't do the extra verification as _this_ script is
+    # not running in Fish. So we simply exit and leave it to the user to verify.
     if [ "$(basename "$SHELL")" = "fish" ]; then
-        success "Mise installed and activated for the Fish shell. Please open a new shell session for changes to take effect."
-    else
-        local mise_shims="$HOME/.local/share/mise/shims"
+        echo
+        success "Mise installed and activated for the Fish shell."
+        notice "Please open a new shell session for changes to take effect (you can verify everything is correct by running 'which node' and 'which pnpm' in a new Fish shell. They should both point to the mise shims folder."
+        return
+    fi
 
-        if [ "$(which node)" != "$mise_shims/node" ]; then
-            error "node is not resolving to the mise shim (got $(which node))\n"
-            return 1
-        fi
-        if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
-            error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
-            return 1
-        fi
+    local mise_shims="$HOME/.local/share/mise/shims"
 
-        node_version=$(node -v)
-        pnpm_version=$(pnpm -v)
+    if [ "$(which node)" != "$mise_shims/node" ]; then
+        error "node is not resolving to the mise shim (got $(which node))\n"
+        return 1
+    fi
+    if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
+        error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
+        return 1
+    fi
 
-        success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+    node_version=$(node -v)
+    pnpm_version=$(pnpm -v)
 
-        if $_removed_activate; then
-            notice "Shell config files were modified. Please open a new shell for the changes to take effect."
-        fi
+    success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+
+    if $_removed_activate; then
+        notice "Shell config files were modified. Please open a new shell for the changes to take effect."
     fi
 }
