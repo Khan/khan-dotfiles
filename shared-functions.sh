@@ -275,9 +275,10 @@ setup_mise() {
     ln -sfn "$DEVTOOLS_DIR"/khan-dotfiles/mise_config.toml "$_mise_config"
 
     # .profile.khan and .zprofile.khan handle mise activate for bash and zsh.
-    # For fish, we need to add it to the fish config file directly.
-    if [ "$(basename "$SHELL")" = "fish" ]; then
-        echo '~/.local/bin/mise activate fish | source' >> ~/.config/fish/conf.d/mise.fish
+    # Since we don't manage equivalent files for Fish in this repo, we need to
+    # add the activation to the appropriate Fish config.
+    if [[ ! -f ~/.config/fish/conf.d/mise.fish ]] || ! grep "mise activate" ~/.config/fish/conf.d/mise.fish; then
+        echo "mise activate --shims fish | source" >> ~/.config/fish/conf.d/mise.fish
     fi
 
     # Uninstall any existing node installations which may not have been configured
@@ -288,23 +289,27 @@ setup_mise() {
     # Installs tools defined in ~/.config/mise/config.toml globally.
     mise install
 
-    local mise_shims="$HOME/.local/share/mise/shims"
+    if [ "$(basename "$SHELL")" = "fish" ]; then
+        success "Mise installed and activated for the Fish shell. Please open a new shell session for changes to take effect."
+    else
+        local mise_shims="$HOME/.local/share/mise/shims"
 
-    if [ "$(which node)" != "$mise_shims/node" ]; then
-        error "node is not resolving to the mise shim (got $(which node))\n"
-        return 1
-    fi
-    if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
-        error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
-        return 1
-    fi
+        if [ "$(which node)" != "$mise_shims/node" ]; then
+            error "node is not resolving to the mise shim (got $(which node))\n"
+            return 1
+        fi
+        if [ "$(which pnpm)" != "$mise_shims/pnpm" ]; then
+            error "pnpm is not resolving to the mise shim (got $(which pnpm))\n"
+            return 1
+        fi
 
-    node_version=$(node -v)
-    pnpm_version=$(pnpm -v)
+        node_version=$(node -v)
+        pnpm_version=$(pnpm -v)
 
-    success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
+        success "Node.js $node_version and pnpm $pnpm_version installed successfully\n"
 
-    if $_removed_activate; then
-        notice "Shell config files were modified. Please open a new shell for the changes to take effect."
+        if $_removed_activate; then
+            notice "Shell config files were modified. Please open a new shell for the changes to take effect."
+        fi
     fi
 }
