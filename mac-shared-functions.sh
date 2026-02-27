@@ -90,7 +90,7 @@ uninstall_node_mac() {
         # we can't. So in that case we fall back to simply unlinking it so it no
         # longer appears in the `bin` folder for Homebrew. Packages that depend
         # on it will continue to work after unlinking it.
-        if !brew uninstall node > /dev/null 2>&1; then
+        if ! (brew uninstall node > /dev/null 2>&1); then
            warn "We could not uninstall the Homebrew version of node. We will unlink it so that it does not conflict with the Mise-managed version that will be installed."
            brew unlink node
         fi
