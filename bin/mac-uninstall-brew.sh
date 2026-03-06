@@ -45,7 +45,6 @@ rm -rf ~/.virtualenv/khan27
 
 echo "Removing other things that may upgrade if user reinstalls..."
 sudo rm -rf ~/Library/Caches/pip
-sudo rm -rf ~/.npm
 sudo rm -rf ~/.yarnrc
 pnpm store prune
 sudo rm -rf ~/go
