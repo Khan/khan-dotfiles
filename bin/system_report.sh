@@ -102,8 +102,6 @@ if which brew >/dev/null ; then
 
 header "Node/JS"
 tool_version node --version
-tool_version npm --version
-tool_version yarn --version
 tool_version pnpm --version
 
 header "Go"

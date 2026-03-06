@@ -77,13 +77,6 @@ check_dependencies() {
 
     # Make sure we have the ssh keys we need to pull from git.
     maybe_generate_ssh_keys  # in shared-functions.sh
-
-    # You need to have run the setup to install binaries: node, npm/etc.
-    if ! npm --version >/dev/null; then
-        echo "You must install binaries before running $0.  See"
-        echo "   https://khanacademy.atlassian.net/wiki/x/VgKiC"
-        exit 1
-    fi
 }
 
 install_dotfiles() {
