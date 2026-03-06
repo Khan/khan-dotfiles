@@ -14,6 +14,7 @@
 # scripts.
 
 import os
+import platform
 import re
 import subprocess
 import time
@@ -21,7 +22,7 @@ import time
 # Ensure we are using the best "version" of brew
 BREW86_PREFIX = "/usr/local/bin/"
 BREW_PREFIX = "/opt/homebrew/bin/"
-BREW_PREFIX = BREW_PREFIX if os.path.isdir(BREW_PREFIX) else BREW86_PREFIX
+BREW_PREFIX = BREW_PREFIX if platform.processor() == "arm" else BREW86_PREFIX
 BREW = BREW_PREFIX + "brew"
 PSQL = BREW_PREFIX + "psql"
 

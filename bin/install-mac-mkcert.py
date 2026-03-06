@@ -6,13 +6,13 @@ the other scripts that require elevated permissions (sudo) and because it
 requires a reboot after completion.
 """
 
-import os
+import platform
 import subprocess
 
-# Ensure we are using the best "version" of brew
+# Ensure we are using the right install of Homebrew
 BREW86_PREFIX = "/usr/local/bin/"
 BREW_PREFIX = "/opt/homebrew/bin/"
-BREW_PREFIX = BREW_PREFIX if os.path.isdir(BREW_PREFIX) else BREW86_PREFIX
+BREW_PREFIX = BREW_PREFIX if platform.processor() == "arm" else BREW86_PREFIX
 BREW = BREW_PREFIX + "brew"
 
 result = subprocess.run(['which', 'mkcert'], capture_output=True)
