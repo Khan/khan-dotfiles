@@ -11,17 +11,6 @@ if [[ $(uname -m) = "arm64" ]]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
-# This will call down to brew UNLESS the machine is an ARM architecture
-# Mac (ie M1), in which case this will use rosetta to interact with the x86
-# version of brew.
-brew86() {
-    if [[ $(uname -m) = "arm64" ]]; then
-        arch -x86_64 /usr/local/bin/brew $@
-    else
-        brew $@
-    fi
-}
-
 tty_bold=`tput bold`
 tty_normal=`tput sgr0`
 
