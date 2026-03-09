@@ -28,10 +28,10 @@ trap exit_warning EXIT   # from shared-functions.sh
 
 
 update_path() {
-    # We need /opt/homebrew/bin (/usr/local/bin on x86) to come before /usr/bin
-    # on the path, to pick up brew files we install.  To do this, we just source
-    # .profile.khan, which does this for us (and the new user). (This assumes
-    # you're running mac-setup.sh from the khan-dotfiles directory.)
+    # We need Homebrew's 'bin' dir to come before /usr/bin on the path, to pick
+    # up brew files we install. To do this, we just source .profile.khan, which
+    # does this for us (and the new user). (This assumes you're running
+    # mac-setup.sh from the khan-dotfiles directory.)
     . .profile.khan
 }
 
