@@ -140,7 +140,7 @@ install_mac_java() {
     brew_install openjdk@21
 
     # Symlink openjdk for the system Java wrappers.  This supports
-    # both M1 and x86_64 macs.
+    # both ARM and x86_64 macs.
     if [ -d /opt/homebrew/opt/openjdk@21 ]; then
         brew_loc=/opt/homebrew/opt/openjdk@21
     elif [ -d /usr/local/Cellar/openjdk@21 ]; then
