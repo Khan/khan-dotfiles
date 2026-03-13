@@ -140,17 +140,7 @@ install_dotfiles() {
     done
 
     # Make sure we pick up any changes we've made, so later steps of install don't fail.
-    case "$(basename "$SHELL")" in
-        zsh)
-            . ~/.zprofile
-            ;;
-        bash)
-            . ~/.profile
-            ;;
-        *)
-            . ~/.profile
-            ;;
-    esac
+    . ~/.profile
 }
 
 # clone a repository without any special sauce. should only be used in order to
