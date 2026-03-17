@@ -2,4 +2,4 @@
 trusted_config_paths = ['~/khan/']
 
 [tools]
-node = { version = "20.20", postinstall = "corepack enable" }
+node = { version = "24.13", postinstall = "corepack enable" }
