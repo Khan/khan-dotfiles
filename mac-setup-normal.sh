@@ -268,7 +268,7 @@ install_python_tools() {
         brew install python@3.11
     fi
     # The python3 formula does not install `python` as a symlink, so we do.
-    if ! [ -e "$(brew --prefix)/bin/python"]; then
+    if ! [ -e "$(brew --prefix)/bin/python" ]; then
         ln -snf "$(brew --prefix)/opt/python@3.11/libexec/bin/python" "$(brew --prefix)/bin/python"
     fi
 
