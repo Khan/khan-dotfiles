@@ -55,6 +55,10 @@ DIR=$(dirname "$0")
 IS_MAC=$(which sw_vers || echo "")
 IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
 
+if [ "$FRONTEND_ONLY" = "true" ] && [ -z "$IS_MAC" ]; then
+    echo "WARNING: --frontend-only is intended for macOS only and may not work correctly on this system."
+fi
+
 # On a clean install of Mac OS X, /opt/homebrew/bin is not in the PATH.
 # Thus, stuff installed with the arm64 version of homebrew is not visible.
 # (This was not the case on intel macs where /usr/local/bin is in the path
@@ -246,7 +250,9 @@ clone_repos() {
     clone_kaclone
     clone_devtools
     clone_webapp
-    clone_mobile
+    if [ "$FRONTEND_ONLY" != "true" ]; then
+        clone_mobile
+    fi
     clone_frontend
     kaclone_repair_self
 }
@@ -350,9 +356,9 @@ clone_repos
 install_and_setup_gcloud     # pre-req: setup_python
 install_deps                 # pre-reqs: clone_repos, install_and_setup_gcloud
 install_our_lovely_cli_deps  # pre-req: clone_repos, install_deps
+install_hooks                # pre-req: clone_repos
 
 if [ "$FRONTEND_ONLY" != "true" ]; then
-    install_hooks                # pre-req: clone_repos
     download_db_dump             # pre-req: install_deps
     create_pg_databases          # pre-req: install_deps
 fi
