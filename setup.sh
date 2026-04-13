@@ -198,7 +198,11 @@ clone_webapp() {
     # By this point, we must have git and ka-clone working, so a failure likely
     # means the user doesn't have access to webapp (it's the only private repo
     # we clone here) -- we give a more useful error than just "not found".
-    kaclone_repo git@github.com:Khan/webapp "$REPOS_DIR/" -p --email="$gitmail" --pre-push-lint || add_fatal_error \
+    local depth_flag=""
+    if [ "$FRONTEND_ONLY" = "true" ]; then
+        depth_flag="--depth=1"
+    fi
+    kaclone_repo git@github.com:Khan/webapp "$REPOS_DIR/" -p --email="$gitmail" --pre-push-lint $depth_flag || add_fatal_error \
         "Unable to clone Khan/webapp -- perhaps you don't have access? " \
         "If you can't view https://github.com/Khan/webapp, ask #it in " \
         "Slack to be added."
