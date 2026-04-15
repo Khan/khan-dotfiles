@@ -27,3 +27,17 @@ os-install:
 
 common-install:
 	./setup.sh
+
+frontend-only:
+	./git_sync.sh
+	rm -f ~/.profile-generated.khan && touch ~/.profile-generated.khan
+	if [ `uname -s` = Darwin ]; then \
+		./mac-setup.sh --frontend-only; \
+	fi
+	./setup.sh --frontend-only
+	@echo "***  YOU MUST REBOOT **IF** this was   ***"
+	@echo "***  the first time you've setup       ***"
+	@echo "***  khan-dotfiles (i.e. if you are    ***"
+	@echo "***  onboarding)                       ***"
+	@echo "***  (Reboot is required for browser   ***"
+	@echo "***  to pickup CA for khanacademy.dev) ***"
