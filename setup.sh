@@ -10,8 +10,27 @@
 # Bail on any errors
 set -e
 
-# Install in $HOME by default, but can set an alternate destination via $1.
-ROOT=${1-$HOME}
+# Install in $HOME by default, but can set an alternate destination via --root.
+ROOT="${HOME}"
+FRONTEND_ONLY=false
+
+# Process command line arguments
+while [[ "$1" != "" ]]; do
+    case $1 in
+        -r | --root)
+            shift
+            ROOT=$1
+            ;;
+        --frontend-only)
+            FRONTEND_ONLY=true
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            exit 1
+    esac
+    shift
+done
+
 mkdir -p "$ROOT"
 
 # the directory all repositories will be cloned to
@@ -35,6 +54,10 @@ DIR=$(dirname "$0")
 # Will contain a string on a mac and be empty on linux
 IS_MAC=$(which sw_vers || echo "")
 IS_MAC_ARM=$(test "$(uname -m)" = "arm64" && echo arm64 || echo "")
+
+if [ "$FRONTEND_ONLY" = "true" ] && [ -z "$IS_MAC" ]; then
+    echo "WARNING: --frontend-only is intended for macOS only and may not work correctly on this system."
+fi
 
 # On a clean install of Mac OS X, /opt/homebrew/bin is not in the PATH.
 # Thus, stuff installed with the arm64 version of homebrew is not visible.
@@ -175,7 +198,11 @@ clone_webapp() {
     # By this point, we must have git and ka-clone working, so a failure likely
     # means the user doesn't have access to webapp (it's the only private repo
     # we clone here) -- we give a more useful error than just "not found".
-    kaclone_repo git@github.com:Khan/webapp "$REPOS_DIR/" -p --email="$gitmail" --pre-push-lint || add_fatal_error \
+    local depth_flag=""
+    if [ "$FRONTEND_ONLY" = "true" ]; then
+        depth_flag="--depth=1"
+    fi
+    kaclone_repo git@github.com:Khan/webapp "$REPOS_DIR/" -p --email="$gitmail" --pre-push-lint $depth_flag || add_fatal_error \
         "Unable to clone Khan/webapp -- perhaps you don't have access? " \
         "If you can't view https://github.com/Khan/webapp, ask #it in " \
         "Slack to be added."
@@ -227,7 +254,9 @@ clone_repos() {
     clone_kaclone
     clone_devtools
     clone_webapp
-    clone_mobile
+    if [ "$FRONTEND_ONLY" != "true" ]; then
+        clone_mobile
+    fi
     clone_frontend
     kaclone_repair_self
 }
@@ -332,8 +361,11 @@ install_and_setup_gcloud     # pre-req: setup_python
 install_deps                 # pre-reqs: clone_repos, install_and_setup_gcloud
 install_our_lovely_cli_deps  # pre-req: clone_repos, install_deps
 install_hooks                # pre-req: clone_repos
-download_db_dump             # pre-req: install_deps
-create_pg_databases          # pre-req: install_deps
+
+if [ "$FRONTEND_ONLY" != "true" ]; then
+    download_db_dump             # pre-req: install_deps
+    create_pg_databases          # pre-req: install_deps
+fi
 
 echo
 echo "---------------------------------------------------------------------"

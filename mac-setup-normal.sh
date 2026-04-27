@@ -15,7 +15,26 @@ tty_bold=`tput bold`
 tty_normal=`tput sgr0`
 
 # The directory to which all repositories will be cloned.
-ROOT=${1-$HOME}
+ROOT="${HOME}"
+FRONTEND_ONLY=false
+
+# Process command line arguments
+while [[ "$1" != "" ]]; do
+    case $1 in
+        -r | --root)
+            shift
+            ROOT=$1
+            ;;
+        --frontend-only)
+            FRONTEND_ONLY=true
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            exit 1
+    esac
+    shift
+done
+
 REPOS_DIR="$ROOT/khan"
 
 # Derived path location constants
@@ -328,11 +347,14 @@ uninstall_node_mac
 # The actual installation of these tools is done in `setup_mise` in setup.sh.
 install_mise_mac
 
-"$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
+if [ "$FRONTEND_ONLY" != "true" ]; then
+    "$DEVTOOLS_DIR"/khan-dotfiles/bin/mac-setup-postgres.py
 
-install_redis
-install_image_utils
-install_helpful_tools
+    install_redis
+    install_image_utils
+    install_helpful_tools
+fi
+
 install_watchman
 install_python_tools
 install_fastly

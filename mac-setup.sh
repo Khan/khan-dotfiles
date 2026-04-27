@@ -8,14 +8,16 @@ SCRIPT=$(basename $0)
 usage() {
     cat << EOF
 usage: $SCRIPT [options]
-  --root <dir> Use specified directory as root (instead of HOME).
-  --all        Install all user apps.
-  --none       Install no user apps.
+  --root <dir>     Use specified directory as root (instead of HOME).
+  --all            Install all user apps.
+  --none           Install no user apps.
+  --frontend-only  Only install tools needed for frontend development.
 EOF
 }
 
 # Install in $HOME by default, but can set an alternate destination via $1.
 ROOT="${ROOT:-$HOME}"
+FRONTEND_ONLY_FLAG=""
 
 # Process command line arguments
 while [[ "$1" != "" ]]; do
@@ -29,6 +31,9 @@ while [[ "$1" != "" ]]; do
             ;;
         -n | --none)
             APPS="-n"
+            ;;
+        --frontend-only)
+            FRONTEND_ONLY_FLAG="--frontend-only"
             ;;
         -h | --help)
             usage
@@ -73,11 +78,8 @@ fi
 
 read -p "Press enter to continue..."
 
-# TODO(ericbrown): Pass command line arguments below
-# Note that ensure parsing arguments (above) doesn't hide anything
-
 # Run setup that requires sudo access
-"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-elevated.sh "$APPS"
+"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-elevated.sh $APPS $FRONTEND_ONLY_FLAG
 
 # Run setup that does NOT require sudo access
-"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-normal.sh
+"$DEVTOOLS_DIR"/khan-dotfiles/mac-setup-normal.sh $FRONTEND_ONLY_FLAG

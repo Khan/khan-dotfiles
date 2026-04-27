@@ -11,12 +11,14 @@ SCRIPT=$(basename $0)
 usage() {
     cat << EOF
 usage: $SCRIPT [options]
-  --root <dir> Use specified directory as root (instead of HOME).
+  --root <dir>     Use specified directory as root (instead of HOME).
+  --frontend-only  Only install tools needed for frontend development.
 EOF
 }
 
 # Install in $HOME by default, but can set an alternate destination via $1.
 ROOT="${ROOT:-$HOME}"
+FRONTEND_ONLY=false
 
 # Process command line arguments
 while [[ "$1" != "" ]]; do
@@ -24,6 +26,9 @@ while [[ "$1" != "" ]]; do
         -r | --root)
             shift
             ROOT=$1
+            ;;
+        --frontend-only)
+            FRONTEND_ONLY=true
             ;;
         -h | --help)
             usage
@@ -72,6 +77,8 @@ fi
 # It used to be we needed to install xcode-tools, now homebrew does this for us
 #"$DEVTOOLS_DIR"/khan-dotfiles/bin/install-mac-gcc.sh
 
-# We use java for our google cloud dataflow jobs that live in webapp
-# (as well as in khan-linter for linting those jobs)
-install_mac_java
+if [ "$FRONTEND_ONLY" != "true" ]; then
+    # We use java for our google cloud dataflow jobs that live in webapp
+    # (as well as in khan-linter for linting those jobs)
+    install_mac_java
+fi
