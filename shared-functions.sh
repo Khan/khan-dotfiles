@@ -190,7 +190,7 @@ maybe_generate_ssh_keys() {
   # Create a public key if need be.
   info "Checking for ssh keys"
   mkdir -p ~/.ssh
-  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ]; then
+  if [ -s ~/.ssh/id_rsa ] || [ -s ~/.ssh/id_ecdsa ] || [ -s ~/.ssh/id_ed25519 ]; then
     # TODO(ebrown): Verify these key(s) have passphrases on them
     success "Found existing ssh keys"
   else
