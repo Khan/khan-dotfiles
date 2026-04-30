@@ -26,7 +26,7 @@ _non_mise_binary_on_path() {
     local bin="$1"
     local bin_path
     bin_path="$(which "$bin" 2>/dev/null)" || return 1
-    [[ "$bin_path" == "$HOME/.local/share/mise/shims/"* ]] && return 1
+    [[ "$bin_path" == "$(mise_data_dir)/shims/"* ]] && return 1
     return 0
 }
 

@@ -20,7 +20,7 @@ export PATH="$KA_DEVROOT/khan-dotfiles/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 # NOTE(kevinb): We do this instead of `mise activate <shell_name> --shims` and
 # it seems to work fine.
-export PATH="$HOME/.local/share/mise/shims:$PATH"
+export PATH="${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/mise}/shims:$PATH"
 
 export MANPATH="$KA_DEVROOT/our-lovely-cli/man:$MANPATH"
 
