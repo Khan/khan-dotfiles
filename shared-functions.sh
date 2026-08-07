@@ -233,6 +233,20 @@ exit_warning() {
     echo "***                                                           ***"
 }
 
+# Resolves the directory mise uses for its data (installs, shims, etc.),
+# matching mise's own precedence: $MISE_DATA_DIR, then $XDG_DATA_HOME/mise,
+# then $HOME/.local/share/mise.
+mise_data_dir() {
+    printf '%s' "${MISE_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/mise}"
+}
+
+# Resolves the directory mise uses for its config, matching mise's own
+# precedence: $MISE_CONFIG_DIR, then $XDG_CONFIG_HOME/mise, then
+# $HOME/.config/mise.
+mise_config_dir() {
+    printf '%s' "${MISE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/mise}"
+}
+
 setup_mise() {
     # Check for and remove 'mise activate ...' commands from shell config files.
     # These conflict with the shims-based approach we use.
@@ -263,9 +277,9 @@ setup_mise() {
     done
 
     # Symlink the mise global config.
-    mkdir -p ~/.config/mise
+    mkdir -p "$(mise_config_dir)"
 
-    local _mise_config="$HOME/.config/mise/config.toml"
+    local _mise_config="$(mise_config_dir)/config.toml"
     if [ -f "$_mise_config" ] && [ ! -L "$_mise_config" ]; then
         notice "Found existing $_mise_config that is not a symlink."
         notice "Moving it to $_mise_config.bak before creating symlink."
@@ -286,10 +300,10 @@ setup_mise() {
 
     # Uninstall any existing node installations which may not have been configured
     # to with `postinstall = "corepack enable"`.
-    rm -rf "$HOME/.local/share/mise/installs/node"
-    rm -rf "$HOME/.local/share/mise/installs/pnpm"
+    rm -rf "$(mise_data_dir)/installs/node"
+    rm -rf "$(mise_data_dir)/installs/pnpm"
 
-    # Installs tools defined in ~/.config/mise/config.toml globally.
+    # Installs tools defined in mise's config.toml globally.
     mise install
 
     # For the Fish shell we can't do the extra verification as _this_ script is
@@ -301,7 +315,7 @@ setup_mise() {
         return
     fi
 
-    local mise_shims="$HOME/.local/share/mise/shims"
+    local mise_shims="$(mise_data_dir)/shims"
 
     if [ "$(which node)" != "$mise_shims/node" ]; then
         error "node is not resolving to the mise shim (got $(which node))\n"
