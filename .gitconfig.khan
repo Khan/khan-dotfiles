@@ -11,7 +11,18 @@
   autosetuprebase = always
 
 [alias]
-  co = checkout
+  # `co` also tries to convert a github PR number (e.g. `git co 1234`) to the
+  # branch that PR was pushed from.
+  #
+  # The leading `: checkout` is a shell no-op that exists purely for tab
+  # completion. Both fish's and bash's git completions scan an alias body
+  # word-by-word to work out which real git command it stands for, skipping
+  # words that start with `!` or `-`, contain `=`, or are `git`, `()`, `{`,
+  # `:`, or a quote. The first word that survives is the one they use --
+  # without the marker they land on `if` and offer nothing. Keep `: checkout ;`
+  # as the first thing in the body, space-separated, or `git co <TAB>` stops
+  # offering branch names.
+  co = "!f() { : checkout ; if [ -n \"$1\" ] && [ -z \"$2\" ]; then git checkout \"$(revisionid-to-diffid.sh \"$1\")\"; else git checkout \"$@\"; fi; }; f"
   p = pull
 
   # Branch management for dealing with github-style deploys.
