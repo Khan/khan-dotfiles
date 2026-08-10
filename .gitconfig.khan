@@ -11,8 +11,6 @@
   autosetuprebase = always
 
 [alias]
-  # Versions of commands that handle submodules properly.
-  # co will also try to convert a git PR to a tag if it can.
   co = checkout
   p = pull
 
