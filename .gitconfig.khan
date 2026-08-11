@@ -12,7 +12,7 @@
 
 [alias]
   # `co` also tries to convert a github PR number (e.g. `git co 1234`) to the
-  # branch that PR was pushed from.
+  # branch that PR was pushed from, and updates submodules after checking out.
   #
   # The leading `: checkout` is a shell no-op that exists purely for tab
   # completion. Both fish's and bash's git completions scan an alias body
@@ -22,8 +22,12 @@
   # without the marker they land on `if` and offer nothing. Keep `: checkout ;`
   # as the first thing in the body, space-separated, or `git co <TAB>` stops
   # offering branch names.
-  co = "!f() { : checkout ; if [ -n \"$1\" ] && [ -z \"$2\" ]; then git checkout \"$(revisionid-to-diffid.sh \"$1\")\"; else git checkout \"$@\"; fi; }; f"
-  p = pull
+  co = "!f() { : checkout ; if [ -n \"$1\" ] && [ -z \"$2\" ]; then git checkout \"$(revisionid-to-diffid.sh \"$1\")\"; else git checkout \"$@\"; fi && git submodule update --init --recursive; }; f"
+
+  # More versions of commands that handle submodules properly.
+  p = "!f() { git pull \"$@\" && git submodule update --init --recursive; }; f"
+  m = "!f() { git merge \"$@\" && git submodule update --init --recursive; }; f"
+  gsu = "!f() { git submodule sync --recursive && git submodule update --init --recursive; }; f"
 
   # Branch management for dealing with github-style deploys.
   # e.g. deploy-branch, review-branch, find-reviewers
@@ -40,6 +44,7 @@
   # Other useful commands.
   outgoing = "!git fetch >/dev/null 2>&1; git log @{upstream}..HEAD"
   incoming = "!git fetch >/dev/null 2>&1; git log HEAD..@{upstream}"
+  update-submodule = !bash -c 'git pull --no-rebase && pushd $1 && git co master && git pull && popd && git commit ${1%/} -m Substate\\ for\\ ${1%/} -m Test\\ plan: -m None && git push' --
   branch-name = "!git rev-parse --abbrev-ref HEAD"
   pup = "!git push origin $(git branch-name)"
   pown = "!git pull origin $(git branch-name)"
