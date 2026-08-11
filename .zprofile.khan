@@ -24,20 +24,54 @@ if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
 fi
 unset KA_DOTFILES_PROFILE_SOURCED
 
-# Figure out what directory we're *really* in (following symlinks).
-# We need this because *-completion.bash are siblings to this script.
-# https://stackoverflow.com/questions/9901210/bash-source0-equivalent-in-zsh
-SOURCE="${(%):-%N}"
-while [ -h "$SOURCE" ]; do   # follow symlinks
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"    # resolve relative symlink
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+# Enable autocompletion for git.
+#
+# zsh ships its own _git, but it cannot complete our shell-function aliases:
+# it splices the alias body onto the command line verbatim and then tries to
+# complete `!f`.  git's own git-completion.zsh delegates to git's bash
+# completion, whose alias scanner skips past `!f`, `()`, `{` and `:` to find
+# the real command -- which is what makes the `: checkout ;` marker in
+# .gitconfig.khan work.  So we prefer git's wrapper over zsh's _git.
+#
+# If we find no wrapper we leave fpath alone: Linux distros package this same
+# wrapper as _git on the default fpath, where it needs no help from us.
+_ka_git_core=""
+if command -v git >/dev/null; then
+    for _ka_dir in \
+        "$(git --exec-path)/../../share/git-core" \
+        /usr/share/git-core/contrib/completion
+    do
+        if [ -r "$_ka_dir/git-completion.zsh" ]; then
+            _ka_git_core="$_ka_dir"
+            break
+        fi
+    done
+    unset _ka_dir
+fi
 
-# Enable autocompletion for git. Should use git-completion.zsh, but it seems problematic on mac
+if [ -n "$_ka_git_core" ]; then
+    # The wrapper must be autoloaded as `_git` from an fpath directory; it
+    # cannot be sourced.  git does not name it that, so we link it.
+    _ka_zsh_functions="${XDG_CACHE_HOME:-$HOME/.cache}/khan-dotfiles/zsh"
+    # -ef compares the resolved files, so this also repairs a link left
+    # dangling by an Xcode or Homebrew upgrade.
+    if [[ ! "$_ka_zsh_functions/_git" -ef \
+          "$_ka_git_core/git-completion.zsh" ]]; then
+        mkdir -p "$_ka_zsh_functions"
+        ln -sf "$_ka_git_core/git-completion.zsh" "$_ka_zsh_functions/_git"
+    fi
+    fpath=("$_ka_zsh_functions" $fpath)
+
+    # The wrapper locates git-completion.bash relative to its own path, which
+    # breaks when it is reached through a symlink, and its fallback paths are
+    # all Linux ones.  Point it at the real file instead.
+    zstyle ':completion:*:*:git:*' script "$_ka_git_core/git-completion.bash"
+    unset _ka_zsh_functions
+fi
+unset _ka_git_core
+
+# fpath must be complete before this runs.
 autoload -Uz compinit && compinit
-source "$DIR/git-completion.bash"
 
 # Similarly for gcloud, if available
 if ! which gcloud >/dev/null; then

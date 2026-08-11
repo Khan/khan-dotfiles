@@ -20,19 +20,31 @@ if [ -z "$KA_DOTFILES_PROFILE_SOURCED" ]; then
 fi
 unset KA_DOTFILES_PROFILE_SOURCED
 
-# Figure out what directory we're *really* in (following symlinks).
-# We need this because *-completion.bash are siblings to this script.
-# http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do   # follow symlinks
-  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"    # resolve relative symlink
-done
-DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+# Enable autocompletion for git.
+#
+# We use the completion script that ships with git itself rather than
+# keeping a copy here, because the script is coupled to its git binary's
+# feature set and a checked-in copy goes stale as git moves on.
+#
+# Nothing sources it for us on macOS: Apple ships the file, but in a
+# directory no shell searches.  On Linux the bash-completion package
+# usually autoloads git already, and sourcing it again is harmless.
+if command -v git >/dev/null; then
+    for _ka_git_completion in \
+        "$(git --exec-path)/../../share/git-core/git-completion.bash" \
+        /usr/share/bash-completion/completions/git \
+        /opt/homebrew/etc/bash_completion.d/git-completion.bash \
+        /usr/local/etc/bash_completion.d/git-completion.bash \
+        /etc/bash_completion.d/git
+    do
+        if [ -r "$_ka_git_completion" ]; then
+            source "$_ka_git_completion"
+            break
+        fi
+    done
+    unset _ka_git_completion
+fi
 
-# Enable autocompletion for git
-source "$DIR/git-completion.bash"
 # Similarly for gcloud, if available
 if ! which gcloud >/dev/null; then
     GCLOUD_COMPLETION_FILE="$(basename "$(basename gcloud)")/completion.bash.inc"
