@@ -156,7 +156,7 @@ install_packages() {
         python3-dev python3-setuptools python3-pip python3-venv \
         python-is-python3 \
         cargo cargo-doc \
-        docker lsof uuid-runtime
+        docker-ce lsof uuid-runtime
 
     # Uninstall other Node.js installations to avoid conflicts with the
     # mise installation.  `mise` installs `node` in `install_deps` in setup.sh.
@@ -171,17 +171,12 @@ install_packages() {
     sudo apt-get install -y unrar ack-grep
 
     # Not needed for Khan, but useful things to have.
-    sudo apt-get install -y ntp abiword diffstat expect gimp \
-         mplayer netcat iftop tcpflow netpbm screen w3m \
-         vim emacs google-chrome-stable
+    sudo apt-get install -y ntp google-chrome-stable
 
     # If you don't have the other ack installed, ack is shorter than ack-grep
     # This might fail if you already have ack installed, so let it fail silently.
     sudo dpkg-divert --local --divert /usr/bin/ack --rename --add \
         /usr/bin/ack-grep || echo "Using installed ack"
-
-    # Needed to install printer drivers, and to use the printer scanner
-    sudo apt-get install -y apparmor-utils xsane
 
     # We use java for our google cloud dataflow jobs that live in webapp
     # (as well as in khan-linter for linting those jobs)
@@ -262,16 +257,6 @@ install_fastly() {
     sudo rm -rf "$builddir"
 }
 
-setup_clock() {
-    # This shouldn't be necessary, but it seems it is.
-    if ! grep -q 3.ubuntu.pool.ntp.org /etc/ntp.conf; then
-        sudo service ntp stop
-        sudo ntpdate 0.ubuntu.pool.ntp.org 1.ubuntu.pool.ntp.org \
-            2.ubuntu.pool.ntp.org 3.ubuntu.pool.ntp.org
-        sudo service ntp start
-    fi
-}
-
 config_inotify() {
     # webpack gets sad on webapp if it can only watch 8192 files (which is the
     # ubuntu default).
@@ -300,7 +285,6 @@ sudo sh -c 'echo Thanks'
 
 install_packages
 install_watchman
-setup_clock
 config_inotify
 install_postgresql
 install_fastly
