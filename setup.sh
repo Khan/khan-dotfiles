@@ -318,7 +318,7 @@ check_dependencies
 install_dotfiles
 
 # mac-normal-setup.sh and linux-setup.sh are responsible for installing `mise`.
-# This symlinks mise/config.toml to ~/.config/mise/config.toml and runs various
+# This symlinks mise/config.toml into mise's config directory and runs various
 # `mise` commands to install `node`, `pnpm`, and any other tools specified in
 # the config.toml.
 setup_mise
