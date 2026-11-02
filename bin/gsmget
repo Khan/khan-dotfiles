@@ -3,19 +3,53 @@
 SCRIPT=$(basename $0)
 
 usage() {
-    cat << EOF
-usage: $SCRIPT secretname <version>
+    cat << EOF2
+usage: $SCRIPT [--internal] secretname <version>
   secretname is the name of the secret in Google Secret Manager. For a list of
-  all the secrets, you can visit 
+  all the secrets, you can visit
   https://console.cloud.google.com/security/secret-manager?project=khan-academy
+  (or ?project=khan-internal-services when using --internal)
 
   version is optional. If not specified then you get the latest version
+
+  --internal  fetch the secret from the khan-internal-services project
+              instead of khan-academy
 
   $SCRIPT Test_secret
   $SCRIPT Test_secret 1
   $SCRIPT Test_secret latest
-EOF
+  $SCRIPT --internal Test_secret
+EOF2
 }
+
+PROJECT="khan-academy"
+
+while [ $# -gt 0 ]
+do
+  case "$1" in
+    --internal)
+      PROJECT="khan-internal-services"
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      echo
+      usage
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
 
 SECRET=$1
 VERSION=$2
@@ -34,4 +68,4 @@ then
 fi
 
 # Command for getting secrets from google secret manager
-exec gcloud --project khan-academy secrets versions access "$VERSION" --secret "$SECRET"
+exec gcloud --project "$PROJECT" secrets versions access "$VERSION" --secret "$SECRET"
