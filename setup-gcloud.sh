@@ -84,7 +84,7 @@ echo "$SCRIPT: Ensuring gcloud is up to date and has the right components."
 gcloud components update --quiet --version="$version"
 # The components we install:
 # - app-engine-java: used by kotlin dev servers
-# - app-engine-python: potentially useful for deploying ai-guide-core?
+# - app-engine-python: no known current use (was for the removed ai-guide-core)
 # - bq: biquery tool used by webapp and many humans
 # - cloud-datastore-emulator: used by all dev servers (or rather will be
 #   "soon" as of March 2019).

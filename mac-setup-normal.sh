@@ -262,7 +262,7 @@ install_jq() {
 }
 
 install_python_tools() {
-    # Python3 is needed to run the python services (e.g. ai-guide-core).
+    # Python3 is needed to run webapp's python tooling (e.g. the scripts in deploy/).
     if ! which python3.11 >/dev/null 2>&1; then
         info "Installing python 3.11\n"
         brew install python@3.11

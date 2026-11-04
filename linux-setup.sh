@@ -123,7 +123,7 @@ install_packages() {
         sudo apt-get update -qq -y || true
     fi
 
-    # Python3 is needed to run the python services (e.g. ai-guide-core).
+    # Python3 is needed to run webapp's python tooling (e.g. the scripts in deploy/).
     # We are on python3.11 now
     sudo apt-get install -y python3.11 python3.11-venv python3.11-dev
 
