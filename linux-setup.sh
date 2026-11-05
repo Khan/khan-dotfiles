@@ -102,12 +102,6 @@ install_packages() {
         updated_apt_repo=yes
     fi
 
-    # To get the most recent python, later.
-    if ! ls /etc/apt/sources.list.d/ 2>&1 | grep -q deadsnakes; then
-        sudo add-apt-repository -y ppa:deadsnakes/ppa
-        updated_apt_repo=yes
-    fi
-
     # To get chrome, later.
     if [ ! -s /etc/apt/sources.list.d/google-chrome.list ]; then
         wget -O- https://dl-ssl.google.com/linux/linux_signing_key.pub \
@@ -122,10 +116,6 @@ install_packages() {
     if [ -n "$updated_apt_repo" ]; then
         sudo apt-get update -qq -y || true
     fi
-
-    # Python3 is needed to run webapp's python tooling (e.g. the scripts in deploy/).
-    # We are on python3.11 now
-    sudo apt-get install -y python3.11 python3.11-venv python3.11-dev
 
     # Install curl for setup script usage
     sudo apt-get install -y curl

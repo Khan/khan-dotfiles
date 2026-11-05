@@ -263,6 +263,11 @@ install_jq() {
 
 install_python_tools() {
     # Python3 is needed to run webapp's python tooling (e.g. the scripts in deploy/).
+    # We picked python3.11 semi-arbitrarily; nothing in webapp is pinned to it.
+    # TODO: we can probably drop this install.  macOS itself only ships
+    # python 3.9 (via the command line tools; it's end-of-life), but brew's
+    # watchman (see install_watchman) already pulls in a newer brew python3.
+    # If we drop it, repoint the `python` symlink below, which bin/pip uses.
     if ! which python3.11 >/dev/null 2>&1; then
         info "Installing python 3.11\n"
         brew install python@3.11
